@@ -19,7 +19,7 @@ from pystemd.base import SDObject
 class Manager(SDObject):
     def __init__(self, bus=None, _autoload=False):
         super(Manager, self).__init__(
-            destination='org.freedesktop.systemd1',
+            destination=b'org.freedesktop.systemd1',
             path=b'/org/freedesktop/systemd1',
             bus=bus,
             _autoload=_autoload)
