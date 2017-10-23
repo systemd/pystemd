@@ -7,11 +7,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import os
 
 from distutils.core import setup
@@ -38,7 +33,7 @@ cython_ext = cythonize([
 setup(
     name='pystemd',
     version=__version__,
-    packages=['pystemd'],
+    packages=['pystemd', 'pystemd.systemd1'],
     author='Alvaro Leiva',
     author_email='aleivag@fb.com',
     ext_modules=cython_ext,
