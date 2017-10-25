@@ -113,10 +113,15 @@ So you like what you see, time to install it. you need to have:
   * Python headers: Just use your distro's package (e.g. python-dev).
   * Six library: for python 2 and 3 compatibility.
   * systemd headers: Chances are you already have this, normally is called
-  `libsystemd-dev` on or `systemd-devel`.
-  * Cython: Use your distro's package, pip install it or use the official
-  installation guide on cython homepage
+  `libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
+  * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
+  `-lsystemd` if not you can install normally install `systemd-libs` or
+  `libsystemd` depending on your distribution, version needs to be at least
+  v221.
+  * Cython: at least version 0.21a1, just pip install it or use the official
+  installation guide from cython homepage to get latest
    http://cython.readthedocs.io/en/latest/src/quickstart/install.html.
+  * gcc: or any compiler that `setup.py` will accept.
 
 then:
 
