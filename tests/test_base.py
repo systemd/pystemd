@@ -32,7 +32,7 @@ class TestLoad(TestCase):
         xml = xmlparse(
             '''<node>
             <interface name='non.sysd.interface'></interface>
-            <interface name='org.freedesktop.systemd1.I1'>
+            <interface name='org.freebeer.obj1.I1'>
                 <property name='prop1' type='s'></property>
                 <method name='meth1'>
                     <arg direction="in" type="s"/>
@@ -43,12 +43,12 @@ class TestLoad(TestCase):
         self.introspect_path_xml = xml
 
     def test_set_load(self):
-        obj = SDObject(b'destination', b'path', bus=MagicMock())
+        obj = SDObject(b'org.freebeer.obj1', b'path', bus=MagicMock())
         obj.get_introspect_xml = lambda: self.introspect_path_xml
         obj.load()
 
         self.assertIn('non.sysd.interface', obj._interfaces)
-        self.assertIn('org.freedesktop.systemd1.I1', obj._interfaces)
+        self.assertIn('org.freebeer.obj1.I1', obj._interfaces)
 
         self.assertIn('prop1', obj.I1.properties)
         obj.I1.prop1  # getting a property

@@ -73,6 +73,7 @@ class SDObject(object):
             return
 
         unit_xml = self.get_introspect_xml()
+        decoded_destination = self.destination.decode()
 
         for interface in unit_xml.childNodes:
             if interface.nodeType != interface.ELEMENT_NODE:
@@ -87,8 +88,12 @@ class SDObject(object):
             self._interfaces[interface_name] = \
                 meta_interface(interface)(self, interface_name)
 
-            if interface_name.startswith('org.freedesktop.systemd1.'):
-                setattr(self, interface_name[25:], self._interfaces[interface_name])
+            if interface_name.startswith(decoded_destination):
+                setattr(
+                    self,
+                    interface_name[len(decoded_destination) + 1:],
+                    self._interfaces[interface_name]
+                )
 
 
 class SDInterface(object):

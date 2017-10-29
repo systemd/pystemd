@@ -14,7 +14,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
     long_description = f.read()
@@ -33,7 +33,7 @@ cython_ext = cythonize([
 setup(
     name='pystemd',
     version=__version__,
-    packages=['pystemd', 'pystemd.systemd1'],
+    packages=['pystemd', 'pystemd.systemd1', 'pystemd.machine1'],
     author='Alvaro Leiva',
     author_email='aleivag@fb.com',
     ext_modules=cython_ext,
