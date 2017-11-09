@@ -125,6 +125,18 @@ class SDInterface(object):
                 'have not implemented set property')
 
     def _call_method(self, method_name, *args):
+        # If the method exist in the sd_object, and it has been authorized to
+        # overwrite the method in this interface, call that one
+        overwrite_method = getattr(self.sd_object, method_name, None)
+        overwrite_interfaces = getattr(
+            overwrite_method, 'overwrite_interfaces', [])
+
+        if callable(overwrite_method) and \
+                self.interface_name in overwrite_interfaces:
+            return overwrite_method(self.interface_name, *args)
+
+        # There is no overwrite in the sd_object, we should call original method
+        # we should call the default method (good enough fpor most cases)
         meth = self._methods_xml[method_name]
         in_args = [
             arg.getAttribute('type')
@@ -132,6 +144,9 @@ class SDInterface(object):
             if arg.nodeType == arg.ELEMENT_NODE and
             arg.getAttribute('direction') == 'in']
 
+        return self._auto_call_dbus_method(method_name, in_args, *args)
+
+    def _auto_call_dbus_method(self, method_name, in_args, *args):
         if len(args) != len(in_args):
             raise TypeError(
                 'method %s require %s arguments, %s supplied' % (
@@ -203,3 +218,13 @@ def meta_interface(interface):
 
             return type.__new__(metacls, classname, baseclasses, attrs)
     return six.add_metaclass(_MetaInterface)(SDInterface)
+
+
+def overwrite_interface_method(interface):
+    "This decorator will sign a method to overwrite a method in a interface"
+    def overwrite(func):
+        overwrite_interfaces = getattr(func, 'overwrite_interfaces', [])
+        overwrite_interfaces.append(interface.encode())
+        func.overwrite_interfaces = overwrite_interfaces
+        return func
+    return overwrite

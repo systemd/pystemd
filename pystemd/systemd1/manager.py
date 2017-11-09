@@ -12,8 +12,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-
-from pystemd.base import SDObject
+from pystemd.base import overwrite_interface_method, SDObject
+from pystemd.dbuslib import apply_signature
+from pystemd.systemd1.unit import KNOWN_UNIT_SIGNATURES
 
 
 class Manager(SDObject):
@@ -23,3 +24,32 @@ class Manager(SDObject):
             path=b'/org/freedesktop/systemd1',
             bus=bus,
             _autoload=_autoload)
+
+    @overwrite_interface_method('org.freedesktop.systemd1.Manager')
+    def StartTransientUnit(
+            self, interface_name, name, smode, properties, extra_units=None):
+        assert interface_name == b'org.freedesktop.systemd1.Manager'
+        assert extra_units is None, 'extra_units not yet supported'
+
+        args = apply_signature(b'ss', [name, smode])
+        args += [(ord(b'a'), b'(sv)')]
+        for prop_name, prop_value in properties.items():
+            args += [(ord(b'r'), b'sv'), (ord(b's'), prop_name)]
+            signature = KNOWN_UNIT_SIGNATURES[prop_name]
+            args += [(ord(b'v'), signature)]
+            args += apply_signature(signature, [prop_value])
+            args += [(-1, None), (-1, None)]
+        args += [(-1, None)]
+
+        # extra units
+        args += [(ord(b'a'), b'(sa(sv))')]
+        args += [(-1, None)]
+
+        with self.bus_context() as bus:
+            return bus.call_method(
+                self.destination,
+                self.path,
+                interface_name,
+                b'StartTransientUnit',
+                args
+            ).body
