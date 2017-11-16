@@ -266,7 +266,7 @@ cdef class DBus:
             raise DBusError(rets, None, "Could not open a bus to DBus")
 
     def close(self):
-        dbusc.sd_bus_unref(self.bus)
+        dbusc.sd_bus_close(self.bus)
 
     def process(self):
         cdef:

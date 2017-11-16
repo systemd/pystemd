@@ -3,7 +3,7 @@
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant 
+# LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
@@ -29,7 +29,17 @@ cdef extern from "systemd/sd-bus.h":
     char *message
     int _need_free
 
+  int sd_bus_open_user(sd_bus **ret)
   int sd_bus_open_system(sd_bus **ret)
+  int sd_bus_open_system_remote(sd_bus **ret, const char *host)
+  int sd_bus_open_system_machine(sd_bus **ret, const char *machine)
+
+  int sd_bus_default_user(sd_bus **ret)
+
+  int sd_bus_new(sd_bus **ret)
+  int sd_bus_set_address(sd_bus *bus, const char *address)
+  int sd_bus_get_address(sd_bus *bus, const char **address)
+  int sd_bus_start(sd_bus *ret)
 
   int sd_bus_call(sd_bus *bus, sd_bus_message *m, uint64_t usec, sd_bus_error *ret_error, sd_bus_message **reply)
   int sd_bus_call_method(
@@ -66,6 +76,7 @@ cdef extern from "systemd/sd-bus.h":
   int sd_bus_wait(sd_bus *bus, uint64_t timeout_usec)
   void sd_bus_error_free(sd_bus_error *e)
   sd_bus *sd_bus_unref(sd_bus *bus)
+  void sd_bus_close(sd_bus *bus);
 
   int sd_bus_message_new_method_call(
     sd_bus *bus,
