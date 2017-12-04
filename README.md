@@ -111,6 +111,7 @@ Install
 So you like what you see, time to install it. you need to have:
 
   * Python headers: Just use your distro's package (e.g. python-dev).
+  * setuptools: Just use your distro's package (e.g. python-setuptools).
   * Six library: for python 2 and 3 compatibility.
   * systemd headers: Chances are you already have this, normally is called
   `libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
