@@ -3,7 +3,7 @@
 # All rights reserved.
 #
 # This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant 
+# LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
@@ -13,7 +13,7 @@ class DBusBaseError(Exception):
       custom_msg = (
         "\nThis is DBusBaseError, a base error for DBus (i bet you did not "
         "see that comming) if you need a special error, enhance "
-        "libfb.py.pystemd.sysdexc module!."
+        "pystemd.sysdexc module!."
       ) if is_base_error else ''
 
       self.errno = errno
