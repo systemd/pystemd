@@ -10,11 +10,11 @@
 import _ast
 import ast
 import atexit
+import glob
 import os
 import sys
 import time
 
-from Cython.Build import cythonize
 from setuptools import setup
 from setuptools.extension import Extension
 
@@ -51,15 +51,26 @@ elif 'sdist' in sys.argv:
 else:
     __version__ += '.{}'.format(release_tag)
 
-# TODO: change this to use the c files instead of pyx if availables
-# on normal setup, or use the pyx in dev mode. also maybe generate cpp instead
-# of regular c.
 
-cython_ext = cythonize([
-    Extension(
-        "*", ["pystemd/*.pyx"],
-        libraries=['systemd']),
-])
+# If you are installing a clone of the repo, you should always compile the pyx
+# files into c code. since we never include the c files in the git repo.
+# But if you are installing this from a source distribution, then we dont pack
+# the pyx files, but we do pack the c extensions, so you need to use that.
+if glob.glob("pystemd/*.pyx"):
+    from Cython.Build import cythonize
+    external_modules = cythonize([
+        Extension(
+            "*", ["pystemd/*.pyx"],
+            libraries=['systemd']),
+    ])
+else:
+    external_modules = [
+        Extension(
+            cext[:-2].replace('/', '.'), [cext],
+            libraries=['systemd'])
+        for cext in glob.glob("pystemd/*.c")
+    ]
+
 
 setup(
     name='pystemd',
@@ -67,7 +78,7 @@ setup(
     packages=['pystemd', 'pystemd.systemd1', 'pystemd.machine1'],
     author='Alvaro Leiva',
     author_email='aleivag@fb.com',
-    ext_modules=cython_ext,
+    ext_modules=external_modules,
     url='https://github.com/facebookincubator/pystemd',
     classifiers=[
         "Operating System :: POSIX :: Linux",
