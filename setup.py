@@ -7,18 +7,49 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+import _ast
+import ast
+import atexit
 import os
+import sys
+import time
 
+from Cython.Build import cythonize
 from setuptools import setup
 from setuptools.extension import Extension
-from Cython.Build import cythonize
 
+THIS_DIR = os.path.dirname(__file__)
 
-__version__ = '0.1.1'
-
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
+with open(os.path.join(THIS_DIR, 'README.md')) as f:
     long_description = f.read()
 
+
+# get and compute the version string
+version_file = os.path.join(THIS_DIR, 'pystemd', '__version__.py')
+release_file = os.path.join(THIS_DIR, 'pystemd', 'RELEASE')
+with open(version_file) as version:
+    parsed_file = ast.parse(version.read())
+    __version__ = [
+        expr.value.s
+        for expr in parsed_file.body
+        if isinstance(expr, _ast.Assign)
+        and isinstance(expr.targets[0], _ast.Name)
+        and isinstance(expr.value, _ast.Str)
+        and expr.targets[0].id == '__version__'
+    ][0]
+
+    release_tag = '{}'.format(int(time.time()))
+
+
+if os.path.exists(release_file):
+    __version__ += '.0'
+elif 'sdist' in sys.argv:
+    with open(release_file, 'w') as release_fileobj:
+        atexit.register(lambda *x: os.remove(release_file))
+        release_fileobj.write(release_tag)
+    __version__ += '.0'
+else:
+    __version__ += '.{}'.format(release_tag)
 
 # TODO: change this to use the c files instead of pyx if availables
 # on normal setup, or use the pyx in dev mode. also maybe generate cpp instead
@@ -53,6 +84,7 @@ setup(
     keywords=['systemd'],
     description='A systemd binding for python',
     install_requires=['six'],
+    package_data={'pystemd': ['RELEASE']},
     long_description=long_description,
     license='BSD'
 )

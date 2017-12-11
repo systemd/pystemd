@@ -86,3 +86,4 @@ ENV/
 # for now don't commit any generated c (we will fix this later, when we can test
 # it)
 pystemd/*.c
+pystemd/RELEASE
