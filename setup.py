@@ -75,7 +75,12 @@ else:
 setup(
     name='pystemd',
     version=__version__,
-    packages=['pystemd', 'pystemd.systemd1', 'pystemd.machine1'],
+    packages=[
+        'pystemd',
+        'pystemd.systemd1',
+        'pystemd.machine1',
+        'pystemd.DBus',
+    ],
     author='Alvaro Leiva',
     author_email='aleivag@fb.com',
     ext_modules=external_modules,

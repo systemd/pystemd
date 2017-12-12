@@ -7,6 +7,8 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+import os
+
 cimport pystemd.dbusc as dbusc
 
 from pystemd.dbusexc import DBusError
@@ -54,6 +56,12 @@ class VariableReturn(object):
     ]
     if self.v_type == dbusc.SD_BUS_TYPE_STRUCT:
       return tuple(o)
+    elif self.v_type == dbusc.SD_BUS_TYPE_VARIANT:
+      return o[0]
+    elif self.v_type == dbusc.SD_BUS_TYPE_DICT_ENTRY:
+      return {o[0]: o[1]}
+    elif self.v_type == dbusc.SD_BUS_TYPE_ARRAY and o and isinstance(o[0], dict):
+      return dict(e for d in o for e in d.items())
     return o
 
 
@@ -122,7 +130,13 @@ cdef class DbusMessage:
             return_e.append(cast_data_to(rettype, peek_type))
 
         u = return_e.dump()
-        self.body = u[0] if u else None
+
+        if len(u) > 1:
+          self.body = u
+        elif u:
+          self.body = u[0]
+        else:
+          self.body = None
 
         # get the headers
 
@@ -251,6 +265,10 @@ cdef class DbusMessage:
 
 cdef class DBus:
     cdef dbusc.sd_bus *bus
+    cdef bool user_mode
+
+    def __init__(self, user_mode=False):
+      self.user_mode = user_mode
 
     def __enter__(self):
         self.open()
@@ -259,9 +277,17 @@ cdef class DBus:
     def __exit__(self, *errs):
         self.close()
 
+    cdef int open_dbus_bus(self):
+      cdef int r
+      # if user_mode not set, then this is easy:
+      if not self.user_mode:
+        return dbusc.sd_bus_open_system(&(self.bus))
+      else:
+        return dbusc.sd_bus_open_user(&(self.bus))
+
     def open(self):
         cdef int rets
-        rets = dbusc.sd_bus_open_system(&(self.bus))
+        rets = self.open_dbus_bus()
         if (rets < 0):
             raise DBusError(rets, None, "Could not open a bus to DBus")
 
@@ -446,6 +472,54 @@ cdef class DBus:
             raise DBusError(r, None, "Failed to get unique name")
 
         return unique_name
+
+    cpdef int get_fd(self):
+      return dbusc.sd_bus_get_fd(self.bus)
+
+
+cdef class DBusMachine(DBus):
+  "DBus class that connects to machine"
+  cdef char* machine
+
+  def __init__(self, char* machine):
+    self.machine = machine
+
+  cdef int open_dbus_bus(self):
+    return dbusc.sd_bus_open_system_machine(&(self.bus), self.machine)
+
+
+cdef class DBusRemote(DBus):
+  "DBus class that connects to a remore host"
+
+  cdef char* host
+
+  def __init__(self, char* host):
+    self.host = host
+
+  cdef int open_dbus_bus(self):
+    return dbusc.sd_bus_open_system_remote(&(self.bus), self.remote)
+
+cdef class DBusAddress(DBus):
+  "DBus class that connects to custom address"
+  cdef char* address
+
+  def __init__(self, char* address):
+    self.address = address
+
+  cdef int open_dbus_bus(self):
+    r = dbusc.sd_bus_new(&(self.bus))
+    if r < 0:
+      return r
+    r = dbusc.sd_bus_set_address(self.bus, self.address)
+
+    if r < 0:
+      return r
+
+    r = dbusc.sd_bus_start(self.bus);
+    if r < 0:
+      return r
+
+    return 0
 
 
 cdef cast_data_to(dbusc.basic_data basic, cast_type):

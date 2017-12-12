@@ -71,12 +71,13 @@ cdef extern from "systemd/sd-bus.h":
     sd_bus_message **reply,
     const char *type)
 
+  int sd_bus_get_fd(sd_bus *bus)
   int sd_bus_get_unique_name(sd_bus *bus, const char **unique)
   int sd_bus_process(sd_bus *bus, sd_bus_message **r)
   int sd_bus_wait(sd_bus *bus, uint64_t timeout_usec)
   void sd_bus_error_free(sd_bus_error *e)
   sd_bus *sd_bus_unref(sd_bus *bus)
-  void sd_bus_close(sd_bus *bus);
+  void sd_bus_close(sd_bus *bus)
 
   int sd_bus_message_new_method_call(
     sd_bus *bus,

@@ -105,11 +105,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from pystemd import machine1, systemd1, __version__
+from pystemd import DBus, machine1, systemd1, __version__
 
 # handy shortcuts for systemd resources
 SDUnit = systemd1.Unit
 SDManager = systemd1.Manager
 SDMachine = machine1.Machine
 
-__all__ = ['systemd1', 'machine1', '__version__']
+__all__ = ['systemd1', 'machine1', '__version__', 'DBus']
