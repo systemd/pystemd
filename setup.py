@@ -11,6 +11,7 @@ import _ast
 import ast
 import atexit
 import glob
+import logging
 import os
 import sys
 import time
@@ -22,6 +23,20 @@ THIS_DIR = os.path.dirname(__file__)
 
 with open(os.path.join(THIS_DIR, 'README.md')) as f:
     long_description = f.read()
+
+try:
+    # convert readme to rst so it will be displayed on pypi (not critical so
+    # its ok to not do it)
+    import pypandoc
+    new_long_description = pypandoc.convert_text(
+        long_description, 'rst', format='md')
+    assert new_long_description
+    long_description = new_long_description
+except Exception:
+    # its ok if this fails.
+    if 'sdist' in sys.argv:
+        logging.exception("Could not translate readme into a rst!")
+    pass
 
 
 # get and compute the version string

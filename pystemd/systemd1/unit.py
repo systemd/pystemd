@@ -16,19 +16,56 @@ from pystemd.base import SDObject
 from pystemd.dbuslib import path_encode
 
 
+# This is where we add the units and signatures, we steal most of this from
+# https://github.com/systemd/systemd/tree/master/src/core/ any of the dbus-*.c
+# has that data.
+
+# This dict should have a key, value, where value should be either a byte (
+# the signatute) or a callable that returns a tuple of key, signature, value.
+# please note that this is not recursive.
+
 KNOWN_UNIT_SIGNATURES = {
 
-    b'Slice': b's',
     b'User': b's',
     b'Type': b's',
     b'Group': b's',
     b'Nice': b'i',
     b'DynamicUser': b'b',
-    b"Personality": b"s",
+    b'Personality': b's',
 
     b'Description': b's',
-    b'ExecStart': b'a(sasb)',
     b'RemainAfterExit': b'b',
+    b'NoNewPrivileges': b'b',
+
+    # exec_command
+    b'ExecStartPre': b'a(sasb)',
+    b'ExecStart': b'a(sasb)',
+    b'ExecStartPost': b'a(sasb)',
+    b'ExecStopPost': b'a(sasb)',
+
+    # execute properties
+    b'UtmpIdentifier': b's',
+    b'UtmpMode': b's',
+    b'PAMName': b's',
+    b'SELinuxContext': b's',
+    b'KeyringMode': b's',
+
+    b'SyslogLevelPrefix': b'b',
+    b'MemoryDenyWriteExecute': b'b',
+    b'RestrictRealtime': b'b',
+    b'RemoveIPC': b'b',
+    b'MountAPIVFS': b'b',
+    b'CPUSchedulingResetOnFork': b'b',
+    b'LockPersonality': b'b',
+
+    b'SupplementaryGroups': b'as',
+    b'SystemCallArchitectures': b'as',
+
+    # timeouts
+    b'RuntimeMaxUSec': b't',
+
+    # syslog
+    b'SyslogIdentifier': b's',
 
     # stdio signatures
     b'StandardInput': b's',
@@ -37,10 +74,13 @@ KNOWN_UNIT_SIGNATURES = {
     b'TTYPath': b's',
     b'TTYReset': b'b',
     b'TTYVHangup': b'b',
+    b'TTYVTDisallocate': b'b',
+    b'IgnoreSIGPIPE': b'b',
     b'StandardInputFileDescriptor': b'h',
     b'StandardOutputFileDescriptor': b'h',
     b'StandardErrorFileDescriptor': b'h',
     b'Environment': b'as',
+    b'EnvironmentFiles': b'a(sb)',
 
     # timer signatures
     b'OnActiveSec': b't',
@@ -59,54 +99,100 @@ KNOWN_UNIT_SIGNATURES = {
     # binds and paths
     b'BindPaths': b'a(ssbt)',
     b'BindReadOnlyPaths': b'a(ssbt)',
-    b"ReadWritePaths": b"as",
-    b"ReadOnlyPaths": b"as",
-    b"InaccessiblePaths": b"as",
-    b"MountFlags": b"t",
-    b"PrivateTmp": b"b",
-    b"PrivateDevices": b"b",
-    b"ProtectKernelTunables": b"b",
-    b"ProtectKernelModules": b"b",
-    b"ProtectControlGroups": b"b",
-    b"PrivateNetwork": b"b",
-    b"PrivateUsers": b"b",
-    b"ProtectHome": b"s",
-    b"ProtectSystem": b"s",
+    b'ReadWritePaths': b'as',
+    b'ReadOnlyPaths': b'as',
+    b'ReadWriteDirectories': b'as',
+    b'ReadOnlyDirectories': b'as',
+    b'InaccessibleDirectories': b'as',
+    b'InaccessiblePaths': b'as',
+    b'MountFlags': b't',
+
+    b'StateDirectory': b'as',
+    b'CacheDirectory': b'as',
+    b'LogsDirectory': b'as',
+    b'RuntimeDirectory': b'as',
+    b'RuntimeDirectoryPreserve': b's',
+    b'ConfigurationDirectory': b'as',
+
+    b'PrivateTmp': b'b',
+    b'PrivateDevices': b'b',
+    b'PrivateNetwork': b'b',
+    b'PrivateUsers': b'b',
+
+    b'ProtectKernelTunables': b'b',
+    b'ProtectKernelModules': b'b',
+    b'ProtectControlGroups': b'b',
+    b'ProtectHome': b's',
+    b'ProtectSystem': b's',
+
+    # systemd.kill
+    b'KillMode': b's',
+    b'KillSignal': b'i',
+    b'SendSIGHUP': b'b',
+    b'SendSIGKILL': b'b',
 
     # Limits
-    b"LimitCPU": b"t",
-    b"LimitCPUSoft": b"t",
-    b"LimitFSIZE": b"t",
-    b"LimitFSIZESoft": b"t",
-    b"LimitDATA": b"t",
-    b"LimitDATASoft": b"t",
-    b"LimitSTACK": b"t",
-    b"LimitSTACKSoft": b"t",
-    b"LimitCORE": b"t",
-    b"LimitCORESoft": b"t",
-    b"LimitRSS": b"t",
-    b"LimitRSSSoft": b"t",
-    b"LimitNOFILE": b"t",
-    b"LimitNOFILESoft": b"t",
-    b"LimitAS": b"t",
-    b"LimitASSoft": b"t",
-    b"LimitNPROC": b"t",
-    b"LimitNPROCSoft": b"t",
-    b"LimitMEMLOCK": b"t",
-    b"LimitMEMLOCKSoft": b"t",
-    b"LimitLOCKS": b"t",
-    b"LimitLOCKSSoft": b"t",
-    b"LimitSIGPENDING": b"t",
-    b"LimitSIGPENDINGSoft": b"t",
-    b"LimitMSGQUEUE": b"t",
-    b"LimitMSGQUEUESoft": b"t",
-    b"LimitNICE": b"t",
-    b"LimitNICESoft": b"t",
-    b"LimitRTPRIO": b"t",
-    b"LimitRTPRIOSoft": b"t",
-    b"LimitRTTIME": b"t",
-    b"LimitRTTIMESoft": b"t",
+    b'LimitCPU': b't',
+    b'LimitCPUSoft': b't',
+    b'LimitFSIZE': b't',
+    b'LimitFSIZESoft': b't',
+    b'LimitDATA': b't',
+    b'LimitDATASoft': b't',
+    b'LimitSTACK': b't',
+    b'LimitSTACKSoft': b't',
+    b'LimitCORE': b't',
+    b'LimitCORESoft': b't',
+    b'LimitRSS': b't',
+    b'LimitRSSSoft': b't',
+    b'LimitNOFILE': b't',
+    b'LimitNOFILESoft': b't',
+    b'LimitAS': b't',
+    b'LimitASSoft': b't',
+    b'LimitNPROC': b't',
+    b'LimitNPROCSoft': b't',
+    b'LimitMEMLOCK': b't',
+    b'LimitMEMLOCKSoft': b't',
+    b'LimitLOCKS': b't',
+    b'LimitLOCKSSoft': b't',
+    b'LimitSIGPENDING': b't',
+    b'LimitSIGPENDINGSoft': b't',
+    b'LimitMSGQUEUE': b't',
+    b'LimitMSGQUEUESoft': b't',
+    b'LimitNICE': b't',
+    b'LimitNICESoft': b't',
+    b'LimitRTPRIO': b't',
+    b'LimitRTPRIOSoft': b't',
+    b'LimitRTTIME': b't',
+    b'LimitRTTIMESoft': b't',
 
+    # cgroup
+    b'DevicePolicy': b's',
+    b'Slice': b's',
+    b'CPUAccounting': b'b',
+    b'MemoryAccounting': b'b',
+    b'MemoryLow': b't',
+    b'MemoryLowScale': b'u',
+    b'MemoryHigh': b't',
+    b'MemoryHighScale': b'u',
+    b'MemoryMax': b't',
+    b'MemoryMaxScale': b'u',
+    b'MemorySwapMax': b't',
+    b'MemorySwapMaxScale': b'u',
+    b'MemoryLimit': b't',
+    b'MemoryLimitScale': b'u',
+    b'IOAccounting': b'b',
+    b'BlockIOAccounting': b'b',
+    b'TasksAccounting': b'b',
+    b'TasksMax': b't',
+    b'TasksMaxScale': b'u',
+    b'CPUQuota': lambda _, value: (
+        b'CPUQuotaPerSecUSec', b't', int(value * 10**6)),
+    b'CPUQuotaPerSecUSec': b't',
+    b'IPAccounting': b'b',
+    b'IPAddressAllow': b'a(iayu)',
+    b'IPAddressDeny': b'a(iayu)',
+
+    b'_custom': lambda _, value: value
 }
 
 

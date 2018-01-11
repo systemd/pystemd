@@ -34,8 +34,13 @@ class Manager(SDObject):
         args = apply_signature(b'ss', [name, smode])
         args += [(ord(b'a'), b'(sv)')]
         for prop_name, prop_value in properties.items():
-            args += [(ord(b'r'), b'sv'), (ord(b's'), prop_name)]
             signature = KNOWN_UNIT_SIGNATURES[prop_name]
+
+            if callable(signature):
+                prop_name, signature, prop_value = signature(
+                    prop_name, prop_value)
+
+            args += [(ord(b'r'), b'sv'), (ord(b's'), prop_name)]
             args += [(ord(b'v'), signature)]
             args += apply_signature(signature, [prop_value])
             args += [(-1, None), (-1, None)]

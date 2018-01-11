@@ -104,30 +104,62 @@ Out[19]: b'kvm'
 
 ```
 
+Extras:
+-------
+as part of the code we include `pystemd.run`, the spiritual port of systemd-run
+to python. example of usage:
+
+```python
+# run this as root
+>>> import pystemd.run, sys
+>>> pystemd.run(
+    [b'/usr/bin/psql', b'postgres'],
+    machine=b'db1',
+    user=b'postgres',
+    wait=True,
+    pty=True,
+    stdin=sys.stdin, stdout=sys.stdout,
+    env={b'PGTZ': b'UTC'}
+)
+```
+
+will open a postgres interactive prompt in a local nspawn-machine.
 
 Install
 -------
 
-So you like what you see, time to install it. you need to have:
+So you like what you see, the simplest way to install is by:
 
-  * Python headers: Just use your distro's package (e.g. python-dev).
+```bash
+$ pip install pystemd
+```
+
+you'll need to have:
+
+* Python headers: Just use your distro's package (e.g. python-dev).
+* systemd headers: Chances are you already have this, normally is called
+`libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
+* systemd library: check if `pkg-config --cflags --libs libsystemd` returns
+`-lsystemd` if not you can install normally install `systemd-libs` or
+`libsystemd` depending on your distribution, version needs to be at least
+v221.
+* gcc: or any compiler that `setup.py` will accept.
+
+if you want to install from source then after you clone this repo you need to
+
+```bash
+$ pip install -r requirements.txt # get six
+$ python setup.py install # prefer python3
+```
+
+but in adition to previous requirementrs yoiu'll need:
+
   * setuptools: Just use your distro's package (e.g. python-setuptools).
-  * Six library: for python 2 and 3 compatibility.
-  * systemd headers: Chances are you already have this, normally is called
-  `libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
-  * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
-  `-lsystemd` if not you can install normally install `systemd-libs` or
-  `libsystemd` depending on your distribution, version needs to be at least
-  v221.
+  * Six library: for python 2 and 3 compatibility (installed by requirements).
   * Cython: at least version 0.21a1, just pip install it or use the official
   installation guide from cython homepage to get latest
    http://cython.readthedocs.io/en/latest/src/quickstart/install.html.
-  * gcc: or any compiler that `setup.py` will accept.
 
-then:
-
-    pip install -r requirements.txt # get six
-    python setup.py install
 
 License
 -------
