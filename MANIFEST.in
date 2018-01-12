@@ -1,1 +1,2 @@
 include LICENSE_BSD PATENTS README.md LICENSE.txt
+recursive-include tests *.py
