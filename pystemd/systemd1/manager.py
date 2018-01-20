@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 from pystemd.base import overwrite_interface_method, SDObject
 from pystemd.dbuslib import apply_signature
 from pystemd.systemd1.unit import KNOWN_UNIT_SIGNATURES
+from pystemd.utils import x2char_star
 
 
 class Manager(SDObject):
@@ -34,6 +35,7 @@ class Manager(SDObject):
         args = apply_signature(b'ss', [name, smode])
         args += [(ord(b'a'), b'(sv)')]
         for prop_name, prop_value in properties.items():
+            prop_name = x2char_star(prop_name)
             signature = KNOWN_UNIT_SIGNATURES[prop_name]
 
             if callable(signature):

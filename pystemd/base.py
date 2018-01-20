@@ -20,12 +20,13 @@ from xml.dom.minidom import parseString
 import six
 
 from pystemd.dbuslib import DBus, apply_signature
+from pystemd.utils import x2char_star
 
 
 class SDObject(object):
     def __init__(self, destination, path, bus=None, _autoload=False):
-        self.destination = destination
-        self.path = path
+        self.destination = x2char_star(destination)
+        self.path = x2char_star(path)
 
         self._interfaces = {}
         self._loaded = False
@@ -112,8 +113,8 @@ class SDInterface(object):
                 self.sd_object.destination,
                 self.sd_object.path,
                 self.interface_name,
-                six.b(property_name),
-                six.b(prop_type)
+                x2char_star(property_name),
+                x2char_star(prop_type)
             )
 
     def _set_property(self, property_name, value):
@@ -160,7 +161,7 @@ class SDInterface(object):
                 'arguments')
 
         in_signature = ''.join(in_args)
-        call_args = apply_signature(six.b(in_signature), list(args))
+        call_args = apply_signature(x2char_star(in_signature), list(args))
 
         with self.sd_object.bus_context() as bus:
             return bus.call_method(

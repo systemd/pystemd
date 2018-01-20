@@ -12,6 +12,7 @@ import os
 cimport pystemd.dbusc as dbusc
 
 from pystemd.dbusexc import DBusError
+from pystemd.utils import x2char_star
 
 from libcpp cimport bool
 from libc.stdint cimport (
@@ -382,21 +383,14 @@ cdef class DBus:
                 msg_call,
                 &arg_type,
                 <double>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_STRING:
+            elif arg_type in (
+                dbusc.SD_BUS_TYPE_STRING, dbusc.SD_BUS_TYPE_OBJECT_PATH,
+                dbusc.SD_BUS_TYPE_SIGNATURE):
+              carg_value = x2char_star(arg_value)
               r = dbusc.sd_bus_message_append(
                 msg_call,
                 &arg_type,
-                <char*> arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_OBJECT_PATH:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <char*>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_SIGNATURE:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <char*>arg_value)
+                <char*>carg_value)
             elif arg_type == dbusc.SD_BUS_TYPE_UNIX_FD:
               r = dbusc.sd_bus_message_append(
                 msg_call,

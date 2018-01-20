@@ -25,6 +25,7 @@ import pystemd
 
 from pystemd.dbuslib import DBus, DBusMachine
 from pystemd.systemd1 import Manager as SDManager, Unit
+from pystemd.utils import x2char_star
 
 
 EXIT_SUBSTATES = (b'exited', b'failed', b'dead')
@@ -136,7 +137,7 @@ def run(cmd,
         else:
             return DBus(user_mode=user_mode)
 
-    name = name or 'pystemd{}.service'.format(uuid.uuid4().hex).encode()
+    name = x2char_star(name or 'pystemd{}.service'.format(uuid.uuid4().hex))
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
@@ -205,7 +206,7 @@ def run(cmd,
             b'Nice': nice,
             b'RuntimeMaxUSec': runtime_max_usec,
             b'Environment': [
-                b'%s=%s' % (key, value)
+                b'%s=%s' % (x2char_star(key), x2char_star(value))
                 for key, value in env.items()
             ] or None
         })

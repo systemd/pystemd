@@ -12,19 +12,17 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import six
+from unittest import TestCase
 
-from pystemd.base import SDObject
-from pystemd.dbuslib import path_encode
 from pystemd.utils import x2char_star
 
 
-class Machine(SDObject):
-    def __init__(self, external_id, bus=None, _autoload=False):
-        self.external_id = x2char_star(external_id)
-        path = path_encode(
-            b'/org/freedesktop/machine1/machine', self.external_id)
-        super(Machine, self).__init__(
-            destination=b'org.freedesktop.machine1',
-            path=path,
-            bus=bus,
-            _autoload=_autoload)
+class TestContextToCharStar(TestCase):
+    def test_pass_normal_vars(self):
+        for elem in (0, six.b('hi'), True, [], {}, (3, 4), {3, 4}):
+            self.assertEqual(elem, x2char_star(elem))
+
+    def test_convert_to_char(self):
+        for elem in ("", six.u('hi all')):
+            self.assertEqual(six.b(elem), x2char_star(elem))

@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 from pystemd.base import SDObject
 from pystemd.dbuslib import path_encode
+from pystemd.utils import x2char_star
 
 
 # This is where we add the units and signatures, we steal most of this from
@@ -198,11 +199,11 @@ KNOWN_UNIT_SIGNATURES = {
 
 class Unit(SDObject):
     def __init__(self, external_id, bus=None, _autoload=False):
+        self.external_id = x2char_star(external_id)
         path = path_encode(
-            b'/org/freedesktop/systemd1/unit', external_id)
+            b'/org/freedesktop/systemd1/unit', self.external_id)
         super(Unit, self).__init__(
             destination=b'org.freedesktop.systemd1',
             path=path,
             bus=bus,
             _autoload=_autoload)
-        self.external_id = external_id
