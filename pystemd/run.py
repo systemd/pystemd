@@ -133,7 +133,7 @@ def run(cmd,
     """
     def bus_factory():
         if machine:
-            return DBusMachine(machine)
+            return DBusMachine(x2char_star(machine))
         else:
             return DBus(user_mode=user_mode)
 
