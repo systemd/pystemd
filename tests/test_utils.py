@@ -24,5 +24,5 @@ class TestContextToCharStar(TestCase):
             self.assertEqual(elem, x2char_star(elem))
 
     def test_convert_to_char(self):
-        for elem in ("", six.u('hi all')):
+        for elem in ("", u'hi all'):
             self.assertEqual(six.b(elem), x2char_star(elem))

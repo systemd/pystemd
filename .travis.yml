@@ -1,0 +1,31 @@
+language: python
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+# we install libsystemd{0,-dev} manually because:
+#   1.- Travisci have not whitelist it.
+#   2.- we want to pick a old enought version of systemd to link to.
+before_install:
+  - sudo apt-get install -y libgcrypt20
+  - wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd0_229-4ubuntu4_amd64.deb http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd-dev_229-4ubuntu4_amd64.deb
+  - sudo dpkg -i libsystemd0_229-4ubuntu4_amd64.deb libsystemd-dev_229-4ubuntu4_amd64.deb
+
+  - pip install -r requirements.txt
+  - pip install Cython
+  - python setup.py sdist
+
+install:
+  - pip install dist/pystemd*.tar.gz
+
+script:
+  - cd tests && python -m unittest discover
