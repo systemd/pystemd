@@ -13,6 +13,7 @@ cimport pystemd.dbusc as dbusc
 
 from pystemd.dbusexc import DBusError
 from pystemd.utils import x2char_star
+from pprint import pformat
 
 from libcpp cimport bool
 from libc.stdint cimport (
@@ -306,6 +307,85 @@ cdef class DBus:
 
         return msg
 
+    cdef _msg_append(
+        self, dbusc.sd_bus_message *msg_call, int arg_type_i, arg_value):
+
+      cdef char * arg_type_c
+      cdef char arg_type = <char>arg_type_i
+
+      if arg_type_i > 0:
+          inter = chr(arg_type_i).encode()
+          arg_type_c = inter
+
+      if arg_type == dbusc.SD_BUS_TYPE_BYTE:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <uint8_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_BOOLEAN:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <bool>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_INT16:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <int16_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_UINT16:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <uint16_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_INT32:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <int32_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_UINT32:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <uint32_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_INT64:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <int64_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_UINT64:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <uint64_t>arg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_DOUBLE:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <double>arg_value)
+      elif arg_type in (
+          dbusc.SD_BUS_TYPE_STRING, dbusc.SD_BUS_TYPE_OBJECT_PATH,
+          dbusc.SD_BUS_TYPE_SIGNATURE):
+        carg_value = x2char_star(arg_value)
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <char*>carg_value)
+      elif arg_type == dbusc.SD_BUS_TYPE_UNIX_FD:
+        r = dbusc.sd_bus_message_append(
+          msg_call,
+          arg_type_c,
+          <int>arg_value)
+      elif arg_type in CONTAINER_TYPES: # open container
+        r = dbusc.sd_bus_message_open_container(
+          msg_call,
+          arg_type,
+          <char*>arg_value)
+      elif arg_type == -1: # close container
+        r = dbusc.sd_bus_message_close_container(msg_call)
+      else:
+        raise DBusError(
+          -42, None, "Unknown arg type %s for %s" % (arg_type, arg_value))
+
     def call_method(
             self,
             const char *destination,
@@ -316,7 +396,7 @@ cdef class DBus:
 
         cdef:
             int r
-            char arg_type
+            int arg_type
 
             dbusc.sd_bus_message *msg_call = NULL
             dbusc.sd_bus_message *msg_reply = NULL
@@ -336,76 +416,14 @@ cdef class DBus:
         if r < 0:
             raise DBusError(r, None, 'Could not create DBus method')
 
-        for arg_type, arg_value in (args or []):
-
-            if arg_type == dbusc.SD_BUS_TYPE_BYTE:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <uint8_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_BOOLEAN:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <bool>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_INT16:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <int16_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_UINT16:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <uint16_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_INT32:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <int32_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_UINT32:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <uint32_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_INT64:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <int64_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_UINT64:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <uint64_t>arg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_DOUBLE:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <double>arg_value)
-            elif arg_type in (
-                dbusc.SD_BUS_TYPE_STRING, dbusc.SD_BUS_TYPE_OBJECT_PATH,
-                dbusc.SD_BUS_TYPE_SIGNATURE):
-              carg_value = x2char_star(arg_value)
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <char*>carg_value)
-            elif arg_type == dbusc.SD_BUS_TYPE_UNIX_FD:
-              r = dbusc.sd_bus_message_append(
-                msg_call,
-                &arg_type,
-                <int>arg_value)
-            elif arg_type in CONTAINER_TYPES: # open container
-              r = dbusc.sd_bus_message_open_container(
-                msg_call,
-                arg_type,
-                <char*>arg_value)
-            elif arg_type == -1: # close container
-              r = dbusc.sd_bus_message_close_container(msg_call)
-            else:
-              raise DBusError(
-                -42, None, "Unknown arg type %s for %s" % (arg_type, arg_value))
+        for narg, (arg_type, arg_value) in enumerate(args or []):
+            try:
+                self._msg_append(msg_call, arg_type, arg_value)
+            except TypeError as e:
+              raise TypeError(
+                str(e) + ' for input "{}", element '
+                'number {} in input serie:\n{}'.format(
+                  arg_value, narg, pformat(args)))
 
 
         r = dbusc.sd_bus_call(self.bus, msg_call, 0, &error, msg.ref())

@@ -11,19 +11,20 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import fcntl
 import os
 import pty as ptylib
 import select
-import sys
 import struct
+import sys
 import termios
-import fcntl
 import tty
 import uuid
 
 import pystemd
 
 from pystemd.dbuslib import DBus, DBusMachine
+from pystemd.exceptions import PystemdRunError
 from pystemd.systemd1 import Manager as SDManager, Unit
 from pystemd.utils import x2char_star
 
@@ -74,6 +75,7 @@ def run(cmd,
         machine=None,
         wait=False,
         remain_after_exit=False,
+        raise_on_fail=False,
         pty=None, pty_master=None, pty_path=None,
         stdin=None, stdout=None, stderr=None,
         _wait_polling=None):
@@ -101,6 +103,9 @@ def run(cmd,
             has finish, also if true, this methods will return
             pystemd.systemd1.Unit object. defaults to False and this method
             returns None and the unit will be gone as soon as is done.
+        raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
+            status code, it wont take affect unless you set wait=True,
+            defaults to False.
         pty: Set this variable to True if you want a pty to be created. if you
             pass a `machine`, the pty will be created in the machine. Setting
             this value will ignore whatever you set in pty_master and pty_path.
@@ -268,6 +273,12 @@ def run(cmd,
                 # on usermode the subcribe to events does not work that well
                 # this is a temporaly hack. you can always not wait on usermode.
                 break
+
+        if raise_on_fail:
+            if unit.Service.ExecMainStatus:
+                raise PystemdRunError(
+                    'cmd {} exited with status {}'.format(
+                        cmd, unit.Service.ExecMainStatus))
 
         if remain_after_exit:
             unit.load()

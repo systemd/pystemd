@@ -34,6 +34,9 @@ but we will assume that this just another building block for your program.
     has finish, also if true, this methods will return
     pystemd.systemd1.Unit object. defaults to False and this method
     returns None and the unit will be gone as soon as is done.
+* raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
+    status code, it wont take affect unless you set wait=True,
+    defaults to False.
 * pty: Set this variable to True if you want a pty to be created. if you
     pass a `machine`, the pty will be created in the machine. Setting
     this value will ignore whatever you set in pty_master and pty_path.
