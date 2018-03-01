@@ -14,13 +14,23 @@ from __future__ import unicode_literals
 import six
 
 
-def x2char_star(what_to_convert):
+def x2char_star(what_to_convert, convert_all=False):
     """
-    converts `what_to_convert` to whatever the platform understand as char*,
-    for python2 this is if unicode we turn it into a string, and if this is
-    python3 and what you pass is a str we convert it into bytes
+    Converts `what_to_convert` to whatever the platform understand as char*.
+    For python2, if this is unicode we turn it into a string. If this is
+    python3 and what you pass is a `str` we convert it into `bytes`.
+
+    If `convert_all` is passed we will also convert non string types, so `1`
+    will be `b'1'` and `True` will be true
     """
 
-    if isinstance(what_to_convert, six.text_type):
+    if isinstance(what_to_convert, six.binary_type):
+        return what_to_convert
+    elif isinstance(what_to_convert, six.text_type):
         return what_to_convert.encode()
-    return what_to_convert
+    elif convert_all:
+        if isinstance(what_to_convert, bool):
+            return str(what_to_convert).lower().encode()
+        return repr(what_to_convert).encode()
+    else:
+        return what_to_convert

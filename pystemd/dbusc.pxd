@@ -17,6 +17,11 @@ from libc.stdint cimport (
   uint64_t,
 )
 
+cdef extern from "systemd/sd-daemon.h":
+  int SD_LISTEN_FDS_START
+  int sd_listen_fds(int unset_environment)
+  int sd_notify(int unset_environment, const char *state)
+
 cdef extern from "systemd/sd-bus.h":
   ctypedef struct sd_bus:
     pass

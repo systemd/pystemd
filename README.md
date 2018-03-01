@@ -106,7 +106,7 @@ Out[19]: b'kvm'
 
 Extras:
 -------
-as part of the code we include `pystemd.run`, the spiritual port of systemd-run
+As part of the code we include `pystemd.run`, the spiritual port of systemd-run
 to python. example of usage:
 
 ```python
@@ -124,6 +124,25 @@ to python. example of usage:
 ```
 
 will open a postgres interactive prompt in a local nspawn-machine.
+
+You also get a interface to `sd_notify` in the form of `pystemd.daemon.notify`
+
+```python
+# run this as root
+>>> import pystemd.daemon
+>>> pystemd.daemon.notify(False, ready=1, status='Gimme! Gimme! Gimme!')
+```
+
+And access to listen file descriptors for socket activation scripts.
+
+```python
+# run this as root
+>>> import pystemd.daemon
+>>> pystemd.daemon.LISTEN_FDS_START
+3
+>>> pystemd.daemon.listen_fds()
+1 # you normally only open 1 socket
+```
 
 Install
 -------
@@ -152,7 +171,7 @@ $ pip install -r requirements.txt # get six
 $ python setup.py install # prefer python3
 ```
 
-but in adition to previous requirementrs yoiu'll need:
+but in addition to previous requirements you'll need:
 
   * setuptools: Just use your distro's package (e.g. python-setuptools).
   * Six library: for python 2 and 3 compatibility (installed by requirements).
