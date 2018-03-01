@@ -1,6 +1,8 @@
 pystemd
 =======
 
+[![Build Status](https://travis-ci.org/facebookincubator/pystemd.svg)](http://travis-ci.org/facebookincubator/pystemd)
+
 This library allows you to talk to systemd over dbus from python, without
 actually thinking that you are talking to systemd over dbus. This allows you to
 programmatically start/stop/restart/kill and verify services status from

@@ -46,7 +46,7 @@ master/src/systemd/sd-daemon.h#L173-L232
   """
   pystates = [x2char_star(s) for s in states]
   pystates.extend(
-    b'%s=%s' % (x2char_star(k.upper()), x2char_star(v, convert_all=True))
+    b'='.join([x2char_star(k.upper()), x2char_star(v, convert_all=True)])
     for k, v in kwstates.items()
   )
   state = b'\n'.join(pystates)
