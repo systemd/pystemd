@@ -21,6 +21,7 @@ cdef extern from "systemd/sd-daemon.h":
   int SD_LISTEN_FDS_START
   int sd_listen_fds(int unset_environment)
   int sd_notify(int unset_environment, const char *state)
+  int sd_watchdog_enabled(int unset_environment, uint64_t *usec)
 
 cdef extern from "systemd/sd-bus.h":
   ctypedef struct sd_bus:

@@ -64,3 +64,13 @@ The first parameter is meant to signal if we should remove the notify
 information from the service. For example, you can do
 `pystemd.daemon.notify(True, ready=1)`
 if you don't intend to speak to the systemd notify socket ever again.
+
+
+Watchdog
+--------
+
+If you set `WatchdogSec=X` in your unit, you can use watchdog functionality. To
+get the number of usec between pooling, that is `X*10^6` where `X` is
+defined in `WatchdogSec=X`. you can get it with
+`pystemd.daemon.watchdog_enabled`, and if you want to ping systemd, you do
+`pystemd.daemon.notify(False, watchdog=1)`.

@@ -12,6 +12,7 @@ the one you find pypi, but its the one in development.
   type, still much work to do here.
 * added pystemd.daemon.notify as interface to sd_notify.
 * added pystemd.daemon.listen_fds as interface to sd_listen_fds.
+* added pystemd.daemon.watchdog_enabled as interface to sd_watchdog_enabled.
 
 0.3.0
 =====

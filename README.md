@@ -146,6 +146,28 @@ And access to listen file descriptors for socket activation scripts.
 1 # you normally only open 1 socket
 ```
 
+And access if watchdog is enabled and ping it.
+
+```python
+import time
+import pystemd.daemon
+
+watchdog_usec = pystemd.daemon.watchdog_enabled()
+watchdog_sec = watchdog_usec/10**6
+
+if not watchdog_usec:
+  print(f'watchdog was not enabled!')
+
+for i in range(20):
+    pystemd.daemon.notify(False, watchdog=1, status=f'count {i+1}')
+    time.sleep(watchdog_sec*0.5)
+
+print(f'sleeping for 30 seconds')
+time.sleep(watchdog_sec*2)
+print(f'you will never reach me in a watchdog env')
+
+```
+
 Install
 -------
 
