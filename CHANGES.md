@@ -4,6 +4,13 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.5.0
+=====
+* Add `StandardInputData`, `TemporaryFileSystem`, `RuntimeMaxSec`,
+   `WatchdogUSec` and `WatchdogSec` to unit definition, so they can be used
+   with `pystemd.run`.
+* `pystemd.run` always returns a unit.
+
 0.4.0
 =====
 * Add raise_on_fail to `pystemd.run` to raise a error when unit exit with

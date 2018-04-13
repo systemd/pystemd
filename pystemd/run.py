@@ -280,10 +280,9 @@ def run(cmd,
                     'cmd {} exited with status {}'.format(
                         cmd, unit.Service.ExecMainStatus))
 
-        if remain_after_exit:
-            unit.load()
-            unit.bus_context = bus_factory
-            return unit
+        unit.load()
+        unit.bus_context = bus_factory
+        return unit
 
 
 # do pystemd.run callable.

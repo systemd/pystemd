@@ -35,13 +35,19 @@ KNOWN_UNIT_SIGNATURES = {
     b'Personality': b's',
 
     b'Description': b's',
+    b'NotifyAccess': b's',
+    b'BusName': b's',
     b'RemainAfterExit': b'b',
     b'NoNewPrivileges': b'b',
+    b'RootDirectoryStartOnly': b'b',
+    b'PermissionsStartOnly': b'b',
 
     # exec_command
     b'ExecStartPre': b'a(sasb)',
     b'ExecStart': b'a(sasb)',
     b'ExecStartPost': b'a(sasb)',
+    b'ExecReload': b'a(sasb)',
+    b'ExecStop': b'a(sasb)',
     b'ExecStopPost': b'a(sasb)',
 
     # execute properties
@@ -64,6 +70,11 @@ KNOWN_UNIT_SIGNATURES = {
 
     # timeouts
     b'RuntimeMaxUSec': b't',
+    b'RuntimeMaxSec': lambda _, value: (
+        b'RuntimeMaxUSec', b't', int(value * 10**6)),
+    b'WatchdogUSec': b't',
+    b'WatchdogSec': lambda _, value: (
+        b'WatchdogUSec', b't', int(value * 10**6)),
 
     # syslog
     b'SyslogIdentifier': b's',
@@ -80,7 +91,10 @@ KNOWN_UNIT_SIGNATURES = {
     b'StandardInputFileDescriptor': b'h',
     b'StandardOutputFileDescriptor': b'h',
     b'StandardErrorFileDescriptor': b'h',
+    b'StandardInputData': b'ay',
     b'Environment': b'as',
+    b'PassEnvironment': b'as',
+    b'UnsetEnvironment': b'as',
     b'EnvironmentFiles': b'a(sb)',
 
     # timer signatures
@@ -106,6 +120,7 @@ KNOWN_UNIT_SIGNATURES = {
     b'ReadOnlyDirectories': b'as',
     b'InaccessibleDirectories': b'as',
     b'InaccessiblePaths': b'as',
+    b'TemporaryFileSystem': b'a(ss)',
     b'MountFlags': b't',
 
     b'StateDirectory': b'as',
@@ -131,6 +146,10 @@ KNOWN_UNIT_SIGNATURES = {
     b'KillSignal': b'i',
     b'SendSIGHUP': b'b',
     b'SendSIGKILL': b'b',
+
+    b'RestartPreventExitStatus': b'(aiai)',
+    b'RestartForceExitStatus': b'(aiai)',
+    b'SuccessExitStatus': b'(aiai)',
 
     # Limits
     b'LimitCPU': b't',
