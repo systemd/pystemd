@@ -10,6 +10,7 @@ the one you find pypi, but its the one in development.
    `WatchdogUSec` and `WatchdogSec` to unit definition, so they can be used
    with `pystemd.run`.
 * `pystemd.run` always returns a unit.
+* `Delegate` and `JoinsNamespaceOf` are also added to unit definition.
 
 0.4.0
 =====

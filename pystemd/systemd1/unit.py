@@ -130,6 +130,7 @@ KNOWN_UNIT_SIGNATURES = {
     b'RuntimeDirectoryPreserve': b's',
     b'ConfigurationDirectory': b'as',
 
+    b'JoinsNamespaceOf': b'as',
     b'PrivateTmp': b'b',
     b'PrivateDevices': b'b',
     b'PrivateNetwork': b'b',
@@ -188,6 +189,7 @@ KNOWN_UNIT_SIGNATURES = {
     # cgroup
     b'DevicePolicy': b's',
     b'Slice': b's',
+    b'Delegate': b'b',
     b'CPUAccounting': b'b',
     b'MemoryAccounting': b'b',
     b'MemoryLow': b't',
