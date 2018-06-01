@@ -21,9 +21,9 @@ from pystemd.manager import SDManager
 
 def list_units():
     with SDManager() as manager:
-        print('Version', manager.Manager.Version)
-        print('Architecture', manager.Manager.Architecture)
+        print("Version", manager.Manager.Version)
+        print("Architecture", manager.Manager.Architecture)
 
         # List Units
         for unit, state in manager.Manager.ListUnitFiles():
-            print('    {} is {}'.format(unit, state))
+            print("    {} is {}".format(unit, state))

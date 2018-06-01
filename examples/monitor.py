@@ -32,14 +32,13 @@ def monitor(*args):
 
     with DBus() as bus:
         cargs = apply_signature(
-            b'asu',  # signature
+            b"asu",  # signature
             [
-                chain(*[
-                    [b"sender='%s'" % arg, b"destination='%s'" % arg]
-                    for arg in args
-                ]),
-                0
-            ]
+                chain(
+                    *[[b"sender='%s'" % arg, b"destination='%s'" % arg] for arg in args]
+                ),
+                0,
+            ],
         )
 
         # BecomeMonitor takes 2 argument an array of string (filters) and a
@@ -51,7 +50,7 @@ def monitor(*args):
             b"/org/freedesktop/DBus",
             b"org.freedesktop.DBus.Monitoring",
             b"BecomeMonitor",
-            cargs
+            cargs,
         )
 
         name = bus.get_unique_name()
@@ -77,7 +76,7 @@ def monitor(*args):
             pprint({k: v for k, v in msg.headers.items() if v is not None})
             # print response
             pprint(msg.body)
-            print('#*' * 40)
+            print("#*" * 40)
 
             if msg.is_signal(b"org.freedesktop.DBus.Local", b"Disconnected"):
                 break

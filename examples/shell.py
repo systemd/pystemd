@@ -23,9 +23,11 @@ from IPython.terminal.embed import InteractiveShellEmbed
 
 display_banner = """
 Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.version}.
-""".format(pystemd=pystemd, sys=sys)
+""".format(
+    pystemd=pystemd, sys=sys
+)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     shell = InteractiveShellEmbed()
     shell.show_banner(display_banner)
     shell.mainloop()

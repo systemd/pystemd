@@ -22,26 +22,26 @@ from pystemd.unit import SDUnit
 
 
 def full_example():
-    with SDUnit(b'postfix.service') as sd_unit:
-        print('ConditionTimestamp', sd_unit.Unit.ConditionTimestamp)
-        print('StopWhenUnneeded', sd_unit.Unit.StopWhenUnneeded)
-        print('StartLimitAction', sd_unit.Unit.StartLimitAction)
-        print('StartLimitBurst', sd_unit.Unit.StartLimitBurst)
-        print('StartupBlockIOWeight', sd_unit.Service.StartupBlockIOWeight)
-        print('SyslogPriority', sd_unit.Service.SyslogPriority)
-        print('SyslogFacility', sd_unit.Service.SyslogFacility)
-        print('SyslogLevelPrefix', sd_unit.Service.SyslogLevelPrefix)
-        print('After', sd_unit.Unit.After)
-        print('Conditions', sd_unit.Unit.Conditions)
-        print('Job', sd_unit.Unit.Job)
-        print('InvocationID', sd_unit.Unit.InvocationID)
-        print('ExecStart', sd_unit.Service.ExecStart)
+    with SDUnit(b"postfix.service") as sd_unit:
+        print("ConditionTimestamp", sd_unit.Unit.ConditionTimestamp)
+        print("StopWhenUnneeded", sd_unit.Unit.StopWhenUnneeded)
+        print("StartLimitAction", sd_unit.Unit.StartLimitAction)
+        print("StartLimitBurst", sd_unit.Unit.StartLimitBurst)
+        print("StartupBlockIOWeight", sd_unit.Service.StartupBlockIOWeight)
+        print("SyslogPriority", sd_unit.Service.SyslogPriority)
+        print("SyslogFacility", sd_unit.Service.SyslogFacility)
+        print("SyslogLevelPrefix", sd_unit.Service.SyslogLevelPrefix)
+        print("After", sd_unit.Unit.After)
+        print("Conditions", sd_unit.Unit.Conditions)
+        print("Job", sd_unit.Unit.Job)
+        print("InvocationID", sd_unit.Unit.InvocationID)
+        print("ExecStart", sd_unit.Service.ExecStart)
 
         # next one require sudo powers!
         if os.geteuid() == 0:
-            print('.GetProcesses', sd_unit.Service.GetProcesses())
-            print('.Start(b\'replace\')', sd_unit.Unit.Start(b'replace'))
+            print(".GetProcesses", sd_unit.Service.GetProcesses())
+            print(".Start(b'replace')", sd_unit.Unit.Start(b"replace"))
         else:
-            print('no root user, no complex method for you!')
+            print("no root user, no complex method for you!")
 
-        print(sd_unit.Service._methods_xml['GetProcesses'].toxml())
+        print(sd_unit.Service._methods_xml["GetProcesses"].toxml())

@@ -15,4 +15,4 @@ from __future__ import unicode_literals
 from .manager import Manager
 from .unit import Unit
 
-__all__ = ['Manager', 'Unit']
+__all__ = ["Manager", "Unit"]

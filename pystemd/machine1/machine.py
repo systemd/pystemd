@@ -21,10 +21,10 @@ from pystemd.utils import x2char_star
 class Machine(SDObject):
     def __init__(self, external_id, bus=None, _autoload=False):
         self.external_id = x2char_star(external_id)
-        path = path_encode(
-            b'/org/freedesktop/machine1/machine', self.external_id)
+        path = path_encode(b"/org/freedesktop/machine1/machine", self.external_id)
         super(Machine, self).__init__(
-            destination=b'org.freedesktop.machine1',
+            destination=b"org.freedesktop.machine1",
             path=path,
             bus=bus,
-            _autoload=_autoload)
+            _autoload=_autoload,
+        )

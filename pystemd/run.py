@@ -29,7 +29,7 @@ from pystemd.systemd1 import Manager as SDManager, Unit
 from pystemd.utils import x2char_star
 
 
-EXIT_SUBSTATES = (b'exited', b'failed', b'dead')
+EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 
 
 class CExit:
@@ -57,28 +57,34 @@ def get_fno(obj):
         return None
     elif isinstance(obj, int):
         return obj
-    elif hasattr(obj, 'fileno') and callable(getattr(obj, 'fileno')):
+    elif hasattr(obj, "fileno") and callable(getattr(obj, "fileno")):
         return obj.fileno()
 
     raise TypeError("Expected None, int or fileobject with fileno method")
 
 
-def run(cmd,
-        name=None,
-        user=None,
-        user_mode=os.getuid() != 0,
-        nice=None,
-        runtime_max_sec=None,
-        env=None,
-        extra=None,
-        cwd=None,
-        machine=None,
-        wait=False,
-        remain_after_exit=False,
-        raise_on_fail=False,
-        pty=None, pty_master=None, pty_path=None,
-        stdin=None, stdout=None, stderr=None,
-        _wait_polling=None):
+def run(
+    cmd,
+    name=None,
+    user=None,
+    user_mode=os.getuid() != 0,
+    nice=None,
+    runtime_max_sec=None,
+    env=None,
+    extra=None,
+    cwd=None,
+    machine=None,
+    wait=False,
+    remain_after_exit=False,
+    raise_on_fail=False,
+    pty=None,
+    pty_master=None,
+    pty_path=None,
+    stdin=None,
+    stdout=None,
+    stderr=None,
+    _wait_polling=None,
+):
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
 
@@ -136,14 +142,15 @@ def run(cmd,
     https://github.com/facebookincubator/pystemd/blob/master/_docs/pystemd.run.md
 
     """
+
     def bus_factory():
         if machine:
             return DBusMachine(x2char_star(machine))
         else:
             return DBus(user_mode=user_mode)
 
-    name = x2char_star(name or 'pystemd{}.service'.format(uuid.uuid4().hex))
-    runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
+    name = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
+    runtime_max_usec = (runtime_max_sec or 0) * 10 ** 6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
     env = env or {}
@@ -153,9 +160,7 @@ def run(cmd,
     if user_mode:
         _wait_polling = _wait_polling or 0.5
 
-    with CExit() as ctexit, \
-            bus_factory() as bus, \
-            SDManager(bus=bus) as manager:
+    with CExit() as ctexit, bus_factory() as bus, SDManager(bus=bus) as manager:
 
         if pty:
             if machine:
@@ -167,12 +172,14 @@ def run(cmd,
                 ctexit.register(os.close, pty_master)
 
         if pty_path:
-            unit_properties.update({
-                b'StandardInput': b'tty',
-                b'StandardOutput': b'tty',
-                b'StandardError': b'tty',
-                b'TTYPath': pty_path,
-            })
+            unit_properties.update(
+                {
+                    b"StandardInput": b"tty",
+                    b"StandardOutput": b"tty",
+                    b"StandardError": b"tty",
+                    b"TTYPath": pty_path,
+                }
+            )
 
             if None not in (stdin, pty_master):
                 # lets set raw mode for stdin so we can foward input without
@@ -180,55 +187,65 @@ def run(cmd,
                 # attributes as they where after this method is done
                 stdin_attrs = tty.tcgetattr(stdin)
                 tty.setraw(stdin)
-                ctexit.register(
-                    tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
+                ctexit.register(tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
                 selectors.append(stdin)
 
             if None not in (stdout, pty_master):
-                if os.getenv('TERM'):
-                    env[b'TERM'] = env.get(b'TERM', os.getenv('TERM').encode())
+                if os.getenv("TERM"):
+                    env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
 
                 selectors.append(pty_master)
                 # lets be a friend and set the size of the pty.
                 winsize = fcntl.ioctl(
-                    stdout, termios.TIOCGWINSZ,
-                    struct.pack('HHHH', 0, 0, 0, 0))
-                fcntl.ioctl(
-                    pty_master, termios.TIOCSWINSZ, winsize)
+                    stdout, termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)
+                )
+                fcntl.ioctl(pty_master, termios.TIOCSWINSZ, winsize)
         else:
-            unit_properties.update({
-                b'StandardInputFileDescriptor': get_fno(stdin) if stdin else stdin,
-                b'StandardOutputFileDescriptor': get_fno(stdout) if stdout else stdout,
-                b'StandardErrorFileDescriptor': get_fno(stderr) if stderr else stderr,
-            })
+            unit_properties.update(
+                {
+                    b"StandardInputFileDescriptor": get_fno(stdin) if stdin else stdin,
+                    b"StandardOutputFileDescriptor": get_fno(stdout)
+                    if stdout
+                    else stdout,
+                    b"StandardErrorFileDescriptor": get_fno(stderr)
+                    if stderr
+                    else stderr,
+                }
+            )
 
-        unit_properties.update({
-            b'Description': b'pystemd: ' + name,
-            b'ExecStart': [(cmd[0], cmd, False)],
-            b'RemainAfterExit': remain_after_exit,
-            b'WorkingDirectory': cwd,
-            b'User': user,
-            b'Nice': nice,
-            b'RuntimeMaxUSec': runtime_max_usec,
-            b'Environment': [
-                b'%s=%s' % (x2char_star(key), x2char_star(value))
-                for key, value in env.items()
-            ] or None
-        })
+        unit_properties.update(
+            {
+                b"Description": b"pystemd: " + name,
+                b"ExecStart": [(cmd[0], cmd, False)],
+                b"RemainAfterExit": remain_after_exit,
+                b"WorkingDirectory": cwd,
+                b"User": user,
+                b"Nice": nice,
+                b"RuntimeMaxUSec": runtime_max_usec,
+                b"Environment": [
+                    b"%s=%s" % (x2char_star(key), x2char_star(value))
+                    for key, value in env.items()
+                ]
+                or None,
+            }
+        )
 
         unit_properties.update(extra or {})
-        unit_properties = {
-            k: v for k, v in unit_properties.items() if v is not None}
+        unit_properties = {k: v for k, v in unit_properties.items() if v is not None}
 
         unit = Unit(name, bus=bus, _autoload=True)
         if wait:
             mstr = (
-                "type='signal',"
-                "sender='org.freedesktop.systemd1',"
-                "path='{}',"
-                "interface='org.freedesktop.DBus.Properties',"
-                "member='PropertiesChanged'"
-            ).format(unit.path.decode()).encode()
+                (
+                    "type='signal',"
+                    "sender='org.freedesktop.systemd1',"
+                    "path='{}',"
+                    "interface='org.freedesktop.DBus.Properties',"
+                    "member='PropertiesChanged'"
+                )
+                .format(unit.path.decode())
+                .encode()
+            )
 
             monbus = bus_factory()
             monbus.open()
@@ -241,7 +258,7 @@ def run(cmd,
             selectors.append(monitor_fd)
 
         # start the process
-        manager.Manager.StartTransientUnit(name, b'fail', unit_properties)
+        manager.Manager.StartTransientUnit(name, b"fail", unit_properties)
 
         while wait:
             _in, _, _ = select.select(selectors, [], [], _wait_polling)
@@ -266,7 +283,7 @@ def run(cmd,
 
                 m.process_reply(False)
                 if m.get_path() == unit.path:
-                    if m.body[1].get(b'SubState') in EXIT_SUBSTATES:
+                    if m.body[1].get(b"SubState") in EXIT_SUBSTATES:
                         break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
@@ -277,8 +294,10 @@ def run(cmd,
         if raise_on_fail:
             if unit.Service.ExecMainStatus:
                 raise PystemdRunError(
-                    'cmd {} exited with status {}'.format(
-                        cmd, unit.Service.ExecMainStatus))
+                    "cmd {} exited with status {}".format(
+                        cmd, unit.Service.ExecMainStatus
+                    )
+                )
 
         unit.load()
         unit.bus_context = bus_factory

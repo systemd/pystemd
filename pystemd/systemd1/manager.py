@@ -21,42 +21,39 @@ from pystemd.utils import x2char_star
 class Manager(SDObject):
     def __init__(self, bus=None, _autoload=False):
         super(Manager, self).__init__(
-            destination=b'org.freedesktop.systemd1',
-            path=b'/org/freedesktop/systemd1',
+            destination=b"org.freedesktop.systemd1",
+            path=b"/org/freedesktop/systemd1",
             bus=bus,
-            _autoload=_autoload)
+            _autoload=_autoload,
+        )
 
-    @overwrite_interface_method('org.freedesktop.systemd1.Manager')
+    @overwrite_interface_method("org.freedesktop.systemd1.Manager")
     def StartTransientUnit(
-            self, interface_name, name, smode, properties, extra_units=None):
-        assert interface_name == b'org.freedesktop.systemd1.Manager'
-        assert extra_units is None, 'extra_units not yet supported'
+        self, interface_name, name, smode, properties, extra_units=None
+    ):
+        assert interface_name == b"org.freedesktop.systemd1.Manager"
+        assert extra_units is None, "extra_units not yet supported"
 
-        args = apply_signature(b'ss', [name, smode])
-        args += [(ord(b'a'), b'(sv)')]
+        args = apply_signature(b"ss", [name, smode])
+        args += [(ord(b"a"), b"(sv)")]
         for prop_name, prop_value in properties.items():
             prop_name = x2char_star(prop_name)
             signature = KNOWN_UNIT_SIGNATURES[prop_name]
 
             if callable(signature):
-                prop_name, signature, prop_value = signature(
-                    prop_name, prop_value)
+                prop_name, signature, prop_value = signature(prop_name, prop_value)
 
-            args += [(ord(b'r'), b'sv'), (ord(b's'), prop_name)]
-            args += [(ord(b'v'), signature)]
+            args += [(ord(b"r"), b"sv"), (ord(b"s"), prop_name)]
+            args += [(ord(b"v"), signature)]
             args += apply_signature(signature, [prop_value])
             args += [(-1, None), (-1, None)]
         args += [(-1, None)]
 
         # extra units
-        args += [(ord(b'a'), b'(sa(sv))')]
+        args += [(ord(b"a"), b"(sa(sv))")]
         args += [(-1, None)]
 
         with self.bus_context() as bus:
             return bus.call_method(
-                self.destination,
-                self.path,
-                interface_name,
-                b'StartTransientUnit',
-                args
+                self.destination, self.path, interface_name, b"StartTransientUnit", args
             ).body

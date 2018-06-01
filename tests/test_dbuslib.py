@@ -18,18 +18,12 @@ from pystemd.dbuslib import path_encode
 
 
 class TestEncode(TestCase):
-    PREFIX = b'/org/freedesktop/systemd1/unit'
-    EXTERNAL_ID = b's1.service'
-    ENCODED_PATH = b'/org/freedesktop/systemd1/unit/s1_2eservice'
+    PREFIX = b"/org/freedesktop/systemd1/unit"
+    EXTERNAL_ID = b"s1.service"
+    ENCODED_PATH = b"/org/freedesktop/systemd1/unit/s1_2eservice"
 
     def test_encode(self):
-        self.assertEqual(
-            path_encode(self.PREFIX, self.EXTERNAL_ID),
-            self.ENCODED_PATH
-        )
+        self.assertEqual(path_encode(self.PREFIX, self.EXTERNAL_ID), self.ENCODED_PATH)
 
     def test_weird_encode(self):
-        self.assertEqual(
-            path_encode(b'/o', self.EXTERNAL_ID),
-            b'/o/s1_2eservice'
-        )
+        self.assertEqual(path_encode(b"/o", self.EXTERNAL_ID), b"/o/s1_2eservice")

@@ -20,7 +20,8 @@ from pystemd import daemon
 class TestNotify(TestCase):
     def test_notify(self):
         notify_status = daemon.notify(
-            False, "STATUS=one...", b"STATUS=two....", status="last...")
+            False, "STATUS=one...", b"STATUS=two....", status="last..."
+        )
         self.assertIn(notify_status, {0, 1})
 
 

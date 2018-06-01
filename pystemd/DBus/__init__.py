@@ -17,7 +17,8 @@ from pystemd.base import SDObject
 class Manager(SDObject):
     def __init__(self, bus=None, _autoload=False):
         super(Manager, self).__init__(
-            destination=b'org.freedesktop.DBus',
-            path=b'/org/freedesktop/DBus',
+            destination=b"org.freedesktop.DBus",
+            path=b"/org/freedesktop/DBus",
             bus=bus,
-            _autoload=_autoload)
+            _autoload=_autoload,
+        )

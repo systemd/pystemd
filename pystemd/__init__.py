@@ -112,4 +112,4 @@ SDUnit = systemd1.Unit
 SDManager = systemd1.Manager
 SDMachine = machine1.Machine
 
-__all__ = ['systemd1', 'machine1', '__version__', 'DBus']
+__all__ = ["systemd1", "machine1", "__version__", "DBus"]
