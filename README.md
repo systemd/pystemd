@@ -184,7 +184,7 @@ you'll need to have:
 `libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
 * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
 `-lsystemd` if not you can install normally install `systemd-libs` or
-`libsystemd` depending on your distribution, version needs to be at least
+`libsystemd` or `libsystemd-dev` depending on your distribution, version needs to be at least
 v221.
 * gcc: or any compiler that `setup.py` will accept.
 
