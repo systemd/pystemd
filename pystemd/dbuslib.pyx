@@ -16,6 +16,7 @@ from pystemd.utils import x2char_star
 from pprint import pformat
 
 from libcpp cimport bool
+from libc.stdlib cimport free
 from libc.stdint cimport (
   int16_t,
   int32_t,
@@ -667,7 +668,7 @@ cpdef list apply_signature(char *signature, list values):
   return ret
 
 
-cpdef char* path_encode(char* prefix,  char* external_id):
+cpdef bytes path_encode(char* prefix,  char* external_id):
   """Python wraper for sd_bus_path_encode, it produce a encoded version of a
   systemd path:
 
@@ -683,10 +684,15 @@ cpdef char* path_encode(char* prefix,  char* external_id):
     char* ret_path
     int r
 
-  r = dbusc.sd_bus_path_encode(prefix, external_id, &ret_path)
-  if r < 0:
-    return b''
-  return ret_path
+  try:
+    r = dbusc.sd_bus_path_encode(prefix, external_id, &ret_path)
+
+    if r < 0:
+      return b''
+
+    return ret_path
+  finally:
+    free(ret_path)
 
 cdef char* path_decode(char* path,  char* prefix):
   """Python wraper for sd_bus_path_decode, it produce a decoded version of a
