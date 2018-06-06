@@ -11,7 +11,7 @@ the one you find pypi, but its the one in development.
    with `pystemd.run`.
 * `pystemd.run` always returns a unit.
 * `Delegate` and `JoinsNamespaceOf` are also added to unit definition.
-* Fix memory leak in path_encode.
+* Fix memory leak in path_encode, dbus termination and call_method.
 
 0.4.0
 =====

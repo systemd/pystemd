@@ -74,6 +74,9 @@ cdef class DbusMessage:
     cdef public body
     cdef public dict headers
 
+    def __dealloc__(self):
+      dbusc.sd_bus_message_unref(self._msg)
+
     cdef dbusc.sd_bus_message **ref(self):
         return &(self._msg)
 
@@ -296,6 +299,7 @@ cdef class DBus:
 
     def close(self):
         dbusc.sd_bus_close(self.bus)
+        dbusc.sd_bus_unref(self.bus)
 
     def process(self):
         cdef:
@@ -433,6 +437,10 @@ cdef class DBus:
             raise DBusError(r, error.name, error.message)
 
         msg.process_reply(False)
+
+        dbusc.sd_bus_message_unref(msg_call)
+        dbusc.sd_bus_message_unref(msg_reply)
+        dbusc.sd_bus_error_free(&error)
 
         return msg
 

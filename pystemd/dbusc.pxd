@@ -128,6 +128,9 @@ cdef extern from "systemd/sd-bus.h":
   const char *sd_bus_message_get_destination(sd_bus_message *m)
   const char *sd_bus_message_get_sender(sd_bus_message *m)
 
+  sd_bus_message* sd_bus_message_ref(sd_bus_message *m)
+  sd_bus_message* sd_bus_message_unref(sd_bus_message *m)
+
   int sd_bus_path_encode(char* prefix, char* external_id, char **ret_path)
   int sd_bus_path_decode(char* path, char* prefix, char **ret_external_id)
 
