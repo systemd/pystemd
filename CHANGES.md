@@ -7,7 +7,7 @@ the one you find pypi, but its the one in development.
 0.6.0
 =====
 * Improve in-repo docs.
-* Raise `InterruptedError` instead of `DBusBaseError` when a system call is
+* Raise `DBusInterruptedError` instead of `DBusBaseError` when a system call is
   interrupted.
 
 0.5.0

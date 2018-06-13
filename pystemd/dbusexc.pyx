@@ -7,6 +7,8 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+import six
+
 class DBusBaseError(Exception):
     def __init__(self, errno, err_name=None, err_message=None):
       is_base_error = self.__class__.__name__ == 'DBusBaseError'
@@ -154,6 +156,11 @@ class DBusNoSuchUnitError(DBusBaseError):
     pass
 
 
+class DBusInterruptedError(DBusBaseError,
+                           OSError if six.PY2 else InterruptedError):
+    pass
+
+
 cdef dict ERROR_MAP = {
     b"org.freedesktop.DBus.Error.Failed": DBusFailedError,
     b"org.freedesktop.DBus.Error.NoMemory": DBusNoMemoryError,
@@ -188,7 +195,7 @@ cdef dict ERROR_MAP = {
     b"org.freedesktop.DBus.Error.InteractiveAuthorizationRequired":
         DBusInteractiveAuthorizationRequiredError,
     b"org.freedesktop.systemd1.NoSuchUnit": DBusNoSuchUnitError,
-    b"System.Error.EINTR": InterruptedError,
+    b"System.Error.EINTR": DBusInterruptedError,
 }
 
 
