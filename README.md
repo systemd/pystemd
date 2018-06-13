@@ -108,8 +108,8 @@ Out[19]: b'kvm'
 
 Extras:
 -------
-As part of the code we include `pystemd.run`, the spiritual port of systemd-run
-to python. example of usage:
+We also include `pystemd.run`, the spiritual port of systemd-run
+to python. [example of usage](_docs/pystemd.run.md):
 
 ```python
 # run this as root
@@ -127,7 +127,7 @@ to python. example of usage:
 
 will open a postgres interactive prompt in a local nspawn-machine.
 
-You also get a interface to `sd_notify` in the form of `pystemd.daemon.notify`
+You also get an interface to `sd_notify` in the form of `pystemd.daemon.notify` [docs](_docs/daemon.md).
 
 ```python
 # run this as root
@@ -162,9 +162,9 @@ for i in range(20):
     pystemd.daemon.notify(False, watchdog=1, status=f'count {i+1}')
     time.sleep(watchdog_sec*0.5)
 
-print(f'sleeping for 30 seconds')
+print('sleeping for 30 seconds')
 time.sleep(watchdog_sec*2)
-print(f'you will never reach me in a watchdog env')
+print('you will never reach me in a watchdog env')
 
 ```
 
@@ -180,8 +180,10 @@ $ pip install pystemd
 you'll need to have:
 
 * Python headers: Just use your distro's package (e.g. python-dev).
-* systemd headers: Chances are you already have this, normally is called
-`libsystemd-dev` on or `systemd-devel`, version needs to be at least v221.
+* systemd headers: Chances are you already have this. Normally, it is called
+`libsystemd-dev` or `systemd-devel`. You need to have at least v221.
+Please note that CentOS 7 ships with version 219. To work around this, please read
+  (this)[_docs/centos7.md] ).
 * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
 `-lsystemd` if not you can install normally install `systemd-libs` or
 `libsystemd` depending on your distribution, version needs to be at least

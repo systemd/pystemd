@@ -4,6 +4,10 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.6.0
+=====
+* Improve in-repo docs.
+
 0.5.0
 =====
 * Add `StandardInputData`, `TemporaryFileSystem`, `RuntimeMaxSec`,

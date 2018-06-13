@@ -7,7 +7,7 @@ in many scenarios, but unlike pystemd, it's not a wrapper around the systemd-run
 C calls, it's a reimplementation of the same ideas but in Python. With that
 said, it is heavily inspired by the systemd-run source code, but it diverges from it
 when needed to be more pythonic, or when systemd-run relies on systemd internals
-that are not exposed as API.
+that are not exposed as an API in libsystemd.
 
 One extra thing to notice is that pystemd.run is an API, not a command line tool,
 so we will not assume that this is the only thing your program calls,
@@ -68,14 +68,16 @@ but we will assume that this just another building block for your program.
 
   Usage examples (all run as root):
 
-  1.- executes a ``/bin/sleep 42` in the background.
+  1.- executes a ``/bin/sleep 42` in the background and returns a
+ `pystemd.systemd1.Unit` object.
 
 ```python
 >>> import pystemd.run
 >>> pystemd.run([b'/bin/sleep', b'42'])
+<pystemd.systemd1.unit.Unit at 0x7f8c460695c0>
 ```
 
-  2.- executes `/bin/sleep 42` but returns the units
+  2.- executes `/bin/sleep 42` and keeps the unit around after the process is done
 
 ```python
 >>> import pystemd.run
@@ -110,7 +112,7 @@ but we will assume that this just another building block for your program.
     nice=3,
     stdout=sys.stdout.fileno(),
     env={b'SUPER_SECRET_PASSW': b'1234'}
-    )
+)
 LANG=en_US.UTF-8
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 INVOCATION_ID=d7abcffb71ba419cbac448baa00cb495
@@ -146,9 +148,9 @@ exit
 1.- Please note that to use `pystemd.run`, you need to `import pystemd.run`,
 importing pystemd and then calling `pystemd.run` will not work.
 
-2.- Right now `pystemd.run` (the same as `pystemd`), does not accept string as
-arguments but they have to be bytes, e.g. commands are not `['/bin/true']` they
-are `[b'/bin/true']`
+2.- `pystemd.run` (which is the same as `pystemd`) accepts Unicode strings as
+arguments.  They don't have to be bytes, and will be converted internally to byte strings for you.
+With that said, you should try to pass byte strings when possible to avoid silly encode/decode errors, but also because `pystemd` in general will always return byte strings instead of unicode strings.
 
 3.- stuff systemd-run does that pystemd.run does not (yet) does, but its on the
 road-map:
