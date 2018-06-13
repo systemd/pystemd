@@ -188,6 +188,7 @@ cdef dict ERROR_MAP = {
     b"org.freedesktop.DBus.Error.InteractiveAuthorizationRequired":
         DBusInteractiveAuthorizationRequiredError,
     b"org.freedesktop.systemd1.NoSuchUnit": DBusNoSuchUnitError,
+    b"System.Error.EINTR": InterruptedError,
 }
 
 
