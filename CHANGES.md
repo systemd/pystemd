@@ -9,6 +9,7 @@ the one you find pypi, but its the one in development.
 * Improve in-repo docs.
 * Raise `DBusInterruptedError` instead of `DBusBaseError` when a system call is
   interrupted.
+* expose sd_bus_match_signal as Dbus.match_signal for easy monitoring of the bus.
 
 0.5.0
 =====

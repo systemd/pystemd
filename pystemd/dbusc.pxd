@@ -30,10 +30,19 @@ cdef extern from "systemd/sd-bus.h":
   ctypedef struct sd_bus_message:
     pass
 
+  ctypedef struct sd_bus_slot:
+    pass
+
   ctypedef struct sd_bus_error:
     char *name
     char *message
     int _need_free
+
+  ctypedef int (*sd_bus_message_handler_t)(
+    sd_bus_message *m,
+    void *userdata,
+    sd_bus_error *ret_error
+  ) except -1
 
   int sd_bus_open_user(sd_bus **ret)
   int sd_bus_open_system(sd_bus **ret)
@@ -127,6 +136,17 @@ cdef extern from "systemd/sd-bus.h":
   const char *sd_bus_message_get_member(sd_bus_message *m)
   const char *sd_bus_message_get_destination(sd_bus_message *m)
   const char *sd_bus_message_get_sender(sd_bus_message *m)
+
+  int sd_bus_match_signal(
+    sd_bus *bus,
+    sd_bus_slot **ret,
+    const char *sender,
+    const char *path,
+    const char *interface,
+    const char *member,
+    sd_bus_message_handler_t callback,
+    void *userdata
+  )
 
   sd_bus_message* sd_bus_message_ref(sd_bus_message *m)
   sd_bus_message* sd_bus_message_unref(sd_bus_message *m)

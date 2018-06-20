@@ -83,6 +83,9 @@ cdef class DbusMessage:
     cdef dbusc.sd_bus_message *msg(self):
         return self._msg
 
+    cdef set_bus_message(self, dbusc.sd_bus_message *msg):
+        self._msg = msg
+
     cpdef process_reply(self, bool with_headers):
         """
           Read throught a sd_bus_message reply object and return the answer to that call
@@ -475,6 +478,42 @@ cdef class DBus:
         msg.process_reply(False)
         return msg.body
 
+    def match_signal(
+      self,
+      sender,
+      path,
+      interface,
+      member,
+      callback,
+      userdata=None
+    ):
+      """
+      This method will register a <callback> (a python function) when the signal
+      <member> on <interface> is trigger for the specify interface. An example
+      on how to use it can be found in
+      https://github.com/facebookincubator/pystemd/blob/master/examples/monitor.py
+      """
+
+      cdef int r
+
+      callback.metadata = {
+        'userdata': userdata,
+      }
+
+      r = dbusc.sd_bus_match_signal(
+        self.bus,
+        NULL,
+        x2char_star(sender),
+        x2char_star(path),
+        x2char_star(interface),
+        x2char_star(member),
+        match_signal_callback_handler,
+        <void*> callback
+      )
+
+      if r < 0:
+        raise DBusError(r, "Failed to add signal match")
+
     # Direct interface to sd_bus_<methods>
 
     cpdef wait(self, uint64_t timeout):
@@ -723,3 +762,23 @@ cdef char* path_decode(char* path,  char* prefix):
     return b''
 
   return answer
+
+
+cdef int match_signal_callback_handler(
+  dbusc.sd_bus_message *m,
+  void *userdata,
+  dbusc.sd_bus_error *ret_error
+) except -1:
+  cdef:
+    DbusMessage msg = DbusMessage()
+    object mycallback = <object> userdata
+
+  msg.set_bus_message(m)
+
+  # We can't surface any Exception mycallback may throw, because this is
+  # happening as a CALLBACK and we have no access to the caller of this method.
+  # This will eventually be resolve into whatever exception the caller decide
+  # to raise, usually SystemError
+  mycallback(msg, error=None, userdata=mycallback.metadata['userdata'])
+
+  return 0
