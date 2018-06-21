@@ -75,7 +75,7 @@ cdef class DbusMessage:
     cdef public dict headers
 
     def __dealloc__(self):
-      dbusc.sd_bus_message_unref(self._msg)
+        dbusc.sd_bus_message_unref(self._msg)
 
     cdef dbusc.sd_bus_message **ref(self):
         return &(self._msg)
@@ -84,7 +84,9 @@ cdef class DbusMessage:
         return self._msg
 
     cdef set_bus_message(self, dbusc.sd_bus_message *msg):
+        dbusc.sd_bus_message_unref(self._msg)
         self._msg = msg
+        dbusc.sd_bus_message_ref(self._msg)
 
     cpdef process_reply(self, bool with_headers):
         """
