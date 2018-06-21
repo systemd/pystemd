@@ -18,7 +18,7 @@ python:
 before_install:
   - sudo apt-get install -y libgcrypt20
   - wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd-dev_237-3ubuntu10_amd64.deb http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd0_237-3ubuntu10_amd64.deb
-  - sudo dpkg -i libsystemd-dev_237-3ubuntu10_amd64.deb libsystemd0_237-3ubuntu10_amd64.deb
+  - sudo dpkg -i libsystemd0_237-3ubuntu10_amd64.deb libsystemd-dev_237-3ubuntu10_amd64.deb
   - pip install -r requirements.txt
   - pip install Cython
   - python setup.py sdist
