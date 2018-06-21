@@ -17,9 +17,8 @@ python:
 #   2.- we want to pick a old enought version of systemd to link to.
 before_install:
   - sudo apt-get install -y libgcrypt20
-  - wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd0_229-4ubuntu4_amd64.deb http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd-dev_229-4ubuntu4_amd64.deb
-  - sudo dpkg -i libsystemd0_229-4ubuntu4_amd64.deb libsystemd-dev_229-4ubuntu4_amd64.deb
-
+  - wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd-dev_237-3ubuntu10.1_amd64.deb http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/libsystemd0_237-3ubuntu10.1_amd64.deb
+  - sudo dpkg -i libsystemd0_237-3ubuntu10.1_amd64.deb libsystemd-dev_237-3ubuntu10.1_amd64.deb
   - pip install -r requirements.txt
   - pip install Cython
   - python setup.py sdist
