@@ -7,8 +7,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-import six
-
 class DBusBaseError(Exception):
     def __init__(self, errno, err_name=None, err_message=None):
       is_base_error = self.__class__.__name__ == 'DBusBaseError'
@@ -156,8 +154,7 @@ class DBusNoSuchUnitError(DBusBaseError):
     pass
 
 
-class DBusInterruptedError(DBusBaseError,
-                           OSError if six.PY2 else InterruptedError):
+class DBusInterruptedError(DBusBaseError, InterruptedError):
     pass
 
 

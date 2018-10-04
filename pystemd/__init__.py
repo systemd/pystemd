@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -100,12 +101,8 @@ Extra read (mostly if you want to develop or extend this):
         https://www.freedesktop.org/software/systemd/man/index.html#S
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from pystemd import DBus, __version__, machine1, systemd1
 
-from pystemd import DBus, machine1, systemd1, __version__
 
 # handy shortcuts for systemd resources
 SDUnit = systemd1.Unit

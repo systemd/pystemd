@@ -1,3 +1,2 @@
-six
 mock
 pypandoc

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -7,12 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-from pystemd.base import overwrite_interface_method, SDObject
+from pystemd.base import SDObject, overwrite_interface_method
 from pystemd.dbuslib import apply_signature
 from pystemd.systemd1.unit import KNOWN_UNIT_SIGNATURES
 from pystemd.utils import x2char_star

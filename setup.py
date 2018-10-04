@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -7,7 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-import _ast
+
 import ast
 import atexit
 import glob
@@ -16,8 +17,10 @@ import os
 import sys
 import time
 
+import _ast
 from setuptools import setup
 from setuptools.extension import Extension
+
 
 THIS_DIR = os.path.dirname(__file__)
 
@@ -96,7 +99,6 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
@@ -106,7 +108,6 @@ setup(
     ],
     keywords=["systemd"],
     description="A systemd binding for python",
-    install_requires=["six"],
     package_data={"pystemd": ["RELEASE"]},
     long_description=long_description,
     license="BSD",

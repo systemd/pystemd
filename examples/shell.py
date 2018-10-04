@@ -18,8 +18,8 @@ Needless to say that you need to have the ipython installed.
 import sys
 
 import pystemd
-
 from IPython.terminal.embed import InteractiveShellEmbed
+
 
 display_banner = """
 Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.version}.

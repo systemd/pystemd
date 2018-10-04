@@ -194,7 +194,7 @@ if you want to install from source then after you clone this repo you need to
 
 ```bash
 $ pip install -r requirements.txt # get six
-$ python setup.py install # prefer python3
+$ python3 setup.py install # only python3 supported
 ```
 
 but in addition to previous requirements you'll need:

@@ -10,6 +10,7 @@ the one you find pypi, but its the one in development.
 * Raise `DBusInterruptedError` instead of `DBusBaseError` when a system call is
   interrupted.
 * expose sd_bus_match_signal as Dbus.match_signal for easy monitoring of the bus.
+* Drop python 2 support and six requirement.
 
 0.5.0
 =====

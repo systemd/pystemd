@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -6,8 +7,6 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import select  # in python3 you may want to use selector.DefaultSelector
 from pprint import pprint

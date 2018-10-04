@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -7,15 +8,10 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 from xml.dom.minidom import parseString as xmlparse
 
-from mock import MagicMock, patch
 from pystemd.base import SDObject
 
 

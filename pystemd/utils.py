@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -6,12 +7,6 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import six
 
 
 def x2char_star(what_to_convert, convert_all=False):
@@ -24,9 +19,9 @@ def x2char_star(what_to_convert, convert_all=False):
     will be `b'1'` and `True` will be true
     """
 
-    if isinstance(what_to_convert, six.binary_type):
+    if isinstance(what_to_convert, bytes):
         return what_to_convert
-    elif isinstance(what_to_convert, six.text_type):
+    elif isinstance(what_to_convert, str):
         return what_to_convert.encode()
     elif convert_all:
         if isinstance(what_to_convert, bool):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
@@ -7,17 +8,9 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import re
-
 from contextlib import contextmanager
 from xml.dom.minidom import parseString
-
-import six
 
 from pystemd.dbuslib import DBus, apply_signature
 from pystemd.utils import x2char_star
@@ -101,7 +94,7 @@ class SDObject(object):
 class SDInterface(object):
     def __init__(self, sd_object, interface_name):
         self.sd_object = sd_object
-        self.interface_name = six.b(interface_name)
+        self.interface_name = x2char_star(interface_name)
 
     def __repr__(self):
         return "<%s of %s>" % (self.interface_name, self.sd_object.path.decode())
@@ -166,7 +159,7 @@ class SDInterface(object):
                 self.sd_object.destination,
                 self.sd_object.path,
                 self.interface_name,
-                six.b(method_name),
+                x2char_star(method_name),
                 call_args,
             ).body
 
@@ -176,6 +169,21 @@ def _wrap_call_with_name(func, name):
         return func(self, name, *args)
 
     return _call
+
+
+def extend_class_def(cls, metaclass):
+    """extend cls with metaclass"""
+
+    orig_vars = cls.__dict__.copy()
+    slots = orig_vars.get("__slots__")
+    if slots is not None:
+        if isinstance(slots, str):
+            slots = [slots]
+        for slots_var in slots:
+            orig_vars.pop(slots_var)
+    orig_vars.pop("__dict__", None)
+    orig_vars.pop("__weakref__", None)
+    return metaclass(cls.__name__, cls.__bases__, orig_vars)
 
 
 def meta_interface(interface):
@@ -214,13 +222,11 @@ def meta_interface(interface):
 
                     attrs[method_name] = _wrap_call_with_name(_call_method, method_name)
 
-                    attrs[method_name].__name__ = (
-                        method_name.encode() if six.PY2 else method_name
-                    )
+                    attrs[method_name].__name__ = method_name
 
             return type.__new__(metacls, classname, baseclasses, attrs)
 
-    return six.add_metaclass(_MetaInterface)(SDInterface)
+    return extend_class_def(SDInterface, _MetaInterface)
 
 
 def overwrite_interface_method(interface):
