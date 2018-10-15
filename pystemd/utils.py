@@ -8,6 +8,8 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+from pathlib import Path
+
 
 def x2char_star(what_to_convert, convert_all=False):
     """
@@ -19,7 +21,9 @@ def x2char_star(what_to_convert, convert_all=False):
     will be `b'1'` and `True` will be true
     """
 
-    if isinstance(what_to_convert, bytes):
+    if isinstance(what_to_convert, Path):
+        return str(what_to_convert).encode()
+    elif isinstance(what_to_convert, bytes):
         return what_to_convert
     elif isinstance(what_to_convert, str):
         return what_to_convert.encode()

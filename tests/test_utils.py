@@ -8,6 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+import pathlib
 from unittest import TestCase
 
 from pystemd.utils import x2char_star
@@ -21,6 +22,8 @@ class TestContextToCharStar(TestCase):
     def test_convert_to_char(self):
         for elem in ("", "hi all"):
             self.assertEqual(elem.encode(), x2char_star(elem))
+
+        self.assertEqual(b"/this/is/path", x2char_star(pathlib.Path("/this/is/path")))
 
     def test_convert_all(self):
         self.assertEqual(b"true", x2char_star(True, convert_all=True))

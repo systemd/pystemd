@@ -11,6 +11,9 @@ the one you find pypi, but its the one in development.
   interrupted.
 * expose sd_bus_match_signal as Dbus.match_signal for easy monitoring of the bus.
 * Drop python 2 support and six requirement.
+* Auto convert Path object to bytes so that can be passed to dbus.
+* Add service_type to pystemd.run for easy Type selection.
+* Many new DBus properties.
 
 0.5.0
 =====
