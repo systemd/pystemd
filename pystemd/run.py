@@ -67,6 +67,7 @@ def run(
     user_mode=os.getuid() != 0,
     nice=None,
     runtime_max_sec=None,
+    timeout_stop_sec=None,
     env=None,
     extra=None,
     cwd=None,
@@ -155,6 +156,9 @@ def run(
     env = env or {}
     unit_properties = {}
     selectors = []
+
+    if timeout_stop_sec is not None:
+        unit_properties["TimeoutStopSec"] = timeout_stop_sec
 
     if user_mode:
         _wait_polling = _wait_polling or 0.5
