@@ -25,4 +25,4 @@ install:
   - $DOCKER_EXEC /usr/bin/pip3 install dist/pystemd*.tar.gz
 
 script:
-  - cd tests && /usr/bin/python3 -m unittest discover
+  - $DOCKER_EXEC  /bin/bash -c "cd tests && /usr/bin/python3 -m unittest discover"
