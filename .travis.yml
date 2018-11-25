@@ -6,15 +6,15 @@ env:
     global:
         - CONT_NAME="pystemd-$TRAVIS_BUILD_NUMBER"
         - CONT_OS="ubuntu:bionic"
-        - DOCKER_EXEC="docker exec -it $CONT_NAME"
+        - DOCKER_EXEC="sudo docker exec -it $CONT_NAME"
 
 
 python:
   - "3.6"
 
 before_install:
-  - docker pull $CONT_OS
-  - docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
+  - sudo docker pull $CONT_OS
+  - sudo docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
   - $DOCKER_EXEC /usr/bin/apt update
   - $DOCKER_EXEC /usr/bin/apt install -y python3-pip libsystemd-dev
   - $DOCKER_EXEC /usr/bin/pip3 install -r requirements.txt Cython
