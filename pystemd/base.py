@@ -89,6 +89,8 @@ class SDObject(object):
                     interface_name[len(decoded_destination) + 1 :],
                     self._interfaces[interface_name],
                 )
+            elif interface_name == "org.freedesktop.DBus.Properties":
+                self.Properties = self._interfaces[interface_name]
 
 
 class SDInterface(object):

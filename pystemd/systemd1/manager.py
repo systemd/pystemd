@@ -10,8 +10,7 @@
 
 from pystemd.base import SDObject, overwrite_interface_method
 from pystemd.dbuslib import apply_signature
-from pystemd.systemd1.unit import KNOWN_UNIT_SIGNATURES
-from pystemd.utils import x2char_star
+from pystemd.systemd1.unit_signatures import signature_array
 
 
 class Manager(SDObject):
@@ -24,6 +23,18 @@ class Manager(SDObject):
         )
 
     @overwrite_interface_method("org.freedesktop.systemd1.Manager")
+    def SetUnitProperties(self, interface_name, unit_name, runtime, properties):
+        assert interface_name == b"org.freedesktop.systemd1.Manager"
+        args = apply_signature(b"sb", [unit_name, runtime])
+
+        args += signature_array(properties)
+
+        with self.bus_context() as bus:
+            return bus.call_method(
+                self.destination, self.path, interface_name, b"SetUnitProperties", args
+            ).body
+
+    @overwrite_interface_method("org.freedesktop.systemd1.Manager")
     def StartTransientUnit(
         self, interface_name, name, smode, properties, extra_units=None
     ):
@@ -31,19 +42,7 @@ class Manager(SDObject):
         assert extra_units is None, "extra_units not yet supported"
 
         args = apply_signature(b"ss", [name, smode])
-        args += [(ord(b"a"), b"(sv)")]
-        for prop_name, prop_value in properties.items():
-            prop_name = x2char_star(prop_name)
-            signature = KNOWN_UNIT_SIGNATURES[prop_name]
-
-            if callable(signature):
-                prop_name, signature, prop_value = signature(prop_name, prop_value)
-
-            args += [(ord(b"r"), b"sv"), (ord(b"s"), prop_name)]
-            args += [(ord(b"v"), signature)]
-            args += apply_signature(signature, [prop_value])
-            args += [(-1, None), (-1, None)]
-        args += [(-1, None)]
+        args += signature_array(properties)
 
         # extra units
         args += [(ord(b"a"), b"(sa(sv))")]
