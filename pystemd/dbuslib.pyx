@@ -561,10 +561,10 @@ cdef class DBusRemote(DBus):
 
 cdef class DBusAddress(DBus):
   "DBus class that connects to custom address"
-  cdef char* address
+  cdef bytes address
 
-  def __init__(self, char* address):
-    self.address = address
+  def __init__(self, address):
+    self.address = bytes(address)
 
   cdef int open_dbus_bus(self):
     r = dbusc.sd_bus_new(&(self.bus))
