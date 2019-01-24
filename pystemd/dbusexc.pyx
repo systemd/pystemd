@@ -7,6 +7,10 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+
+import errno
+
+
 class DBusBaseError(Exception):
     def __init__(self, errno, err_name=None, err_message=None):
       is_base_error = self.__class__.__name__ == 'DBusBaseError'
@@ -154,11 +158,15 @@ class DBusNoSuchUnitError(DBusBaseError):
     pass
 
 
+class DBusConnectionRefusedError(DBusBaseError):
+    pass
+
+
 class DBusInterruptedError(DBusBaseError, InterruptedError):
     pass
 
 
-cdef dict ERROR_MAP = {
+cdef dict DBUS_ERROR_MAP = {
     b"org.freedesktop.DBus.Error.Failed": DBusFailedError,
     b"org.freedesktop.DBus.Error.NoMemory": DBusNoMemoryError,
     b"org.freedesktop.DBus.Error.ServiceUnknown": DBusServiceUnknownError,
@@ -196,7 +204,13 @@ cdef dict ERROR_MAP = {
 }
 
 
+cdef dict OS_ERROR_MAP = {
+    -errno.ECONNREFUSED: DBusConnectionRefusedError,
+    -errno.ENOENT: DBusFileNotFoundError,
+}
+
+
 def DBusError(err_no, err_name=None, err_message=""):
-    return ERROR_MAP.get(
-        err_name, DBusBaseError
+    return DBUS_ERROR_MAP.get(
+        err_name, OS_ERROR_MAP.get(err_no, DBusBaseError)
     )(err_no, err_name, err_message)
