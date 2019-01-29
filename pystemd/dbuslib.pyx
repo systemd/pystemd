@@ -84,7 +84,9 @@ cdef class DbusMessage:
         return self._msg
 
     cdef set_bus_message(self, dbusc.sd_bus_message *msg):
+        assert self._msg == NULL
         self._msg = msg
+        dbusc.sd_bus_message_ref(msg)
 
     cpdef process_reply(self, bool with_headers):
         """
