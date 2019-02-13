@@ -95,6 +95,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"LockPersonality": b"b",
     b"SupplementaryGroups": b"as",
     b"SystemCallArchitectures": b"as",
+    b"SystemCallFilter": b"(bas)",
     # timeouts
     b"RuntimeMaxUSec": b"t",
     b"RuntimeMaxSec": lambda _, value: (b"RuntimeMaxUSec", b"t", int(value * 10 ** 6)),
