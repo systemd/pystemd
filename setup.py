@@ -12,54 +12,38 @@
 import ast
 import atexit
 import glob
-import logging
 import os
 import sys
 import time
+from pathlib import Path
 
 import _ast
 from setuptools import setup
 from setuptools.extension import Extension
 
 
-THIS_DIR = os.path.dirname(__file__)
+THIS_DIR = Path(__file__).parent
 
-with open(os.path.join(THIS_DIR, "README.md")) as f:
-    long_description = f.read()
-
-try:
-    # convert readme to rst so it will be displayed on pypi (not critical so
-    # its ok to not do it)
-    import pypandoc
-
-    new_long_description = pypandoc.convert_text(long_description, "rst", format="md")
-    assert new_long_description
-    long_description = new_long_description
-except Exception:
-    # its ok if this fails.
-    if "sdist" in sys.argv:
-        logging.exception("Could not translate readme into a rst!")
-    pass
-
+long_description = (THIS_DIR / "README.md").read_text()
 
 # get and compute the version string
-version_file = os.path.join(THIS_DIR, "pystemd", "__version__.py")
-release_file = os.path.join(THIS_DIR, "pystemd", "RELEASE")
-with open(version_file) as version:
-    parsed_file = ast.parse(version.read())
-    __version__ = [
-        expr.value.s
-        for expr in parsed_file.body
-        if isinstance(expr, _ast.Assign)
-        and isinstance(expr.targets[0], _ast.Name)
-        and isinstance(expr.value, _ast.Str)
-        and expr.targets[0].id == "__version__"
-    ][0]
+version_file = THIS_DIR / "pystemd" / "__version__.py"
+release_file = THIS_DIR / "pystemd" / "RELEASE"
 
-    release_tag = "{}".format(int(time.time()))
+parsed_file = ast.parse(version_file.read_text())
+__version__ = [
+    expr.value.s
+    for expr in parsed_file.body
+    if isinstance(expr, _ast.Assign)
+    and isinstance(expr.targets[0], _ast.Name)
+    and isinstance(expr.value, _ast.Str)
+    and expr.targets[0].id == "__version__"
+][0]
+
+release_tag = "{}".format(int(time.time()))
 
 
-if os.path.exists(release_file):
+if release_file.exists():
     __version__ += ".0"
 elif "sdist" in sys.argv:
     with open(release_file, "w") as release_fileobj:
@@ -110,5 +94,6 @@ setup(
     description="A systemd binding for python",
     package_data={"pystemd": ["RELEASE"]},
     long_description=long_description,
+    long_description_content_type="text/markdown",
     license="BSD",
 )
