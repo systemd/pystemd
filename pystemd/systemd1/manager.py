@@ -39,13 +39,18 @@ class Manager(SDObject):
         self, interface_name, name, smode, properties, extra_units=None
     ):
         assert interface_name == b"org.freedesktop.systemd1.Manager"
-        assert extra_units is None, "extra_units not yet supported"
 
         args = apply_signature(b"ss", [name, smode])
         args += signature_array(properties)
 
         # extra units
         args += [(ord(b"a"), b"(sa(sv))")]
+        for eu_name, eu_properties in extra_units or []:
+            args += [(ord(b"r"), b"sa(sv)")]
+            args += apply_signature(b"s", [eu_name])
+            args += signature_array(eu_properties)
+            args += [(-1, None)]
+
         args += [(-1, None)]
 
         with self.bus_context() as bus:

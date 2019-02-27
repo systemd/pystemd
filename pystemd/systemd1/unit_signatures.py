@@ -226,6 +226,10 @@ KNOWN_UNIT_SIGNATURES = {
     b"IPAccounting": b"b",
     b"IPAddressAllow": b"a(iayu)",
     b"IPAddressDeny": b"a(iayu)",
+    # Timer properties
+    b"TimersMonotonic": b"a(st)",
+    b"WakeSystem": b"b",
+    b"Persistent": b"b",
     b"_custom": lambda _, value: value,
 }
 
