@@ -35,6 +35,27 @@ class SDObject(object):
     def __exit__(self, exception_type, exception_value, traceback):
         pass
 
+    def __getattr__(self, name):
+        """
+        This methods allow us to call properties and methods from the interfaces
+        directly from the SDObject, this way both are equivalents:
+
+            with SDObject(destination, path) as u:
+                assert u.Interface.Property1 == u.Property1
+
+        """
+
+        # At some point we should verify that 2 interface do not have the same
+        # methods and/or properties. But in the meantime, we can trust that
+        # the fine folks at systemd will not do this. they have actually go
+        # out of their way to make this true:
+        # https://github.com/systemd/systemd/blob/119f0f2876ea340cc41525e844487aa88551c219/src/core/dbus-unit.c#L1738-L1746
+
+        for interface in self._interfaces.values():
+            if name in (*interface.properties, *interface.methods):
+                return getattr(interface, name)
+        raise AttributeError()
+
     @contextmanager
     def bus_context(self):
         close_bus_at_end = self._bus is None

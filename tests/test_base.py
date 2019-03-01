@@ -60,3 +60,32 @@ class TestLoad(TestCase):
 
         with self.assertRaises(TypeError):
             obj.I1.meth1("arg1", "extra args")
+
+
+class TestGetItem(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        class FakeInterface:
+            def __init__(self):
+                self.properties = ["p"]
+                self.methods = ["m"]
+
+                self.p = "<fake property>"
+
+            def m(self):
+                return "<fake method>"
+
+        self.destination, self.path = b"com.facebook.pystemd", b"/com/facebook/pystemd"
+        self.fake_interface = FakeInterface()
+        self.sd_obj = SDObject(self.destination, self.path)
+        self.sd_obj._interfaces["myinterface"] = self.fake_interface
+
+    def test_find_in_object(self):
+        self.assertEqual(self.sd_obj.destination, self.destination)
+
+    def test_find_property_in_interfaces(self):
+        self.assertEqual(self.sd_obj.p, self.fake_interface.p)
+
+    def test_find_method_in_interfaces(self):
+        self.assertEqual(self.sd_obj.m(), self.fake_interface.m())

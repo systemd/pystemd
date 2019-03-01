@@ -14,6 +14,9 @@ the one you find pypi, but its the one in development.
 * Auto convert Path object to bytes so that can be passed to dbus.
 * Add service_type to pystemd.run for easy Type selection.
 * Many new DBus properties.
+* access interface methods and properties directly.
+* systemd1.Manager.StartTransientUnit now support extra units, allowing users
+  to also create timer/path transient units
 
 0.5.0
 =====
