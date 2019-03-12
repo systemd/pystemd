@@ -206,6 +206,17 @@ but in addition to previous requirements you'll need:
    http://cython.readthedocs.io/en/latest/src/quickstart/install.html.
 
 
+Learning more
+-------------
+
+This project has been covered in a number of conference talks:
+* [Using systemd in high level languages](https://www.youtube.com/watch?v=lBQgMGPxqNo) at [All Systems Go! 2018](https://all-systems-go.io)
+* [systemd: why you should care as a Python developer](https://www.youtube.com/watch?v=ZUX9Fx8Rwzg) at [PyCon 2018](https://us.pycon.org/2018/)
+* [Better security for Python with systemd](https://www.youtube.com/watch?v=o-OqslA5dkw) at [Pyninsula #10](https://www.meetup.com/Pyninsula-Python-Peninsula-Meetup/events/244939632/)
+
+A [Vagrant-based demo](https://github.com/aleivag/pycon2018) was also developed
+for PyCon 2018.
+
 License
 -------
 
