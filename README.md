@@ -220,4 +220,4 @@ for PyCon 2018.
 License
 -------
 
-pystemd is BSD-licensed. We also provide an additional patent grant.
+pystemd is licensed under LGPL 2.1 or later.

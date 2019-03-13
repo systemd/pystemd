@@ -3,9 +3,8 @@
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the license found in the LICENSE file in
+# the root directory of this source tree.
 #
 
 
@@ -88,12 +87,12 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
     ],
     keywords=["systemd"],
     description="A systemd binding for python",
     package_data={"pystemd": ["RELEASE"]},
     long_description=long_description,
     long_description_content_type="text/markdown",
-    license="BSD",
+    license="LGPL-2.1+",
 )

@@ -1,4 +1,3 @@
-psystemd is licensed under the BSD-style license located at LICENSE_BSD.
-We also provide an additional patent grant in the PATENTS file.
-If any of these file is absent, they can be found at
+psystemd is licensed under the LGPL 2.1 or later license located at
+LICENSE.LGPL2.1. If this file is absent, it can be found at
 https://github.com/facebookincubator/pystemd
