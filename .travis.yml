@@ -1,27 +1,29 @@
 language: python
 os: linux
-dist: xenial
-sudo: required
-env:
-    global:
+
+python:
+  - 3.6
+
+matrix:
+  include:
+    - dist: xenial
+      sudo: required
+      env:
         - CONT_NAME="pystemd-$TRAVIS_BUILD_NUMBER"
         - CONT_OS="ubuntu:bionic"
         - DOCKER_EXEC="sudo docker exec -it $CONT_NAME"
-
-python:
-  - "3.6"
-
-before_install:
-  - sudo docker pull $CONT_OS
-  - sudo docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
-  - $DOCKER_EXEC /usr/bin/apt update
-  - $DOCKER_EXEC /usr/bin/apt install -y python3-pip libsystemd-dev
-  - $DOCKER_EXEC /usr/bin/pip3 install -r requirements.txt Cython
-  - $DOCKER_EXEC /usr/bin/pip3 install Cython
-  - $DOCKER_EXEC /usr/bin/python3 setup.py sdist
-
-install:
-  - $DOCKER_EXEC /usr/bin/pip3 install dist/pystemd*.tar.gz
-
-script:
-  - $DOCKER_EXEC  /bin/bash -c "cd tests && /usr/bin/python3 -m unittest discover"
+      before_install:
+        - sudo docker pull $CONT_OS
+        - sudo docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
+        - $DOCKER_EXEC /usr/bin/apt update
+        - $DOCKER_EXEC /usr/bin/apt install -y python3-pip libsystemd-dev
+        - $DOCKER_EXEC /usr/bin/pip3 install -r requirements.txt Cython
+        - $DOCKER_EXEC /usr/bin/pip3 install Cython
+        - $DOCKER_EXEC /usr/bin/python3 setup.py sdist
+      install:
+        - $DOCKER_EXEC /usr/bin/pip3 install dist/pystemd*.tar.gz
+      script:
+        - $DOCKER_EXEC /bin/bash -c "cd tests && /usr/bin/python3 -m unittest discover"
+    - name: "Black formatting"
+      install: pip install black
+      script: black --check .
