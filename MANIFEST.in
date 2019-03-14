@@ -1,2 +1,2 @@
-include LICENSE.LGPL2.1 PATENTS README.md LICENSE.txt
+include README.md LICENSE
 recursive-include tests *.py
