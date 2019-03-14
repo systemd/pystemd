@@ -35,6 +35,7 @@ but we will assume that this just another building block for your program.
     has finish, also if true, this methods will return
     pystemd.systemd1.Unit object. defaults to False and this method
     returns None and the unit will be gone as soon as is done.
+* collect: Unload unit after it ran, even when failed.
 * raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
     status code, it wont take affect unless you set wait=True,
     defaults to False.
@@ -149,8 +150,9 @@ exit
 1.- Please note that to use `pystemd.run`, you need to `import pystemd.run`,
 importing pystemd and then calling `pystemd.run` will not work.
 
-2.- `pystemd.run` (which is the same as `pystemd`) accepts Unicode strings as
-arguments.  They don't have to be bytes, and will be converted internally to byte strings for you.
+2.- `pystemd.run` (which is the same as `pystemd`) accepts Unicode strings and
+Path object as arguments.  They don't have to be bytes, and will be converted
+internally to byte strings for you.
 With that said, you should try to pass byte strings when possible to avoid silly encode/decode errors, but also because `pystemd` in general will always return byte strings instead of unicode strings.
 
 3.- stuff systemd-run does that pystemd.run does not (yet) does, but its on the

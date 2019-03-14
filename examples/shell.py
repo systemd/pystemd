@@ -17,6 +17,7 @@ Needless to say that you need to have the ipython installed.
 import sys
 
 import pystemd
+import pystemd.run
 from IPython.terminal.embed import InteractiveShellEmbed
 
 

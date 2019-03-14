@@ -72,6 +72,7 @@ def run(
     machine=None,
     wait=False,
     remain_after_exit=False,
+    collect=False,
     raise_on_fail=False,
     pty=None,
     pty_master=None,
@@ -107,6 +108,7 @@ def run(
             has finish, also if true, this methods will return
             pystemd.systemd1.Unit object. defaults to False and this method
             returns None and the unit will be gone as soon as is done.
+        collect: Unload unit after it ran, even when failed.
         raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
             status code, it wont take affect unless you set wait=True,
             defaults to False.
@@ -217,6 +219,7 @@ def run(
                 b"Description": b"pystemd: " + name,
                 b"ExecStart": [(cmd[0], cmd, False)],
                 b"RemainAfterExit": remain_after_exit,
+                b"CollectMode": b"inactive-or-failed" if collect else None,
                 b"WorkingDirectory": cwd,
                 b"User": user,
                 b"Nice": nice,
@@ -257,7 +260,9 @@ def run(
             selectors.append(monitor_fd)
 
         # start the process
-        manager.Manager.StartTransientUnit(name, b"fail", unit_properties)
+        unit_start_job = manager.Manager.StartTransientUnit(
+            name, b"fail", unit_properties
+        )
 
         while wait:
             _in, _, _ = select.select(selectors, [], [], _wait_polling)
@@ -281,8 +286,16 @@ def run(
                     continue
 
                 m.process_reply(False)
-                if m.get_path() == unit.path:
-                    if m.body[1].get(b"SubState") in EXIT_SUBSTATES:
+                if (
+                    m.get_path() == unit.path
+                    and m.body[0] == b"org.freedesktop.systemd1.Unit"
+                ):
+                    _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
+
+                    if (
+                        message_job_path != unit_start_job
+                        and m.body[1].get(b"SubState") in EXIT_SUBSTATES
+                    ):
                         break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:

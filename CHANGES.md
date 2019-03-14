@@ -7,6 +7,7 @@ the one you find pypi, but its the one in development.
 0.6.0
 =====
 * Improve in-repo docs.
+* changed license from BSD to LGPL-2.1+.
 * Raise `DBusInterruptedError` instead of `DBusBaseError` when a system call is
   interrupted.
 * expose sd_bus_match_signal as Dbus.match_signal for easy monitoring of the bus.
@@ -16,7 +17,9 @@ the one you find pypi, but its the one in development.
 * Many new DBus properties.
 * access interface methods and properties directly.
 * systemd1.Manager.StartTransientUnit now support extra units, allowing users
-  to also create timer/path transient units
+  to also create timer/path transient units.
+* pystemd.run now waits for start unit job to finish, before even thinking in
+  tearing down the unit (and closing pty's)
 
 0.5.0
 =====
