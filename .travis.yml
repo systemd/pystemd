@@ -1,29 +1,59 @@
 language: python
 os: linux
 
-python:
-  - 3.6
+env:
+  global:
+    - CONT_NAME="pystemd-$TRAVIS_BUILD_NUMBER"
+    - DOCKER_EXEC="sudo docker exec -it $CONT_NAME"
+
+before_install: |
+  if [ -n "$PYTHON_VERSION" ]; then
+    CONT_OS="ubuntu:bionic"
+
+    # setup container
+    sudo docker pull $CONT_OS
+    sudo docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
+    $DOCKER_EXEC /usr/bin/apt update
+    if [ "$PYTHON_VERSION" != 3 ]; then
+      $DOCKER_EXEC /usr/bin/apt install -y software-properties-common
+      $DOCKER_EXEC /usr/bin/add-apt-repository -y ppa:deadsnakes/ppa
+      $DOCKER_EXEC /usr/bin/apt update
+    fi
+
+    # setup venv and install dependencies
+    $DOCKER_EXEC /usr/bin/apt install -y \
+      gcc \
+      libsystemd-dev \
+      pandoc \
+      python${PYTHON_VERSION}-dev \
+      python${PYTHON_VERSION}-venv
+    $DOCKER_EXEC /usr/bin/python${PYTHON_VERSION} -m venv /build/venv
+    $DOCKER_EXEC /build/venv/bin/pip3 install -r requirements.txt Cython
+    $DOCKER_EXEC /build/venv/bin/pip3 install Cython
+    $DOCKER_EXEC /build/venv/bin/python3 setup.py sdist
+  fi
+
+install:
+  - $DOCKER_EXEC /build/venv/bin/pip3 install dist/pystemd*.tar.gz
+
+script:
+  - $DOCKER_EXEC /bin/bash -c "cd tests && /build/venv/bin/python3 -m unittest discover"
 
 matrix:
   include:
     - dist: xenial
       sudo: required
-      env:
-        - CONT_NAME="pystemd-$TRAVIS_BUILD_NUMBER"
-        - CONT_OS="ubuntu:bionic"
-        - DOCKER_EXEC="sudo docker exec -it $CONT_NAME"
-      before_install:
-        - sudo docker pull $CONT_OS
-        - sudo docker run -v $TRAVIS_BUILD_DIR:/build:rw -w /build --privileged=true --name $CONT_NAME -dit --net=host $CONT_OS /bin/bash
-        - $DOCKER_EXEC /usr/bin/apt update
-        - $DOCKER_EXEC /usr/bin/apt install -y python3-pip libsystemd-dev
-        - $DOCKER_EXEC /usr/bin/pip3 install -r requirements.txt Cython
-        - $DOCKER_EXEC /usr/bin/pip3 install Cython
-        - $DOCKER_EXEC /usr/bin/python3 setup.py sdist
-      install:
-        - $DOCKER_EXEC /usr/bin/pip3 install dist/pystemd*.tar.gz
-      script:
-        - $DOCKER_EXEC /bin/bash -c "cd tests && /usr/bin/python3 -m unittest discover"
+      name: "Python 3.4"
+      env: PYTHON_VERSION=3.4
+    - dist: xenial
+      sudo: required
+      name: "Python 3.5"
+      env: PYTHON_VERSION=3.5
+    - dist: xenial
+      sudo: required
+      name: "Python 3.6"
+      env: PYTHON_VERSION=3
     - name: "Black formatting"
+      python: 3.6
       install: pip install black
       script: black --check .

@@ -48,9 +48,9 @@ release_tag = "{}".format(int(time.time()))
 if release_file.exists():
     __version__ += ".0"
 elif "sdist" in sys.argv:
-    with open(release_file, "w") as release_fileobj:
-        atexit.register(lambda *x: os.remove(release_file))
-        release_fileobj.write(release_tag)
+    with release_file.open("w") as f:
+        atexit.register(lambda *x: f.unlink())
+        f.write(release_tag)
     __version__ += ".0"
 else:
     __version__ += ".{}".format(release_tag)
