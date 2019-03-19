@@ -23,13 +23,16 @@ from setuptools.extension import Extension
 
 THIS_DIR = Path(__file__).parent
 
-long_description = (THIS_DIR / "README.md").read_text()
+with (THIS_DIR / "README.md").open() as f:
+    long_description = f.read()
 
 # get and compute the version string
 version_file = THIS_DIR / "pystemd" / "__version__.py"
 release_file = THIS_DIR / "pystemd" / "RELEASE"
 
-parsed_file = ast.parse(version_file.read_text())
+with version_file.open() as f:
+    parsed_file = ast.parse(f.read())
+
 __version__ = [
     expr.value.s
     for expr in parsed_file.body
