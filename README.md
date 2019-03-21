@@ -181,13 +181,13 @@ you'll need to have:
 
 * Python headers: Just use your distro's package (e.g. python-dev).
 * systemd headers: Chances are you already have this. Normally, it is called
-`libsystemd-dev` or `systemd-devel`. You need to have at least v221.
+`libsystemd-dev` or `systemd-devel`. You need to have at least v237.
 Please note that CentOS 7 ships with version 219. To work around this, please read
   [this](_docs/centos7.md).
 * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
 `-lsystemd` if not you can install normally install `systemd-libs` or
 `libsystemd` depending on your distribution, version needs to be at least
-v221.
+v237.
 * gcc: or any compiler that `setup.py` will accept.
 
 if you want to install from source then after you clone this repo you need to
@@ -200,7 +200,6 @@ $ python3 setup.py install # only python3 supported
 but in addition to previous requirements you'll need:
 
   * setuptools: Just use your distro's package (e.g. python-setuptools).
-  * Six library: for python 2 and 3 compatibility (installed by requirements).
   * Cython: at least version 0.21a1, just pip install it or use the official
   installation guide from cython homepage to get latest
    http://cython.readthedocs.io/en/latest/src/quickstart/install.html.

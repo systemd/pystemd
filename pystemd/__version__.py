@@ -11,7 +11,7 @@ import os
 import sys
 
 
-__version__ = "0.6"
+__version__ = "0.7"
 
 _endstr = ".dev"
 
