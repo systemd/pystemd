@@ -51,7 +51,7 @@ class SDObject(object):
         # https://github.com/systemd/systemd/blob/119f0f2876ea340cc41525e844487aa88551c219/src/core/dbus-unit.c#L1738-L1746
 
         for interface in self._interfaces.values():
-            if name in (*interface.properties, *interface.methods):
+            if name in (interface.properties + interface.methods):
                 return getattr(interface, name)
         raise AttributeError()
 
