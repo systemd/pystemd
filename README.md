@@ -39,22 +39,25 @@ systemd's interfaces:
     In [7]: unit.Unit.ActiveState
     Out[7]: b'inactive'
 
-    In [8]: unit.Unit.Start(b'replace') # require privilege account
-    Out[8]: b'/org/freedesktop/systemd1/job/6601532'
+    In [8]: unit.Unit.SubState
+    Out[8]: b'running'
 
-    In [9]: unit.Unit.ActiveState
-    Out[9]: b'active'
+    In [9]: unit.Unit.Start(b'replace') # require privilege account
+    Out[9]: b'/org/freedesktop/systemd1/job/6601532'
 
-    In [10]: unit.Service.GetProcesses()
-    Out[10]:
+    In [10]: unit.Unit.ActiveState
+    Out[10]: b'active'
+
+    In [11]: unit.Service.GetProcesses()
+    Out[11]:
     [(b'/system.slice/postfix.service',
         1754222,
         b'/usr/libexec/postfix/master -w'),
      (b'/system.slice/postfix.service', 1754224, b'pickup -l -t fifo -u'),
      (b'/system.slice/postfix.service', 1754225, b'qmgr -l -t fifo -u')]
 
-    In [11]: unit.Service.MainPID
-    Out[11]: 1754222
+    In [12]: unit.Service.MainPID
+    Out[12]: 1754222
 
 The `systemd1.Unit` class provides shortcuts for the interfaces in the systemd
 namespace, as you se above, we have  Service (org.freedesktop.systemd1.Service)
