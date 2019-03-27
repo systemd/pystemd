@@ -17,6 +17,17 @@ from libc.stdint cimport (
   uint64_t,
 )
 
+
+cdef extern from "sys/uio.h":
+    cdef struct iovec:
+        void * iov_base
+        size_t iov_len
+
+
+cdef extern from "systemd/sd-journal.h":
+    int sd_journal_sendv(iovec *iov, int n);
+
+
 cdef extern from "systemd/sd-daemon.h":
   int SD_LISTEN_FDS_START
   int sd_listen_fds(int unset_environment)

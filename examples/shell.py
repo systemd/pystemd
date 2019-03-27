@@ -17,6 +17,8 @@ Needless to say that you need to have the ipython installed.
 import sys
 
 import pystemd
+import pystemd.daemon
+import pystemd.journal
 import pystemd.run
 from IPython.terminal.embed import InteractiveShellEmbed
 
