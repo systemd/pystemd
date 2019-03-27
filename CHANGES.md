@@ -7,6 +7,7 @@ the one you find pypi, but its the one in development.
 0.7.0
 =====
 * Modify README to show the right systemd min version.
+* Added `pystemd.journal` with methods `log` and `sendv`.
 
 0.6.0
 =====

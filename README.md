@@ -168,6 +168,33 @@ print('you will never reach me in a watchdog env')
 
 ```
 
+We also provide basic journal interaction with `pystemd.journal` [docs](_docs/journal.md)
+
+```python
+import logging
+import pystemd.journal
+
+pystemd.journal.sendv(
+  f"PRIORITY={logging.INFO}",
+  MESSAGE="everything is awesome",
+  SYSLOG_IDENTIFIER="tegan"
+)
+```
+
+will result in the message (shorten for sake of example).
+
+```json
+
+{
+
+  "SYSLOG_IDENTIFIER" : "tegan",
+  "PRIORITY" : "20",
+  "MESSAGE" : "everything is awesome",
+  ...
+}
+
+```
+
 Install
 -------
 
