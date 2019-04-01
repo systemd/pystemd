@@ -57,6 +57,16 @@ master/src/systemd/sd-daemon.h#L173-L232
   state = b'\n'.join(pystates)
   return dbusc.sd_notify(unset_environment, state)
 
+
+def booted():
+  "Returns True if system was booted with systemd"
+  cdef int status = dbusc.sd_booted()
+  if status >=0:
+    return status > 0
+
+  raise PystemdDaemonError("Could not get systemd booted status")
+
+
 def watchdog_enabled(int unset_environment=0):
   """
   returns 0 if watchdog is not enable, and returns the number of usec between
