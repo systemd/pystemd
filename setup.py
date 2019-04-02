@@ -16,7 +16,6 @@ import sys
 import time
 from pathlib import Path
 
-import _ast
 from setuptools import setup
 from setuptools.extension import Extension
 
@@ -36,9 +35,9 @@ with version_file.open() as f:
 __version__ = [
     expr.value.s
     for expr in parsed_file.body
-    if isinstance(expr, _ast.Assign)
-    and isinstance(expr.targets[0], _ast.Name)
-    and isinstance(expr.value, _ast.Str)
+    if isinstance(expr, ast.Assign)
+    and isinstance(expr.targets[0], ast.Name)
+    and isinstance(expr.value, ast.Str)
     and expr.targets[0].id == "__version__"
 ][0]
 
