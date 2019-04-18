@@ -14,7 +14,7 @@ import tempfile
 from unittest import TestCase
 
 from pystemd.dbusexc import DBusConnectionRefusedError, DBusFileNotFoundError
-from pystemd.dbuslib import DBusAddress, path_encode
+from pystemd.dbuslib import DBusAddress, path_decode, path_encode
 
 
 class TestEncode(TestCase):
@@ -27,6 +27,12 @@ class TestEncode(TestCase):
 
     def test_weird_encode(self):
         self.assertEqual(path_encode(b"/o", self.EXTERNAL_ID), b"/o/s1_2eservice")
+
+    def test_decode(self):
+        self.assertEqual(path_decode(self.ENCODED_PATH, self.PREFIX), self.EXTERNAL_ID)
+
+    def test_weird_decode(self):
+        self.assertEqual(path_decode(b"/o/s1_2eservice", b"/o"), self.EXTERNAL_ID)
 
 
 class TestDBusError(TestCase):

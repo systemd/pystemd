@@ -743,7 +743,8 @@ cpdef bytes path_encode(char* prefix,  char* external_id):
   finally:
     free(ret_path)
 
-cdef char* path_decode(char* path,  char* prefix):
+
+cpdef bytes path_decode(char* path,  char* prefix):
   """Python wraper for sd_bus_path_decode, it produce a decoded version of a
   systemd path:
 
@@ -757,13 +758,19 @@ cdef char* path_decode(char* path,  char* prefix):
   cdocs: https://www.freedesktop.org/software/systemd/man/sd_bus_path_encode.html
   """
 
-  cdef char* answer
-  cdef int r = dbusc.sd_bus_path_decode(path, prefix, &answer)
+  cdef:
+    char* answer
+    int r
 
-  if r == 0:
-    return b''
+  try:
+    r = dbusc.sd_bus_path_decode(path, prefix, &answer)
 
-  return answer
+    if r <= 0:
+      return b''
+
+    return answer
+  finally:
+    free(answer)
 
 
 cdef int match_signal_callback_handler(
