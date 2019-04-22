@@ -505,10 +505,10 @@ cdef class DBus:
       r = dbusc.sd_bus_match_signal(
         self.bus,
         NULL,
-        x2char_star(sender),
-        x2char_star(path),
-        x2char_star(interface),
-        x2char_star(member),
+        _b2c(x2char_star(sender)),
+        _b2c(x2char_star(path)),
+        _b2c(x2char_star(interface)),
+        _b2c(x2char_star(member)),
         match_signal_callback_handler,
         <void*> callback
       )
@@ -791,3 +791,13 @@ cdef int match_signal_callback_handler(
   mycallback(msg, error=None, userdata=mycallback.metadata['userdata'])
 
   return 0
+
+
+cdef char* _b2c(bytes py_value):
+  "Interface to convert byte (as return by x2char_star) to char* respecting Null"
+  cdef char * output = NULL
+
+  if py_value is not None:
+    output = py_value
+
+  return output

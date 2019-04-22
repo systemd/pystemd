@@ -10,6 +10,7 @@ the one you find pypi, but its the one in development.
 * Added `pystemd.journal` with methods `log` and `sendv`.
 * Added `booted` support in `pystemd.daemon` to know if a system was booted with
   systemd.
+* allow None (translated to NULL) options in DBUS.match_signal.
 
 0.6.0
 =====
