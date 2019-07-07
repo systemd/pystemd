@@ -150,17 +150,6 @@ cdef extern from "systemd/sd-bus.h":
   const char *sd_bus_message_get_destination(sd_bus_message *m)
   const char *sd_bus_message_get_sender(sd_bus_message *m)
 
-  int sd_bus_match_signal(
-    sd_bus *bus,
-    sd_bus_slot **ret,
-    const char *sender,
-    const char *path,
-    const char *interface,
-    const char *member,
-    sd_bus_message_handler_t callback,
-    void *userdata
-  )
-
   sd_bus_message* sd_bus_message_ref(sd_bus_message *m)
   sd_bus_message* sd_bus_message_unref(sd_bus_message *m)
 
@@ -217,3 +206,6 @@ cdef union basic_data:
 
 cdef extern from 'stdbool.h':
   pass
+
+IF LIBSYSTEMD_VERSION >= 237:
+  include "dbusc_v237.pxi"
