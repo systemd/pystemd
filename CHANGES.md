@@ -11,6 +11,7 @@ the one you find pypi, but its the one in development.
 * Added `booted` support in `pystemd.daemon` to know if a system was booted with
   systemd.
 * allow None (translated to NULL) options in DBUS.match_signal.
+* Added `address` option to `pystemd.run` to support custom dbus addresses.
 
 0.6.0
 =====
