@@ -577,6 +577,10 @@ cdef class DBusAddress(DBus):
     if r < 0:
       return r
 
+    r = dbusc.sd_bus_set_bus_client(self.bus, 1)
+    if r < 0:
+      return r
+
     r = dbusc.sd_bus_start(self.bus);
     if r < 0:
       return r

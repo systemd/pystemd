@@ -65,6 +65,7 @@ cdef extern from "systemd/sd-bus.h":
 
   int sd_bus_new(sd_bus **ret)
   int sd_bus_set_address(sd_bus *bus, const char *address)
+  int sd_bus_set_bus_client(sd_bus *bus, int b)
   int sd_bus_get_address(sd_bus *bus, const char **address)
   int sd_bus_start(sd_bus *ret)
 
