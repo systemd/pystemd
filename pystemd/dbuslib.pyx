@@ -564,9 +564,11 @@ cdef class DBusRemote(DBus):
 cdef class DBusAddress(DBus):
   "DBus class that connects to custom address"
   cdef bytes address
+  cdef bint peer_to_peer
 
-  def __init__(self, address):
+  def __init__(self, address, peer_to_peer=False):
     self.address = bytes(address)
+    self.peer_to_peer = int(peer_to_peer)
 
   cdef int open_dbus_bus(self):
     r = dbusc.sd_bus_new(&(self.bus))
@@ -577,9 +579,10 @@ cdef class DBusAddress(DBus):
     if r < 0:
       return r
 
-    r = dbusc.sd_bus_set_bus_client(self.bus, 1)
-    if r < 0:
-      return r
+    if not self.peer_to_peer:
+      r = dbusc.sd_bus_set_bus_client(self.bus, 1)
+      if r < 0:
+        return r
 
     r = dbusc.sd_bus_start(self.bus);
     if r < 0:
