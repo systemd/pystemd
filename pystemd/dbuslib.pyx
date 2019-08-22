@@ -577,7 +577,7 @@ cdef class DBusAddress(DBus):
     r = dbusc.sd_bus_set_address(self.bus, self.address)
 
     if r < 0:
-      return r
+        return r
 
     if not self.peer_to_peer:
       r = dbusc.sd_bus_set_bus_client(self.bus, 1)
