@@ -90,8 +90,8 @@ cdef class DbusMessage:
 
     cpdef process_reply(self, bool with_headers):
         """
-          Read throught a sd_bus_message reply object and return the answer to that call
-          it loosly based on bus_message_dump in \
+          Read through a sd_bus_message reply object and return the answer to that call.
+          It's loosely based on bus_message_dump in \
           https://github.com/systemd/systemd/blob/master/src/libsystemd/sd-bus/bus-dump.c
           except that will dump to stdout, this will give you a nice python array (you
           are welcome!).
@@ -725,7 +725,7 @@ cpdef list apply_signature(char *signature, list values):
 
 
 cpdef bytes path_encode(char* prefix,  char* external_id):
-  """Python wraper for sd_bus_path_encode, it produce a encoded version of a
+  """Python wrapper for sd_bus_path_encode, it produce a encoded version of a
   systemd path:
 
   example:
@@ -752,7 +752,7 @@ cpdef bytes path_encode(char* prefix,  char* external_id):
 
 
 cpdef bytes path_decode(char* path,  char* prefix):
-  """Python wraper for sd_bus_path_decode, it produce a decoded version of a
+  """Python wrapper for sd_bus_path_decode, it produce a decoded version of a
   systemd path:
 
   example:

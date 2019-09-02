@@ -16,7 +16,7 @@ class DBusBaseError(Exception):
       is_base_error = self.__class__.__name__ == 'DBusBaseError'
       custom_msg = (
         "\nThis is DBusBaseError, a base error for DBus (i bet you did not "
-        "see that comming) if you need a special error, enhance "
+        "see that coming) if you need a special error, enhance "
         "pystemd.sysdexc module!."
       ) if is_base_error else ''
 
