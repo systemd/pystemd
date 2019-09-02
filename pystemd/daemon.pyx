@@ -37,13 +37,13 @@ def notify(int unset_environment, *states, **kwstates):
 
   usage:
     * `pystemd.daemon.notify(1, ready=1)`: this will signal `READY=1` to systemd
-      notify and will remove all information from the enviroment. You should not
+      notify and will remove all information from the environment. You should not
       try to talk to systemd notify socket again.
     *  `pystemd.daemon.notify(True, "READY=1")`: same as above just passed as a
       string.
     *  `pystemd.daemon.notify(False, ready=1, status='gime gime gime')`: will
       signal systemd that the app is ready and also set the status to
-      'gime gime gime'. This command does not clean the notify enviroment.
+      'gime gime gime'. This command does not clean the notify environment.
 
     For info on sd_notify, check https://github.com/systemd/systemd/blob/\
 master/src/systemd/sd-daemon.h#L173-L232
@@ -69,7 +69,7 @@ def booted():
 
 def watchdog_enabled(int unset_environment=0):
   """
-  returns 0 if watchdog is not enable, and returns the number of usec between
+  returns 0 if watchdog is not enabled, and returns the number of usec between
   keep-alive notification messages that the service manager expects.
   """
 
