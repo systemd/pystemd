@@ -12,6 +12,7 @@ the one you find pypi, but its the one in development.
   systemd.
 * allow None (translated to NULL) options in DBUS.match_signal.
 * Added `address` option to `pystemd.run` to support custom dbus addresses.
+* Added `socket` options to unit_signatures, now we can create transient sockets.
 
 0.6.0
 =====
