@@ -55,21 +55,24 @@ else:
     __version__ += ".{}".format(release_tag)
 
 
-# If you are installing a clone of the repo, you should always compile the pyx
-# files into c code. since we never include the c files in the git repo.
-# But if you are installing this from a source distribution, then we dont pack
-# the pyx files, but we do pack the c extensions, so you need to use that.
-if glob.glob("pystemd/*.pyx"):
-    from Cython.Build import cythonize
-
-    external_modules = cythonize(
-        [Extension("*", ["pystemd/*.pyx"], libraries=["systemd"])]
-    )
-else:
+# Use C extensions if respective files are present. Else let Cython modules be
+# compiled to C code. The latter is the case when using a clone of the git
+# repository, unlike the source distribution which includes both .pyx and .c
+# files.
+if glob.glob("pystemd/*.c"):
     external_modules = [
         Extension(cext[:-2].replace("/", "."), [cext], libraries=["systemd"])
         for cext in glob.glob("pystemd/*.c")
     ]
+else:
+    try:
+        from Cython.Build import cythonize
+
+        external_modules = cythonize(
+            [Extension("*", ["pystemd/*.pyx"], libraries=["systemd"])]
+        )
+    except ImportError:
+        raise RuntimeError("Cython not installed.")
 
 
 setup(
