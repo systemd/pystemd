@@ -4,6 +4,10 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.8.0
+=====
+* add initial support for python 3.7
+
 0.7.0
 =====
 * Modify README to show the right systemd min version.
