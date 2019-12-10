@@ -7,6 +7,8 @@ the one you find pypi, but its the one in development.
 0.8.0
 =====
 * add initial support for python 3.7
+* added options StandardOutputFile, StandardOutputFileToAppend, StandardErrorFile and
+  StandardErrorFileToAppend to known unit signatures.
 
 0.7.0
 =====
