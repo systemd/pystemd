@@ -53,7 +53,11 @@ matrix:
       sudo: required
       name: "Python 3.6"
       env: PYTHON_VERSION=3
+    - dist: xenial
+      sudo: required
+      name: "Python 3.7"
+      env: PYTHON_VERSION=3.7
     - name: "Black formatting"
-       python: 3.6
-       install: pip install black
-       script: black --check .
+      python: 3.6
+      install: pip install black
+      script: black --check .
