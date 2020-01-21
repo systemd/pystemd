@@ -60,4 +60,8 @@ matrix:
     - name: "Black formatting"
       python: 3.6
       install: pip install black
-      script: black --check .
+      script: black --diff .
+    - name: "Black version"
+      python: 3.6
+      install: pip install black
+      script: black --version
