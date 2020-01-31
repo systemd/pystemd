@@ -37,7 +37,7 @@ class TestEncode(TestCase):
 
 class TestDBusError(TestCase):
     def test_connecting_to_serverless_socket_raises_connection_refused_error(
-        self
+        self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             socket_path = pathlib.Path(temporary_directory) / "test_socket"
