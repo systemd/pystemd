@@ -97,7 +97,7 @@ setup(
     ],
     keywords=["systemd"],
     description="A systemd binding for python",
-    package_data={"pystemd": ["RELEASE"]},
+    package_data={"pystemd": ["RELEASE", "daemon.pyi"]},
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="LGPL-2.1+",

@@ -9,6 +9,7 @@ the one you find pypi, but its the one in development.
 * add initial support for python 3.7
 * added options StandardOutputFile, StandardOutputFileToAppend, StandardErrorFile and
   StandardErrorFileToAppend to known unit signatures.
+* Added type stubs for `pystemd.daemon`
 
 0.7.0
 =====
