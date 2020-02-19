@@ -62,6 +62,7 @@ machine: Machine name to execute the command, by default we connect to
     descriptor.
 * stderr: Specify a file descriptor for stderr. By default this is `None`
     and your unit will not have a stderr.
+* slice_: the slice under you want to run the unit.
 
 
 ## Examples
@@ -168,3 +169,14 @@ With that said, you should try to pass byte strings when possible to avoid silly
 road-map:
     a) Run on a remote host.
     b) Run something different than a transient service, e.g. a timer.
+
+  7.- Run a unit in a cgroup
+We can create a new cgroup with:
+```shell
+sudo mkdir /sys/fs/cgroup/my_amazing.slice
+```
+And run the unit with:
+```python
+>>> import pystemd.run
+>>> pystemd.run([b'/bin/yes'], slice_="my_amazing.slice")
+```

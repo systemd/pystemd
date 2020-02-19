@@ -82,6 +82,7 @@ def run(
     stdout=None,
     stderr=None,
     _wait_polling=None,
+    slice_=None,
 ):
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
@@ -135,6 +136,7 @@ def run(
             descriptor.
         stderr: Specify a file descriptor for stderr. By default this is `None`
             and your unit will not have a stderr.
+        slice_: the slice under you want to run the unit.
 
     More info and examples in:
     https://github.com/facebookincubator/pystemd/blob/master/_docs/pystemd.run.md
@@ -170,6 +172,9 @@ def run(
                 pty_master, pty_follower = ptylib.openpty()
                 pty_path = os.ttyname(pty_follower).encode()
                 ctexit.register(os.close, pty_master)
+
+        if slice_:
+            unit_properties[b"Slice"] = x2char_star(slice_)
 
         if pty_path:
             unit_properties.update(
