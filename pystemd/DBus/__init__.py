@@ -7,11 +7,14 @@
 # the root directory of this source tree.
 #
 
+from typing import Optional
+
 from pystemd.base import SDObject
+from pystemd.dbuslib import DBus
 
 
 class Manager(SDObject):
-    def __init__(self, bus=None, _autoload=False):
+    def __init__(self, bus: Optional[DBus] = None, _autoload: bool = False) -> None:
         super(Manager, self).__init__(
             destination=b"org.freedesktop.DBus",
             path=b"/org/freedesktop/DBus",

@@ -14,17 +14,21 @@ from pystemd.utils import x2char_star
 
 
 class TestContextToCharStar(TestCase):
-    def test_pass_normal_vars(self):
+    def test_pass_normal_vars(self) -> None:
         for elem in (0, b"hi", True, [], {}, (3, 4), {3, 4}):
+            # pyre-fixme[6]: Expected `Union[bool, bytes, float, int, pathlib.Path,
+            #  str]` for 1st param but got `Union[typing.Dict[typing.Any, typing.Any],
+            #  typing.List[typing.Any], typing.Set[int], typing.Tuple[int, int], bool,
+            #  bytes, int]`.
             self.assertEqual(elem, x2char_star(elem))
 
-    def test_convert_to_char(self):
+    def test_convert_to_char(self) -> None:
         for elem in ("", "hi all"):
             self.assertEqual(elem.encode(), x2char_star(elem))
 
         self.assertEqual(b"/this/is/path", x2char_star(pathlib.Path("/this/is/path")))
 
-    def test_convert_all(self):
+    def test_convert_all(self) -> None:
         self.assertEqual(b"true", x2char_star(True, convert_all=True))
         self.assertEqual(b"false", x2char_star(False, convert_all=True))
         self.assertEqual(b"1", x2char_star(1, convert_all=True))

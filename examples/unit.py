@@ -16,7 +16,7 @@ import os
 from pystemd.unit import SDUnit
 
 
-def full_example():
+def full_example() -> None:
     with SDUnit(b"postfix.service") as sd_unit:
         print("ConditionTimestamp", sd_unit.Unit.ConditionTimestamp)
         print("StopWhenUnneeded", sd_unit.Unit.StopWhenUnneeded)

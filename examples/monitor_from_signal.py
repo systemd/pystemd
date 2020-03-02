@@ -9,8 +9,9 @@
 
 import select  # in python3 you may want to use selector.DefaultSelector
 from pprint import pprint
+from typing import Any, Optional
 
-from pystemd.dbuslib import DBus
+from pystemd.dbuslib import DBus, DbusMessage
 from pystemd.systemd1 import Unit
 
 
@@ -18,7 +19,9 @@ class STATE:
     EXIT = False
 
 
-def process(msg, error=None, userdata=None):
+def process(
+    msg: DbusMessage, error: Optional[Exception] = None, userdata: Optional[Any] = None
+) -> None:
     # read the message True means read Header... usually not needed, we just
     # add it here because this is an example
     msg.process_reply(True)
@@ -36,12 +39,13 @@ def process(msg, error=None, userdata=None):
 
     if msg.body[1].get(b"SubState") in (b"exited", b"failed", b"dead"):
         print("Unit is dead, exiting select loop")
+    if userdata:
         userdata.EXIT = True
     print("#" * 80)
     print("\n")
 
 
-def monitor(name):
+def monitor(name: bytes) -> None:
 
     unit = Unit(name)
 

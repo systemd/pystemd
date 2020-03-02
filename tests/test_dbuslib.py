@@ -22,16 +22,16 @@ class TestEncode(TestCase):
     EXTERNAL_ID = b"s1.service"
     ENCODED_PATH = b"/org/freedesktop/systemd1/unit/s1_2eservice"
 
-    def test_encode(self):
+    def test_encode(self) -> None:
         self.assertEqual(path_encode(self.PREFIX, self.EXTERNAL_ID), self.ENCODED_PATH)
 
-    def test_weird_encode(self):
+    def test_weird_encode(self) -> None:
         self.assertEqual(path_encode(b"/o", self.EXTERNAL_ID), b"/o/s1_2eservice")
 
-    def test_decode(self):
+    def test_decode(self) -> None:
         self.assertEqual(path_decode(self.ENCODED_PATH, self.PREFIX), self.EXTERNAL_ID)
 
-    def test_weird_decode(self):
+    def test_weird_decode(self) -> None:
         self.assertEqual(path_decode(b"/o/s1_2eservice", b"/o"), self.EXTERNAL_ID)
 
 

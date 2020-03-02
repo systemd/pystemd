@@ -14,7 +14,7 @@ import time
 from pystemd.systemd1 import Manager, Unit
 
 
-def start_transient_unit(cmd="/bin/sleep 15"):
+def start_transient_unit(cmd: str = "/bin/sleep 15") -> None:
     a_cmd = [c.encode() for c in shlex.split(cmd)]
     random_unit_name = "myservice.{r}.{t}.service".format(
         r=random.randint(0, 100), t=time.time()

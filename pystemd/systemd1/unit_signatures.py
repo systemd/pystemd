@@ -8,6 +8,8 @@
 #
 
 
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
 from pystemd.dbuslib import apply_signature
 from pystemd.utils import x2char_star
 
@@ -20,7 +22,7 @@ from pystemd.utils import x2char_star
 # the signatute) or a callable that returns a tuple of key, signature, value.
 # please note that this is not recursive.
 
-KNOWN_UNIT_SIGNATURES = {
+KNOWN_UNIT_SIGNATURES: Dict[Union[str, bytes], Union[Callable, bytes]] = {
     b"Service": b"s",
     b"Requires": b"as",
     b"Requisite": b"as",
@@ -311,11 +313,17 @@ KNOWN_UNIT_SIGNATURES = {
 }
 
 
-def signature_array(properties):
-    args = [(ord(b"a"), b"(sv)")]
+def signature_array(
+    properties: Any
+) -> List[Tuple[int, Optional[Union[bool, bytes, float]]]]:
+    args: List[Tuple[int, Optional[Union[bool, bytes, float]]]] = [(ord(b"a"), b"(sv)")]
     for prop_name, prop_value in properties.items():
         prop_name = x2char_star(prop_name)
-        signature = KNOWN_UNIT_SIGNATURES[prop_name]
+
+        if isinstance(prop_name, str) or isinstance(prop_name, bytes):
+            signature = KNOWN_UNIT_SIGNATURES[prop_name]
+        else:
+            signature = b""
 
         if callable(signature):
             prop_name, signature, prop_value = signature(prop_name, prop_value)

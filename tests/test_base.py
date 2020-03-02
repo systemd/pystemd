@@ -9,13 +9,15 @@
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
+
+# pyre-fixme[21]: Could not find `dom`.
 from xml.dom.minidom import parseString as xmlparse
 
 from pystemd.base import SDObject
 
 
 class TestContextManager(TestCase):
-    def test_context(self):
+    def test_context(self) -> None:
         with patch.object(SDObject, "load") as load:
             with self.assertRaises(ZeroDivisionError), SDObject(b"d", b"p"):
                 raise ZeroDivisionError("we shoudl raise this error")
@@ -25,7 +27,8 @@ class TestContextManager(TestCase):
 
 
 class TestLoad(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
+        # pyre-fixme[16]: Module `xml` has no attribute `dom`.
         xml = xmlparse(
             """<node>
             <interface name='non.sysd.interface'></interface>
@@ -40,7 +43,7 @@ class TestLoad(TestCase):
 
         self.introspect_path_xml = xml
 
-    def test_set_load(self):
+    def test_set_load(self) -> None:
         obj = SDObject(b"org.freebeer.obj1", b"path", bus=MagicMock())
         obj.get_introspect_xml = lambda: self.introspect_path_xml
         obj.load()
@@ -50,15 +53,25 @@ class TestLoad(TestCase):
 
         self.assertIn("prop1", obj.I1.properties)
         obj.I1.prop1  # getting a property
+
+        bus = obj._bus
+        if bus is None:
+            self.assertNotEqual(bus, None)
+        else:
+            print(type(bus))
+            print("\n")
+
         # Do not use Mock.assert_called_once(), because its not
         # present in python3.5
-        self.assertEqual(obj._bus.get_property.call_count, 1)
+        # pyre-fixme[16]: `DBus` has no attribute `get_property`.
+        self.assertEqual(bus.get_property.call_count, 1)
 
         self.assertIn("meth1", obj.I1.methods)
         obj.I1.meth1(b"arg1")  # just calling a method
         # Do not use Mock.assert_called_once(), because its not
         # present in python3.5
-        self.assertEqual(obj._bus.call_method.call_count, 1)
+        # pyre-fixme[16]: Callable `call_method` has no attribute `call_count`.
+        self.assertEqual(bus.call_method.call_count, 1)
 
         with self.assertRaises(TypeError):
             obj.I1.meth1()
@@ -68,7 +81,7 @@ class TestLoad(TestCase):
 
 
 class TestGetItem(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
 
         class FakeInterface:
@@ -81,16 +94,17 @@ class TestGetItem(TestCase):
             def m(self):
                 return "<fake method>"
 
-        self.destination, self.path = b"com.facebook.pystemd", b"/com/facebook/pystemd"
+        self.destination: bytes = b"com.facebook.pystemd"
+        self.path: bytes = b"/com/facebook/pystemd"
         self.fake_interface = FakeInterface()
         self.sd_obj = SDObject(self.destination, self.path)
         self.sd_obj._interfaces["myinterface"] = self.fake_interface
 
-    def test_find_in_object(self):
+    def test_find_in_object(self) -> None:
         self.assertEqual(self.sd_obj.destination, self.destination)
 
-    def test_find_property_in_interfaces(self):
+    def test_find_property_in_interfaces(self) -> None:
         self.assertEqual(self.sd_obj.p, self.fake_interface.p)
 
-    def test_find_method_in_interfaces(self):
+    def test_find_method_in_interfaces(self) -> None:
         self.assertEqual(self.sd_obj.m(), self.fake_interface.m())

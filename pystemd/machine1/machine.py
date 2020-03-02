@@ -7,15 +7,24 @@
 # the root directory of this source tree.
 #
 
+from typing import AnyStr, Optional
 
 from pystemd.base import SDObject
-from pystemd.dbuslib import path_encode
+from pystemd.dbuslib import DBus, path_encode
 from pystemd.utils import x2char_star
 
 
 class Machine(SDObject):
-    def __init__(self, external_id, bus=None, _autoload=False):
-        self.external_id = x2char_star(external_id)
+    external_id: bytes
+
+    def __init__(
+        self, external_id: AnyStr, bus: Optional[DBus] = None, _autoload: bool = False
+    ) -> None:
+        maybebytes = x2char_star(external_id)
+        if isinstance(maybebytes, bytes):
+            self.external_id = maybebytes
+        else:
+            self.external_id = b""
         path = path_encode(b"/org/freedesktop/machine1/machine", self.external_id)
         super(Machine, self).__init__(
             destination=b"org.freedesktop.machine1",

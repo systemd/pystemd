@@ -14,7 +14,7 @@ This is a set of example of stuff you could do with a SDManager object
 from pystemd.manager import SDManager
 
 
-def list_units():
+def list_units() -> None:
     with SDManager() as manager:
         print("Version", manager.Manager.Version)
         print("Architecture", manager.Manager.Architecture)
