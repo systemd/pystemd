@@ -19,13 +19,13 @@ from pystemd.dbuslib import (
 
 
 class TestCompileSimple(TestCase):
-    def test_compile(self) -> None:
+    def test_compile(self):
         signature = b"s"
 
         off, _ = compile_simple(signature)
         self.assertEqual(signature, off)
 
-    def test_result_of_compile(self) -> None:
+    def test_result_of_compile(self):
         signature = b"s"
         call_arg = b"arg"
 
@@ -35,7 +35,7 @@ class TestCompileSimple(TestCase):
 
 
 class TestCompileArray(TestCase):
-    def test_compile_array_with_simple_arg(self) -> None:
+    def test_compile_array_with_simple_arg(self):
         signature = b"as"
         call_arg = [b"arg_1", b"arg_2"]
 
@@ -52,7 +52,7 @@ class TestCompileArray(TestCase):
             ],
         )
 
-    def test_compile_double_array(self) -> None:
+    def test_compile_double_array(self):
         signature = b"aas"
         call_arg = [[b"arg_1", b"arg_2"], [b"arg_a", b"arg_b"]]
 
@@ -75,7 +75,7 @@ class TestCompileArray(TestCase):
             ],
         )
 
-    def test_compile_array_of_structs(self) -> None:
+    def test_compile_array_of_structs(self):
         signature = b"a(ss)"
         call_arg = [(b"arg_1", b"arg_2"), (b"arg_a", b"arg_b")]
 
@@ -100,12 +100,12 @@ class TestCompileArray(TestCase):
 
 
 class TestCompileStruct(TestCase):
-    def test_compile(self) -> None:
+    def test_compile(self):
         signature = b"(ss)"
         off, _ = compile_struct(signature)
         self.assertEqual(signature, off)
 
-    def test_apply(self) -> None:
+    def test_apply(self):
         signature = b"(ss)"
         call_arg = (b"arg_1", b"arg_2")
 
@@ -123,30 +123,29 @@ class TestCompileStruct(TestCase):
 
 
 class TestCompileMainFunc(TestCase):
-    def test_compile_array(self) -> None:
+    def test_compile_array(self):
         signature = b"as"
         funcs = compile_args(signature)
         self.assertEqual(len(funcs), 1)
 
-    def test_compile_simplest(self) -> None:
+    def test_compile_simplest(self):
         signature = b"ssibb"
         funcs = compile_args(signature)
         self.assertEqual(len(funcs), len(signature))
 
-    def test_compile_little_complex_expr(self) -> None:
+    def test_compile_little_complex_expr(self):
         signature = b"s(si)abb"
         funcs = compile_args(signature)
         self.assertEqual(len(funcs), 4)
         self.assertEqual(
-            # pyre-fixme[16]: `int` has no attribute `__name__`.
             [f.__name__ for f in funcs],
             ["process_simple", "process_struct", "process_array", "process_simple"],
         )
 
 
 class TestFindClosure(TestCase):
-    def test_closure(self) -> None:
+    def test_closure(self):
         self.assertEqual(find_closure(b"(ss)", ord("("), ord(")")), 3)
 
-    def test_multi_closure(self) -> None:
+    def test_multi_closure(self):
         self.assertEqual(find_closure(b"(s(s)aa(((s)))u)sss", ord("("), ord(")")), 15)

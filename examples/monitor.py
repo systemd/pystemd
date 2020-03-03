@@ -9,12 +9,11 @@
 
 from itertools import chain
 from pprint import pprint
-from typing import AnyStr, Iterable
 
 from pystemd.dbuslib import DBus, apply_signature
 
 
-def monitor(*args: Iterable[AnyStr]) -> None:
+def monitor(*args):
     """
     This is a simple mock of the monitor function inside busctl. the c version can
     be found in https://github.com/systemd/systemd/blob/master/src/busctl/busctl.c#L1081

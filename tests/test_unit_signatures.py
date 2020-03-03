@@ -13,7 +13,7 @@ import pystemd.systemd1.unit_signatures
 
 
 class TestArraySignature(TestCase):
-    def test_sample(self) -> None:
+    def test_sample(self):
         self.assertEqual(
             pystemd.systemd1.unit_signatures.signature_array({"PrivateTmp": True}),
             [

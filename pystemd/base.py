@@ -9,65 +9,32 @@
 
 import re
 from contextlib import contextmanager
-from typing import (
-    Any,
-    AnyStr,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Optional,
-    Sized,
-)
-
-# pyre-fixme[21]: Could not find `dom`.
 from xml.dom.minidom import parseString
 
-from pystemd.dbusexc import DBusFailedError
 from pystemd.dbuslib import DBus, apply_signature
 from pystemd.utils import x2char_star
 
 
 class SDObject(object):
-    destination: bytes
-    path: bytes
+    def __init__(self, destination, path, bus=None, _autoload=False):
+        self.destination = x2char_star(destination)
+        self.path = x2char_star(path)
 
-    def __init__(
-        self,
-        destination: AnyStr,
-        path: AnyStr,
-        bus: Optional[DBus] = None,
-        _autoload: bool = False,
-    ) -> None:
-        maybebytes = x2char_star(destination)
-        if isinstance(maybebytes, bytes):
-            self.destination = maybebytes
-        else:
-            raise TypeError("2nd positional argument must be bytes or str.")
-        maybebytes = x2char_star(path)
-        if isinstance(maybebytes, bytes):
-            self.path = maybebytes
-        else:
-            raise TypeError("3rd positional argument must be bytes or str.")
-
-        self._interfaces: Dict[Any, Any] = {}
-        self._loaded: bool = False
-        self._bus: Optional[DBus] = bus
+        self._interfaces = {}
+        self._loaded = False
+        self._bus = bus
 
         if _autoload:
             self.load()
 
-    def __enter__(self) -> "SDObject":
+    def __enter__(self):
         self.load()
         return self
 
-    def __exit__(
-        self, exception_type: Exception, exception_value: Exception, traceback: Any
-    ) -> bool:
+    def __exit__(self, exception_type, exception_value, traceback):
         pass
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name):
         """
         This methods allow us to call properties and methods from the interfaces
         directly from the SDObject, this way both are equivalents:
@@ -89,28 +56,21 @@ class SDObject(object):
         raise AttributeError()
 
     @contextmanager
-    def bus_context(self) -> Generator[DBus, None, None]:
+    def bus_context(self):
         close_bus_at_end = self._bus is None
-        bus = None
         try:
             if self._bus is None:
                 bus = DBus()
                 bus.open()
             else:
                 bus = self._bus
-
-            if bus is not None:
-                yield bus
-            else:
-                raise DBusFailedError(0)
+            yield bus
         finally:
             if close_bus_at_end:
-                if bus:
-                    bus.close()
+                bus.close()
 
-    def get_introspect_xml(self) -> Any:
+    def get_introspect_xml(self):
         with self.bus_context() as bus:
-            # pyre-fixme[16]: Module `xml` has no attribute `dom`.
             xml_doc = parseString(
                 bus.call_method(
                     self.destination,
@@ -122,7 +82,7 @@ class SDObject(object):
             )
             return xml_doc.lastChild
 
-    def load(self, force: bool = False) -> None:
+    def load(self, force=False):
         if self._loaded and not force:
             return
 
@@ -150,29 +110,20 @@ class SDObject(object):
                     self._interfaces[interface_name],
                 )
             elif interface_name == "org.freedesktop.DBus.Properties":
-                # pyre-fixme[16]: `SDObject` has no attribute `Properties`.
                 self.Properties = self._interfaces[interface_name]
 
 
 class SDInterface(object):
-    interface_name: bytes
+    def __init__(self, sd_object, interface_name):
+        self.sd_object = sd_object
+        self.interface_name = x2char_star(interface_name)
 
-    def __init__(self, sd_object: SDObject, interface_name: AnyStr) -> None:
-        self.sd_object: SDObject = sd_object
-        maybebytes = x2char_star(interface_name)
-        if isinstance(maybebytes, bytes):
-            self.interface_name = maybebytes
-        else:
-            raise TypeError("2nd positional argument must be bytes or str")
-
-    def __repr__(self) -> str:
+    def __repr__(self):
         return "<%s of %s>" % (self.interface_name, self.sd_object.path.decode())
 
-    def _get_property(self, property_name: AnyStr) -> Any:
-        # pyre-fixme[16]: `SDInterface` has no attribute `_properties_xml`.
+    def _get_property(self, property_name):
         prop_type = self._properties_xml[property_name].getAttribute("type")
         with self.sd_object.bus_context() as bus:
-            # pyre-fixme[16]: `DBus` has no attribute `get_property`.
             return bus.get_property(
                 self.sd_object.destination,
                 self.sd_object.path,
@@ -181,15 +132,14 @@ class SDInterface(object):
                 x2char_star(prop_type),
             )
 
-    def _set_property(self, property_name: AnyStr, value: Any) -> None:
-        # pyre-fixme[16]: `SDInterface` has no attribute `_properties_xml`.
+    def _set_property(self, property_name, value):
         prop_access = self._properties_xml[property_name].getAttribute("access")
         if prop_access == "read":
             raise AttributeError("{} is read-only".format(property_name))
         else:
             raise NotImplementedError("have not implemented set property")
 
-    def _call_method(self, method_name: str, *args: Sized) -> Any:
+    def _call_method(self, method_name, *args):
         # If the method exist in the sd_object, and it has been authorized to
         # overwrite the method in this interface, call that one
         overwrite_method = getattr(self.sd_object, method_name, None)
@@ -200,7 +150,6 @@ class SDInterface(object):
 
         # There is no overwrite in the sd_object, we should call original method
         # we should call the default method (good enough fpor most cases)
-        # pyre-fixme[16]: `SDInterface` has no attribute `_methods_xml`.
         meth = self._methods_xml[method_name]
         in_args = [
             arg.getAttribute("type")
@@ -211,9 +160,7 @@ class SDInterface(object):
 
         return self._auto_call_dbus_method(method_name, in_args, *args)
 
-    def _auto_call_dbus_method(
-        self, method_name: AnyStr, in_args: List[str], *args: Sized
-    ) -> Any:
+    def _auto_call_dbus_method(self, method_name, in_args, *args):
         if len(args) != len(in_args):
             raise TypeError(
                 "method %s require %s arguments, %s supplied"
@@ -226,37 +173,27 @@ class SDInterface(object):
                 "still not implemented methods with complex " "arguments"
             )
 
-        in_signature = x2char_star("".join(in_args))
-        if isinstance(in_signature, bytes):
-            call_args = apply_signature(in_signature, list(args))
-        else:
-            raise TypeError(
-                "2nd positional argument contains things other than bytes or str"
-            )
+        in_signature = "".join(in_args)
+        call_args = apply_signature(x2char_star(in_signature), list(args))
 
         with self.sd_object.bus_context() as bus:
-            method = x2char_star(method_name)
-            if bus and isinstance(method, bytes):
-                return bus.call_method(
-                    self.sd_object.destination,
-                    self.sd_object.path,
-                    self.interface_name,
-                    method,
-                    call_args,
-                ).body
-
-        raise TypeError("1st positional argument must be bytes or str")
+            return bus.call_method(
+                self.sd_object.destination,
+                self.sd_object.path,
+                self.interface_name,
+                x2char_star(method_name),
+                call_args,
+            ).body
 
 
-def _wrap_call_with_name(func: Callable, name: AnyStr) -> Any:
-    def _call(self: Any, *args: Iterable[Any]) -> Callable:
+def _wrap_call_with_name(func, name):
+    def _call(self, *args):
         return func(self, name, *args)
 
     return _call
 
 
-# This is really Any Metaclass -> Any
-def extend_class_def(cls: Any, metaclass: Any) -> Any:
+def extend_class_def(cls, metaclass):
     """extend cls with metaclass"""
 
     orig_vars = cls.__dict__.copy()
@@ -271,7 +208,7 @@ def extend_class_def(cls: Any, metaclass: Any) -> Any:
     return metaclass(cls.__name__, cls.__bases__, orig_vars)
 
 
-def meta_interface(interface: Any) -> Any:
+def meta_interface(interface):
     class _MetaInterface(type):
         def __new__(metacls, classname, baseclasses, attrs):
             attrs.update(
@@ -314,10 +251,10 @@ def meta_interface(interface: Any) -> Any:
     return extend_class_def(SDInterface, _MetaInterface)
 
 
-def overwrite_interface_method(interface: Any) -> Callable:
+def overwrite_interface_method(interface):
     "This decorator will sign a method to overwrite a method in a interface"
 
-    def overwrite(func: Callable) -> Callable:
+    def overwrite(func):
         overwrite_interfaces = getattr(func, "overwrite_interfaces", [])
         overwrite_interfaces.append(interface.encode())
         func.overwrite_interfaces = overwrite_interfaces

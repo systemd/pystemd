@@ -5,11 +5,6 @@
 # the root directory of this source tree.
 #
 
-from typing import AnyStr, Union
+from typing import Union
 
-def notify(
-    unset_environment: bool, *args: AnyStr, **kwargs: Union[int, str]
-) -> None: ...
-def listen_fds(a: bool) -> int: ...
-
-LISTEN_FDS_START: int
+def notify(unset_environment: bool, *args: str, **kwargs: Union[int, str]) -> None: ...

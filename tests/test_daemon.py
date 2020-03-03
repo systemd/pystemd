@@ -13,20 +13,16 @@ from pystemd import daemon
 
 
 class TestNotify(TestCase):
-    def test_notify(self) -> None:
+    def test_notify(self):
         notify_status = daemon.notify(
-            False,
-            "STATUS=one...",
-            # pyre-fixme[6]: Expected `AnyStr` for 3rd param but got `bytes`.
-            b"STATUS=two....",
-            status="last...",
+            False, "STATUS=one...", b"STATUS=two....", status="last..."
         )
         self.assertIn(notify_status, {0, 1})
 
 
 class TestListen(TestCase):
-    def test_notify(self) -> None:
+    def test_notify(self):
         self.assertTrue(daemon.listen_fds(False) >= 0)
 
-    def test_listen_fds_start(self) -> None:
+    def test_listen_fds_start(self):
         self.assertEqual(daemon.LISTEN_FDS_START, 3)

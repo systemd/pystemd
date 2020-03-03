@@ -15,7 +15,7 @@ import time
 from pystemd.systemd1 import Manager
 
 
-def start_transient_unit(cmd: str = "/bin/sleep 15", delay_in_seconds: int = 5) -> None:
+def start_transient_unit(cmd="/bin/sleep 15", delay_in_seconds=5):
     a_cmd = [c.encode() for c in shlex.split(cmd)]
 
     random_unit_name = "myservice.{r}.{t}".format(
@@ -47,7 +47,7 @@ def start_transient_unit(cmd: str = "/bin/sleep 15", delay_in_seconds: int = 5) 
     print("started {} as timer and service".format(random_unit_name))
 
 
-def start_webserver(listen_stream: str = "0.0.0.0:7042",) -> None:
+def start_webserver(listen_stream="0.0.0.0:7042",):
     a_cmd = [
         "/usr/bin/python3",
         "-c",

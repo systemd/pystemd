@@ -23,7 +23,7 @@ import pystemd.run
 from IPython.terminal.embed import InteractiveShellEmbed
 
 
-display_banner: str = """
+display_banner = """
 Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.version}.
 """.format(
     pystemd=pystemd, sys=sys

@@ -16,12 +16,8 @@ import sys
 import termios
 import tty
 import uuid
-from contextlib import contextmanager
-from pathlib import Path
-from typing import IO, Any, Callable, Dict, Generator, List, Optional, Tuple, Union
 
 import pystemd
-from pystemd.dbusexc import DBusFailedError
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
 from pystemd.systemd1 import Manager as SDManager, Unit
@@ -32,21 +28,21 @@ EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 
 
 class CExit:
-    def __init__(self) -> None:
-        self.pipe: List[Any] = []
+    def __init__(self):
+        self.pipe = []
 
-    def __enter__(self) -> "CExit":
+    def __enter__(self):
         return self
 
-    def __exit__(self, *excargs: Tuple, **exckw: Dict[Any, Any]) -> None:
+    def __exit__(self, *excargs, **exckw):
         for call, args, kwargs in reversed(self.pipe):
             call(*args, **kwargs)
 
-    def register(self, meth: Callable, *args: Tuple, **kwargs: Dict[Any, Any]) -> None:
+    def register(self, meth, *args, **kwargs):
         self.pipe.append((meth, args, kwargs))
 
 
-def get_fno(obj: Union[None, int, IO[str]]) -> Union[None, int]:
+def get_fno(obj):
     """
     Try to get the best fileno of a obj:
         * If the obj is a integer, it return that integer.
@@ -56,38 +52,38 @@ def get_fno(obj: Union[None, int, IO[str]]) -> Union[None, int]:
         return None
     elif isinstance(obj, int):
         return obj
-    elif hasattr(obj, "fileno") and callable(obj.fileno):
+    elif hasattr(obj, "fileno") and callable(getattr(obj, "fileno")):
         return obj.fileno()
 
     raise TypeError("Expected None, int or fileobject with fileno method")
 
 
 def run(
-    cmd: Union[str, bytes],
-    address: Optional[Union[bool, bytes, Path, str]] = None,
-    service_type: Optional[bytes] = None,
-    name: Optional[bytes] = None,
-    user: Optional[bytes] = None,
-    user_mode: bool = os.getuid() != 0,
-    nice: Optional[bool] = None,
-    runtime_max_sec: Optional[int] = None,
+    cmd,
+    address=None,
+    service_type=None,
+    name=None,
+    user=None,
+    user_mode=os.getuid() != 0,
+    nice=None,
+    runtime_max_sec=None,
     env=None,
     extra=None,
-    cwd: Optional[bytes] = None,
-    machine: Optional[Union[bool, bytes, Path, str]] = None,
-    wait: bool = False,
-    remain_after_exit: bool = False,
-    collect: bool = False,
-    raise_on_fail: bool = False,
+    cwd=None,
+    machine=None,
+    wait=False,
+    remain_after_exit=False,
+    collect=False,
+    raise_on_fail=False,
     pty=None,
     pty_master=None,
-    pty_path: Optional[str] = None,
-    stdin: Optional[Union[IO[str], bytes, int]] = None,
-    stdout: Optional[Union[IO[str], bytes, int]] = None,
-    stderr: Optional[Union[IO[str], bytes, int]] = None,
-    _wait_polling: Optional[float] = None,
+    pty_path=None,
+    stdin=None,
+    stdout=None,
+    stderr=None,
+    _wait_polling=None,
     slice_=None,
-) -> Unit:
+):
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
 
@@ -147,30 +143,15 @@ def run(
 
     """
 
-    @contextmanager
-    def bus_factory() -> Generator[DBus, None, None]:
-        bus = None
-        try:
-            if address and (isinstance(address, bytes) or isinstance(address, str)):
-                addr = x2char_star(address)
-                if isinstance(addr, bytes):
-                    bus = DBusAddress(addr)
-            elif machine and (isinstance(machine, bytes) or isinstance(machine, str)):
-                mach = x2char_star(machine)
-                if isinstance(mach, bytes):
-                    bus = DBusMachine(mach)
-            else:
-                bus = DBus(user_mode=user_mode)
+    def bus_factory():
+        if address:
+            return DBusAddress(x2char_star(address))
+        elif machine:
+            return DBusMachine(x2char_star(machine))
+        else:
+            return DBus(user_mode=user_mode)
 
-            if bus is not None:
-                yield bus
-            else:
-                raise DBusFailedError(0)
-        finally:
-            if bus is not None:
-                bus.close()
-
-    name: bytes = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
+    name = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
     runtime_max_usec = (runtime_max_sec or 0) * 10 ** 6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)

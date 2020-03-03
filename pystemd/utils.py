@@ -8,13 +8,9 @@
 #
 
 from pathlib import Path
-from typing import Union
 
 
-def x2char_star(
-    what_to_convert: Union[float, int, Path, bytes, str, bool],
-    convert_all: bool = False,
-) -> Union[bool, float, bytes]:
+def x2char_star(what_to_convert, convert_all=False):
     """
     Converts `what_to_convert` to whatever the platform understand as char*.
     For python2, if this is unicode we turn it into a string. If this is

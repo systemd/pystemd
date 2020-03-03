@@ -10,10 +10,10 @@
 import select
 from pprint import pprint
 
-from pystemd.dbuslib import DBus, DbusMessage
+from pystemd.dbuslib import DBus
 
 
-def process(msg: DbusMessage, error: None = None, userdata: None = None) -> None:
+def process(msg, error=None, userdata=None):
     # read the message True means read Header... usually not needed, we just
     # add it here because this is an example
     msg.process_reply(True)
@@ -32,7 +32,7 @@ def process(msg: DbusMessage, error: None = None, userdata: None = None) -> None
     print("\n")
 
 
-def monitor() -> None:
+def monitor():
 
     with DBus() as bus:
 

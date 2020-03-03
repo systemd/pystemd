@@ -7,7 +7,6 @@
 # the root directory of this source tree.
 #
 
-from typing import Callable
 from unittest import TestCase
 from unittest.mock import ANY, call, patch
 
@@ -20,16 +19,14 @@ class TestJournalLog(TestCase):
     PRIORITY = 101
 
     @patch("pystemd.journal.sendv")
-    def test_msg(self, sendv: Callable) -> None:
+    def test_msg(self, sendv):
 
         pystemd.journal.log(self.PRIORITY, self.MESSAGE)
-        LOG_LINE = 25
+        LOG_LINE = 24
         # ^^ that should be the line we called pystemd.journal.log.
 
-        # pyre-fixme[16]: Anonymous callable has no attribute `call_count`.
         self.assertEqual(sendv.call_count, 1, "sendv should only be called once")
 
-        # pyre-fixme[16]: Anonymous callable has no attribute `call_args`.
         sendv.call_args.assert_called_with(
             call(
                 CODE_CONTEXT=ANY,
