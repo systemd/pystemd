@@ -74,6 +74,11 @@ else:
     except ImportError:
         raise RuntimeError("Cython not installed.")
 
+package_data = [
+    "pystemd/RELEASE",
+    *glob.glob("pystemd/*.pyi"),
+    *glob.glob("pystemd/*/*.pyi"),
+]
 
 setup(
     name="pystemd",
@@ -97,7 +102,7 @@ setup(
     ],
     keywords=["systemd"],
     description="A systemd binding for python",
-    package_data={"pystemd": ["RELEASE", "daemon.pyi"]},
+    package_data={"pystemd": [Path(p).relative_to("pystemd") for p in package_data]},
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="LGPL-2.1+",
