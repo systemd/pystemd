@@ -74,11 +74,9 @@ else:
     except ImportError:
         raise RuntimeError("Cython not installed.")
 
-package_data = [
-    "pystemd/RELEASE",
-    *glob.glob("pystemd/*.pyi"),
-    *glob.glob("pystemd/*/*.pyi"),
-]
+package_data = ["pystemd/RELEASE"]
+package_data.extend(glob.glob("pystemd/*.pyi"))
+package_data.extend(glob.glob("pystemd/*/*.pyi"))
 
 setup(
     name="pystemd",
