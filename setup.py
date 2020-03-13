@@ -102,7 +102,9 @@ setup(
     ],
     keywords=["systemd"],
     description="A systemd binding for python",
-    package_data={"pystemd": [str(Path(p).relative_to("pystemd")) for p in package_data]},
+    package_data={
+        "pystemd": [str(Path(p).relative_to("pystemd")) for p in package_data]
+    },
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="LGPL-2.1+",
