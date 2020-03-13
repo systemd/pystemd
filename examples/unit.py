@@ -8,16 +8,16 @@
 #
 
 """
-This is a set of example of stuff you could do with a SDUnit object
+This is a set of example of stuff you could do with a Unit object
 """
 
 import os
 
-from pystemd.unit import SDUnit
+from pystemd.systemd1 import Unit
 
 
 def full_example():
-    with SDUnit(b"postfix.service") as sd_unit:
+    with Unit(b"postfix.service") as sd_unit:
         print("ConditionTimestamp", sd_unit.Unit.ConditionTimestamp)
         print("StopWhenUnneeded", sd_unit.Unit.StopWhenUnneeded)
         print("StartLimitAction", sd_unit.Unit.StartLimitAction)
