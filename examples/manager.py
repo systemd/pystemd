@@ -8,14 +8,14 @@
 #
 
 """
-This is a set of example of stuff you could do with a SDManager object
+This is a set of example of stuff you could do with a Manager object
 """
 
-from pystemd.manager import SDManager
+from pystemd.systemd1 import Manager
 
 
 def list_units():
-    with SDManager() as manager:
+    with Manager() as manager:
         print("Version", manager.Manager.Version)
         print("Architecture", manager.Manager.Architecture)
 
