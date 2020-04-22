@@ -232,6 +232,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"IPAddressDeny": b"a(iayu)",
     # Timer properties
     b"TimersMonotonic": b"a(st)",
+    b"TimersCalendar": b"a(ss)",
     b"WakeSystem": b"b",
     b"Persistent": b"b",
     # Socket Signatures

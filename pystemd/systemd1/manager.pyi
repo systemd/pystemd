@@ -7,13 +7,23 @@
 # the root directory of this source tree.
 #
 
-from typing import Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from pystemd.base import SDInterface, SDObject
 from pystemd.dbuslib import DBus
 
 class Manager_Manager(SDInterface):
-    def StartUnit(self, unit_name, mode): ...
+    def StartTransientUnit(
+        self,
+        unit_name: bytes,
+        mode: bytes,
+        properties: Dict[bytes, Any],
+        extra_units: Optional[List[Tuple[bytes, Dict[bytes, Any]]]],
+    ): ...
+    def StartUnit(self, unit_name: bytes, mode: bytes): ...
+    def SetUnitProperties(
+        self, unit_name: bytes, runtime: bool, properties: Dict[bytes, Any]
+    ): ...
 
 class Manager(SDObject):
     def __init__(self, bus: Optional[DBus] = None, _autoload: bool = False): ...
