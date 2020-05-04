@@ -390,7 +390,7 @@ cdef class DBus:
           msg_call,
           arg_type,
           <char*>arg_value)
-      elif arg_type == -1: # close container
+      elif arg_type_i == -1: # close container
         r = dbusc.sd_bus_message_close_container(msg_call)
       else:
         raise DBusError(
