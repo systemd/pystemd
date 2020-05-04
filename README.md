@@ -215,7 +215,7 @@ you'll need to have:
 Please note that CentOS 7 ships with version 219. To work around this, please read
   [this](_docs/centos7.md).
 * systemd library: check if `pkg-config --cflags --libs libsystemd` returns
-`-lsystemd` if not you can install normally install `systemd-libs` or
+`-lsystemd` if not you can install `systemd-libs` or
 `libsystemd` depending on your distribution, version needs to be at least
 v237.
 * gcc: or any compiler that `setup.py` will accept.
