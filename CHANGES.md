@@ -6,10 +6,13 @@ the one you find pypi, but its the one in development.
 
 0.8.0
 =====
-* add initial support for python 3.7
+* add initial support for python 3.7 and 3.8
 * added options StandardOutputFile, StandardOutputFileToAppend, StandardErrorFile and
   StandardErrorFileToAppend to known unit signatures.
-* Added type stubs for `pystemd.daemon`
+* Added type stubs for `pystemd.daemon`, `pystemd.dbuslib`, `pystemd.systemd1.Unit`
+  and `pystemd.systemd1.Manager` because we still "support python 3.4.
+* fix issue when char is unsigned, and <char *> -1 returns 255.
+* added `slice_` option to pystemd.run to specify the cgroup where the unit is created.
 
 0.7.0
 =====

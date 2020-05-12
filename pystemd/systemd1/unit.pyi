@@ -101,6 +101,22 @@ class Unit_Unit(SDInterface):
     def Stop(self, mode): ...
     def ResetFailed(self): ...
     def Restart(self, mode): ...
+    def Reload(self, arg0: bytes) -> bytes: ...  # s  # o
+    def TryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    def ReloadOrRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    def ReloadOrTryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    def EnqueueJob(
+        self, arg0: bytes, arg1: bytes  # s  # s
+    ) -> Tuple[
+        int, bytes, bytes, bytes, bytes, List[Tuple[int, bytes, bytes, bytes, bytes]]
+    ]: ...  # (uososa(uosos))
+    def Kill(self, arg0: bytes, arg1: int) -> None: ...  # s  # i
+    def SetProperties(
+        self, arg0: bool, arg1: List[Tuple[bytes, Any]]  # b  # a(sv)
+    ) -> None: ...
+    def Ref(self) -> None: ...
+    def Unref(self) -> None: ...
+    def Clean(self, arg0: List[bytes]) -> None: ...  # as
 
 class Unit_Service(SDInterface):
     AllowedCPUs: List[bytes]  # ay
@@ -386,6 +402,8 @@ class Unit_Service(SDInterface):
     WatchdogTimestampMonotonic: int  # t
     WatchdogUSec: int  # t
     WorkingDirectory: bytes  # s
+    def GetProcesses(self) -> List[Tuple[bytes, int, bytes]]: ...  # a(sus)
+    def AttachProcesses(self, arg0: bytes, arg1: List[int]) -> None: ...  # s  # au
 
 class Unit(SDObject):
     def __init__(
