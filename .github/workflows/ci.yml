@@ -1,0 +1,38 @@
+name: Continuous Integration
+on:
+  push:
+    branches: [master]
+  pull_request:
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [3.4, 3.5, 3.6, 3.7]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Setup Cython
+      run: |
+        pip install -r requirements.txt Cython
+        pip install Cython
+    - name: Build pystemd
+      run: python setup.py sdist
+    - name: Install pystemd
+      run: pip install dist/pystemd*.tar.gz
+    - name: Run unit tests
+      run: python -m unittest discover
+      working-directory: ./tests
+  black:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Run black
+      uses: lgeiger/black-action@v1.0.1
+      args: --check .
