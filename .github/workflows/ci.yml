@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [3.4, 3.5, 3.6, 3.7]
+        python: [3.5, 3.6, 3.7, 3.8]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -21,6 +21,8 @@ jobs:
       run: |
         pip install -r requirements.txt Cython
         pip install Cython
+    - name: Install dependencies
+      run: sudo apt-get install -y libsystemd-dev pandoc
     - name: Build pystemd
       run: python setup.py sdist
     - name: Install pystemd
@@ -35,4 +37,5 @@ jobs:
       uses: actions/checkout@v2
     - name: Run black
       uses: lgeiger/black-action@v1.0.1
-      args: --check .
+      with:
+        args: "--check ."
