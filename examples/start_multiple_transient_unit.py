@@ -47,7 +47,7 @@ def start_transient_unit(cmd="/bin/sleep 15", delay_in_seconds=5):
     print("started {} as timer and service".format(random_unit_name))
 
 
-def start_webserver(listen_stream="0.0.0.0:7042",):
+def start_webserver(listen_stream="0.0.0.0:7042"):
     a_cmd = [
         "/usr/bin/python3",
         "-c",
