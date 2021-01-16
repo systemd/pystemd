@@ -219,6 +219,7 @@ Please note that CentOS 7 ships with version 219. To work around this, please re
 `libsystemd` depending on your distribution, version needs to be at least
 v237.
 * gcc: or any compiler that `setup.py` will accept.
+* [`pkg-config`](https://www.freedesktop.org/wiki/Software/pkg-config/) command. Depending on your distro, the package is called "pkg-config", "pkgconfig" or a compatible substitute like "pkgconf"
 
 if you want to install from source then after you clone this repo you need to
 
