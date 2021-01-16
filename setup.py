@@ -32,6 +32,8 @@ except FileNotFoundError as e:
     sys.exit('"pkg-config" command could not be found. Please ensure "pkg-config" is installed into your PATH.')
 except subprocess.CalledProcessError as e:
     sys.exit("`%s` failed. Please ensure all prerequisite packages from README.md are installed." % ' '.join(e.cmd))
+except ValueError as e:
+    sys.exit("libsystemd version returned by pkg-config is not a plain integer!")
 
 THIS_DIR = Path(__file__).parent
 
