@@ -19,6 +19,26 @@ from pathlib import Path
 from setuptools import setup
 from setuptools.extension import Extension
 
+import subprocess
+
+compile_time_env = {"LIBSYSTEMD_VERSION": -1}
+
+try:
+    compile_time_env["LIBSYSTEMD_VERSION"] = int(
+        subprocess.check_output(["pkg-config", "--modversion", "libsystemd"])
+    )
+    # Extension has no means to interrogate pkg-config: https://bugs.python.org/issue28207#msg277413
+except FileNotFoundError as e:
+    sys.exit(
+        '"pkg-config" command could not be found. Please ensure "pkg-config" is installed into your PATH.'
+    )
+except subprocess.CalledProcessError as e:
+    sys.exit(
+        "`%s` failed. Please ensure all prerequisite packages from README.md are installed."
+        % " ".join(e.cmd)
+    )
+except ValueError as e:
+    sys.exit("libsystemd version returned by pkg-config is not a plain integer!")
 
 THIS_DIR = Path(__file__).parent
 
@@ -69,7 +89,8 @@ else:
         from Cython.Build import cythonize
 
         external_modules = cythonize(
-            [Extension("*", ["pystemd/*.pyx"], libraries=["systemd"])]
+            [Extension("*", ["pystemd/*.pyx"], libraries=["systemd"])],
+            compile_time_env=compile_time_env,
         )
     except ImportError:
         raise RuntimeError("Cython not installed.")

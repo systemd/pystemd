@@ -496,25 +496,28 @@ cdef class DBus:
       https://github.com/facebookincubator/pystemd/blob/master/examples/monitor.py
       """
 
-      cdef int r
+      IF LIBSYSTEMD_VERSION < 237:
+          raise DBusError(-1, "sd_bus_match_signal not available in libsystemd v%d" % LIBSYSTEMD_VERSION)
+      ELSE:
+          cdef int r
 
-      callback.metadata = {
-        'userdata': userdata,
-      }
+          callback.metadata = {
+            'userdata': userdata,
+          }
 
-      r = dbusc.sd_bus_match_signal(
-        self.bus,
-        NULL,
-        _b2c(x2char_star(sender)),
-        _b2c(x2char_star(path)),
-        _b2c(x2char_star(interface)),
-        _b2c(x2char_star(member)),
-        match_signal_callback_handler,
-        <void*> callback
-      )
+          r = dbusc.sd_bus_match_signal(
+            self.bus,
+            NULL,
+            _b2c(x2char_star(sender)),
+            _b2c(x2char_star(path)),
+            _b2c(x2char_star(interface)),
+            _b2c(x2char_star(member)),
+            match_signal_callback_handler,
+            <void*> callback
+          )
 
-      if r < 0:
-        raise DBusError(r, "Failed to add signal match")
+          if r < 0:
+              raise DBusError(r, "Failed to add signal match")
 
     # Direct interface to sd_bus_<methods>
 
