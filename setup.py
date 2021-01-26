@@ -12,14 +12,13 @@ import ast
 import atexit
 import glob
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
 
 from setuptools import setup
 from setuptools.extension import Extension
-
-import subprocess
 
 compile_time_env = {"LIBSYSTEMD_VERSION": -1}
 
