@@ -11,7 +11,6 @@
 import ast
 import atexit
 import glob
-import os
 import subprocess
 import sys
 import time
@@ -20,14 +19,15 @@ from pathlib import Path
 from setuptools import setup
 from setuptools.extension import Extension
 
-compile_time_env = {"LIBSYSTEMD_VERSION": -1}
+
+compile_time_env = {"LIBSYSTEMD_VERSION": 500}
 
 try:
     compile_time_env["LIBSYSTEMD_VERSION"] = int(
         subprocess.check_output(["pkg-config", "--modversion", "libsystemd"])
     )
     # Extension has no means to interrogate pkg-config: https://bugs.python.org/issue28207#msg277413
-except FileNotFoundError as e:
+except FileNotFoundError:
     sys.exit(
         '"pkg-config" command could not be found. Please ensure "pkg-config" is installed into your PATH.'
     )
@@ -36,7 +36,7 @@ except subprocess.CalledProcessError as e:
         "`%s` failed. Please ensure all prerequisite packages from README.md are installed."
         % " ".join(e.cmd)
     )
-except ValueError as e:
+except ValueError:
     sys.exit("libsystemd version returned by pkg-config is not a plain integer!")
 
 THIS_DIR = Path(__file__).parent
@@ -114,6 +114,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",

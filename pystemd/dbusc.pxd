@@ -207,5 +207,6 @@ cdef union basic_data:
 cdef extern from 'stdbool.h':
   pass
 
+# We may not need this since this file is just to declare where things are.
 IF LIBSYSTEMD_VERSION >= 237:
   include "dbusc_v237.pxi"
