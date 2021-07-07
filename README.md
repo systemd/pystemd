@@ -48,7 +48,7 @@ systemd's interfaces:
     In [10]: unit.Unit.ActiveState
     Out[10]: b'active'
 
-    In [11]: unit.Service.GetProcesses()
+    In [11]: unit.Service.GetProcesses() # require systemd v238 and above
     Out[11]:
     [(b'/system.slice/postfix.service',
         1754222,
