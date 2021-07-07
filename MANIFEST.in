@@ -1,3 +1,3 @@
 include README.md LICENSE
 recursive-include tests *.py
-recursive-include pystemd *.pyx
+recursive-include pystemd *.pyx *.pxd *.pxi
