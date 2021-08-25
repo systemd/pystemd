@@ -1,7 +1,7 @@
 name: Continuous Integration
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
 jobs:
   python:
