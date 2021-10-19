@@ -277,9 +277,11 @@ cdef class DbusMessage:
 cdef class DBus:
     cdef dbusc.sd_bus *bus
     cdef bool user_mode
+    cdef int interactive
 
-    def __init__(self, user_mode=False):
+    def __init__(self, user_mode=False, interactive=None):
       self.user_mode = user_mode
+      self.interactive = -1 if interactive is None else int(interactive)
 
     def __enter__(self):
         self.open()
@@ -301,6 +303,8 @@ cdef class DBus:
         rets = self.open_dbus_bus()
         if (rets < 0):
             raise DBusError(rets, None, "Could not open a bus to DBus")
+        if self.interactive >= 0:
+            self.set_allow_interactive_authorization(self.interactive)
 
     def close(self):
         dbusc.sd_bus_close(self.bus)
@@ -540,6 +544,14 @@ cdef class DBus:
 
     cpdef int get_fd(self):
       return dbusc.sd_bus_get_fd(self.bus)
+
+    cpdef bool get_allow_interactive_authorization(self):
+      return dbusc.sd_bus_get_allow_interactive_authorization(self.bus)
+
+    cpdef set_allow_interactive_authorization(self, bool interactive):
+        r = dbusc.sd_bus_set_allow_interactive_authorization(self.bus, interactive)
+        if r < 0:
+            raise DBusError(r, None, "Failed to set interactive authorization")
 
 
 cdef class DBusMachine(DBus):

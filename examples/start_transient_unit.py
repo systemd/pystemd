@@ -11,6 +11,7 @@ import random
 import shlex
 import time
 
+from pystemd.dbuslib import DBus
 from pystemd.systemd1 import Manager, Unit
 
 
@@ -25,23 +26,24 @@ def start_transient_unit(cmd="/bin/sleep 15"):
         b"ExecStart": [(a_cmd[0], a_cmd, False)],
         b"RemainAfterExit": True,
     }
-
-    with Manager() as manager:
+    # if we need interactive prompts for passwords, we can create our own DBus object.
+    # if we dont need interactive, we would just do `with Manager() as manager:`.
+    with DBus(interactive=True) as bus, Manager(bus=bus) as manager:
         manager.Manager.StartTransientUnit(random_unit_name, b"fail", unit)
 
-    with Unit(random_unit_name) as unit:
-        while True:
-            print(
-                "service `{cmd}` (name={random_unit_name}) has MainPID "
-                "{unit.Service.MainPID}".format(**locals())
-            )
-            if unit.Service.MainPID == 0:
+        with Unit(random_unit_name, bus=bus) as unit:
+            while True:
                 print(
-                    "service finished with "
-                    "{unit.Service.ExecMainStatus}/{unit.Service.Result} "
-                    "will stop it and then... bye".format(**locals())
+                    "service `{cmd}` (name={random_unit_name}) has MainPID "
+                    "{unit.Service.MainPID}".format(**locals())
                 )
-                unit.Unit.Stop(b"replace")
-                break
-            print("service still runing, sleeping by 5 seconds")
-            time.sleep(5)
+                if unit.Service.MainPID == 0:
+                    print(
+                        "service finished with "
+                        "{unit.Service.ExecMainStatus}/{unit.Service.Result} "
+                        "will stop it and then... bye".format(**locals())
+                    )
+                    unit.Unit.Stop(b"replace")
+                    break
+                print("service still runing, sleeping by 5 seconds")
+                time.sleep(5)

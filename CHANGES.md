@@ -4,6 +4,10 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.10.0
+=====
+* support for interactive auth.
+
 0.9.0
 =====
 * add initial support for Python 3.9

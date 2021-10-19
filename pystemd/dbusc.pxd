@@ -156,6 +156,9 @@ cdef extern from "systemd/sd-bus.h":
   int sd_bus_path_encode(char* prefix, char* external_id, char **ret_path)
   int sd_bus_path_decode(char* path, char* prefix, char **ret_external_id)
 
+  int sd_bus_set_allow_interactive_authorization(sd_bus *bus, int b);
+  int sd_bus_get_allow_interactive_authorization(sd_bus *bus);
+
 
 
 cdef extern from "systemd/sd-bus-protocol.h":
