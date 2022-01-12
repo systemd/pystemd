@@ -86,8 +86,8 @@ The above code operates on root user units by default. To operate on userspace u
 from pystemd.dbuslib import DBus
 
 with DBus(user_mode=True) as bus:
-	unit = Unit(b"postfix.service", bus=bus)
-	unit.load()
+    unit = Unit(b"postfix.service", bus=bus)
+    unit.load()
 ```
 
 Alongside the `systemd1.Unit`, we also have a `systemd1.Manager`, that allows
