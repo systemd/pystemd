@@ -81,6 +81,15 @@ Each interface has methods and properties, that can access directly as
 `unit.Service.MainPID`, the list of properties and methods is in `.properties`
 and `.methods` of each interface.
 
+The above code operates on root user units by default. To operate on userspace units, explicitly pass in a user mode DBus instance:
+```
+from pystemd.dbuslib import DBus
+
+with DBus(user_mode=True) as bus:
+	unit = Unit(b"postfix.service", bus=bus)
+	unit.load()
+```
+
 Alongside the `systemd1.Unit`, we also have a `systemd1.Manager`, that allows
 you to interact with systemd manager.
 
