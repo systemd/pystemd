@@ -9,8 +9,9 @@
 
 import pathlib
 from unittest import TestCase
+from unittest.mock import sentinel
 
-from pystemd.utils import x2char_star
+from pystemd.utils import x2char_star, x2cmdlist, str2cmd
 
 
 class TestContextToCharStar(TestCase):
@@ -30,3 +31,47 @@ class TestContextToCharStar(TestCase):
         self.assertEqual(b"1", x2char_star(1, convert_all=True))
         self.assertEqual(b"3.14159", x2char_star(3.14159, convert_all=True))
         self.assertEqual(b"100", x2char_star(100, convert_all=True))
+
+
+class TestX2x2Cmdlist(TestCase):
+    def tests_none(self):
+        self.assertEqual(x2cmdlist(None), [])
+        self.assertEqual(x2cmdlist([]), [])
+
+    def tests_strings(self):
+        self.assertEqual(
+            x2cmdlist("foo", sentinel.i_pass), [(b"foo", (b"foo",), sentinel.i_pass)]
+        )
+        self.assertEqual(
+            x2cmdlist("foo bar", sentinel.i_pass),
+            [(b"foo", (b"foo", b"bar"), sentinel.i_pass)],
+        )
+
+    def tests_bytes(self):
+        self.assertEqual(
+            x2cmdlist(b"foo", sentinel.i_pass), [(b"foo", (b"foo",), sentinel.i_pass)]
+        )
+        self.assertEqual(
+            x2cmdlist(b"foo bar", sentinel.i_pass),
+            [(b"foo", (b"foo", b"bar"), sentinel.i_pass)],
+        )
+
+    def test_array(self):
+        self.assertEqual(
+            x2cmdlist(
+                [
+                    [b"foo", "bar"],
+                    [b"bing", "bang"],
+                ],
+                sentinel.i_pass,
+            ),
+            [
+                (b"foo", (b"foo", b"bar"), sentinel.i_pass),
+                (b"bing", (b"bing", b"bang"), sentinel.i_pass),
+            ],
+        )
+
+        self.assertEqual(
+            x2cmdlist([b"foo", "bar"], sentinel.i_pass),
+            [(b"foo", (b"foo", b"bar"), sentinel.i_pass)],
+        )

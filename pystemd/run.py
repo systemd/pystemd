@@ -21,7 +21,7 @@ import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
 from pystemd.systemd1 import Manager as SDManager, Unit
-from pystemd.utils import x2char_star
+from pystemd.utils import x2char_star, x2cmdlist
 
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
@@ -83,6 +83,10 @@ def run(
     stderr=None,
     _wait_polling=None,
     slice_=None,
+    stop_cmd=None,
+    stop_post_cmd=None,
+    start_pre_cmd=None,
+    start_post_cmd=None,
 ):
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
@@ -90,6 +94,10 @@ def run(
     Options:
 
         cmd: Array with the command to execute (absolute path only)
+        stop_cmd: Array with the command to execute on stop (absolute path only)
+        stop_post_cmd: Array with the command to execute after stop (absolute path only)
+        start_pre_cmd: Array with the command to execute on pre start (absolute path only)
+        start_post_cmd: Array with the command to execute on on post start (absolute path only)
         address: A custom dbus socket address
         service_type: Set the unit type, e.g. notify, oneshot. If you dont give a
             value, the unit type will be whatever systemd thinks is the default.
@@ -159,6 +167,13 @@ def run(
     unit_properties = {}
     selectors = []
 
+    extra = extra or {}
+    start_cmd = x2cmdlist(cmd, False) + extra.pop(b"ExecStart", [])
+    stop_cmd = x2cmdlist(stop_cmd, False) + extra.pop(b"ExecStop", [])
+    stop_post_cmd = x2cmdlist(stop_post_cmd, False) + extra.pop(b"ExecStopPost", [])
+    start_pre_cmd = x2cmdlist(start_pre_cmd, False) + extra.pop(b"ExecStartPre", [])
+    start_post_cmd = x2cmdlist(start_post_cmd, False) + extra.pop(b"ExecStartPost", [])
+
     if user_mode:
         _wait_polling = _wait_polling or 0.5
 
@@ -222,7 +237,11 @@ def run(
             {
                 b"Type": service_type,
                 b"Description": b"pystemd: " + name,
-                b"ExecStart": [(cmd[0], cmd, False)],
+                b"ExecStartPre": start_pre_cmd or None,
+                b"ExecStart": start_cmd,
+                b"ExecStartPost": start_post_cmd or None,
+                b"ExecStop": stop_cmd or None,
+                b"ExecStopPost": stop_post_cmd or None,
                 b"RemainAfterExit": remain_after_exit,
                 b"CollectMode": b"inactive-or-failed" if collect else None,
                 b"WorkingDirectory": cwd,
@@ -237,7 +256,7 @@ def run(
             }
         )
 
-        unit_properties.update(extra or {})
+        unit_properties.update(extra)
         unit_properties = {k: v for k, v in unit_properties.items() if v is not None}
 
         unit = Unit(name, bus=bus, _autoload=True)

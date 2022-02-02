@@ -16,6 +16,10 @@ but we will assume that this just another building block for your program.
 ## Options:
 
 * cmd: Array with the command to execute (absolute path only)
+* stop_cmd: Array with the command to execute on stop (absolute path only)
+* stop_post_cmd: Array with the command to execute after stop (absolute path only)
+* start_pre_cmd: Array with the command to execute on pre start (absolute path only)
+* start_post_cmd: Array with the command to execute on on post start (absolute path only)
 * address: A custom dbus socket address
 * service_type: Set the unit type, e.g. notify, oneshot. If you dont give a
     value, the unit type will be whatever systemd thinks is the default.
@@ -75,6 +79,15 @@ machine: Machine name to execute the command, by default we connect to
 ```python
 >>> import pystemd.run
 >>> pystemd.run([b'/bin/sleep', b'42'])
+<pystemd.systemd1.unit.Unit at 0x7f8c460695c0>
+```
+
+pystemd can also take raw strings, but there is no path expansion so `pystemd.run(b'/bin/sleep 42')`
+is the same as `pystemd.run([b'/bin/sleep', b'42'])`, but not ``pystemd.run(b'sleep 42')``
+
+```python
+>>> import pystemd.run
+>>> pystemd.run(b'/bin/sleep 42')
 <pystemd.systemd1.unit.Unit at 0x7f8c460695c0>
 ```
 
@@ -154,6 +167,36 @@ exit
 Note: if using CPython, don't do `open().fileno()`. `open` returns a File Object
 that after `.fileno` is called has 0 references pointing at it, so the runtime
 frees the object, closing the file descriptor in the process.
+
+  7.- adds ExecStop to pystend.run, this code execute a unit (and stop it right away), and then exec stop waits for the unit main process to finish before exiting.
+```python
+
+>>> import pystemd.run
+>>> pystemd.run(
+    "/bin/sleep 5",
+    stop_cmd=[
+        "/bin/bash",
+        "-c",
+        """
+if [ -n "${MAINPID}" ]; then
+    # send a signal to main proces to ask it to stop, and then
+    # lets wait for it to actually stop.
+    /bin/tail -f  --pid ${MAINPID}
+    echo we are done with $MAINPID
+else
+    echo process not runing
+fi
+         """
+    ],
+    stdout=1).Unit.Stop(b"replace")
+b'/org/freedesktop/systemd1/job/2568298'
+
+# 5 seconds later
+
+we are done with 1015398
+
+
+```
 
 ## Extra notes:
 

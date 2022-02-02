@@ -37,4 +37,8 @@ def run(
     stderr=...,
     _wait_polling=...,
     slice_=...,
+    stop_cmd=...,
+    post_stop_cmd=...,
+    pre_start_cmd=...,
+    post_start_cmd=...,
 ): ...
