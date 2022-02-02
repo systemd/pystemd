@@ -101,6 +101,18 @@ KNOWN_UNIT_SIGNATURES = {
     b"RuntimeMaxSec": lambda _, value: (b"RuntimeMaxUSec", b"t", int(value * 10 ** 6)),
     b"WatchdogUSec": b"t",
     b"WatchdogSec": lambda _, value: (b"WatchdogUSec", b"t", int(value * 10 ** 6)),
+    b"TimeoutStopUSec": b"t",
+    b"TimeoutStopSec": lambda _, value: (
+        b"TimeoutStopUSec",
+        b"t",
+        int(value * 10 ** 6),
+    ),
+    b"TimeoutStartUSec": b"t",
+    b"TimeoutStartSec": lambda _, value: (
+        b"TimeoutStartUSec",
+        b"t",
+        int(value * 10 ** 6),
+    ),
     # syslog
     b"SyslogIdentifier": b"s",
     # stdio signatures
