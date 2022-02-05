@@ -45,5 +45,5 @@ def start_transient_unit(cmd="/bin/sleep 15"):
                     )
                     unit.Unit.Stop(b"replace")
                     break
-                print("service still runing, sleeping by 5 seconds")
+                print("service still running, sleeping by 5 seconds")
                 time.sleep(5)

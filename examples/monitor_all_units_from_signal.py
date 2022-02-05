@@ -20,7 +20,7 @@ def process(msg, error=None, userdata=None):
     print("*" * 80)
     print(" * New message:\n")
     # since we read headers, lets print out the headers
-    print("# Mesage headers:")
+    print("# Message headers:")
     pprint({k: v for k, v in msg.headers.items() if v is not None})
 
     print("\n# Interface:", msg.body[0])

@@ -97,7 +97,7 @@ cdef class DbusMessage:
           are welcome!).
 
           The nice thing about this method, is that it will enter complex types like
-          arrays or struc. so if the answer is in the form of "a(sbi)", it can return
+          arrays or struct. so if the answer is in the form of "a(sbi)", it can return
           as an answer [[b'a', True, 0], [b'b', False, 1], ...]
         """
         cdef:
@@ -436,7 +436,7 @@ cdef class DBus:
             except TypeError as e:
               raise TypeError(
                 str(e) + ' for input "{}", element '
-                'number {} in input serie:\n{}'.format(
+                'number {} in input series:\n{}'.format(
                   arg_value, narg, pformat(args)))
 
 
@@ -566,7 +566,7 @@ cdef class DBusMachine(DBus):
 
 
 cdef class DBusRemote(DBus):
-  "DBus class that connects to a remore host"
+  "DBus class that connects to a remote host"
 
   cdef char* host
 

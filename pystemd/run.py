@@ -113,7 +113,7 @@ def run(
             settings to the start_transient_unit method.
         machine: Machine name to execute the command, by default we connect to
             the host's dbus.
-        wait: Wait for command completition before returning control, defaults
+        wait: Wait for command completion before returning control, defaults
             to False.
         remain_after_exit: If True, the transient unit will remain after cmd
             has finished, also if true, this methods will return
@@ -121,7 +121,7 @@ def run(
             returns None and the unit will be gone as soon as is done.
         collect: Unload unit after it ran, even when failed.
         raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
-            status code, it wont take affect unless you set wait=True,
+            status code, it won't take affect unless you set wait=True,
             defaults to False.
         pty: Set this variable to True if you want a pty to be created. if you
             pass a `machine`, the pty will be created in the machine. Setting
@@ -202,7 +202,7 @@ def run(
             )
 
             if None not in (stdin, pty_master):
-                # lets set raw mode for stdin so we can foward input without
+                # lets set raw mode for stdin so we can forward input without
                 # waiting for a new line, but lets also make sure we return the
                 # attributes as they where after this method is done
                 stdin_attrs = tty.tcgetattr(stdin)
@@ -323,8 +323,8 @@ def run(
                         break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
-                # on usermode the subcribe to events does not work that well
-                # this is a temporaly hack. you can always not wait on usermode.
+                # on usermode the subscribe to events does not work that well
+                # this is a temporary hack. you can always not wait on usermode.
                 break
 
         if raise_on_fail:
