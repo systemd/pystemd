@@ -9,8 +9,8 @@
 
 import re
 from contextlib import contextmanager
-from xml.dom.minidom import parseString
 
+from lxml import etree
 from pystemd.dbuslib import DBus, apply_signature
 from pystemd.utils import x2char_star
 
@@ -71,7 +71,7 @@ class SDObject(object):
 
     def get_introspect_xml(self):
         with self.bus_context() as bus:
-            xml_doc = parseString(
+            xml_doc = etree.fromstring(
                 bus.call_method(
                     self.destination,
                     self.path,
@@ -80,7 +80,8 @@ class SDObject(object):
                     [],
                 ).body
             )
-            return xml_doc.lastChild
+
+            return xml_doc
 
     def load(self, force=False):
         if self._loaded and not force:
@@ -89,15 +90,15 @@ class SDObject(object):
         unit_xml = self.get_introspect_xml()
         decoded_destination = self.destination.decode()
 
-        for interface in unit_xml.childNodes:
-            if interface.nodeType != interface.ELEMENT_NODE:
+        for interface in unit_xml.getchildren():
+            if not etree.iselement(interface):
                 continue
 
-            if interface.tagName != "interface":
+            if interface.tag != "interface":
                 # This is not bad, we just can't act on this info.
                 continue
 
-            interface_name = interface.getAttribute("name")
+            interface_name = interface.attrib.get("name")
 
             self._interfaces[interface_name] = meta_interface(interface)(
                 self, interface_name
@@ -122,7 +123,7 @@ class SDInterface(object):
         return "<%s of %s>" % (self.interface_name, self.sd_object.path.decode())
 
     def _get_property(self, property_name):
-        prop_type = self._properties_xml[property_name].getAttribute("type")
+        prop_type = self._properties_xml[property_name].attrib.get("type")
         with self.sd_object.bus_context() as bus:
             return bus.get_property(
                 self.sd_object.destination,
@@ -133,7 +134,7 @@ class SDInterface(object):
             )
 
     def _set_property(self, property_name, value):
-        prop_access = self._properties_xml[property_name].getAttribute("access")
+        prop_access = self._properties_xml[property_name].attrib.get("access")
         if prop_access == "read":
             raise AttributeError("{} is read-only".format(property_name))
         else:
@@ -152,10 +153,9 @@ class SDInterface(object):
         # we should call the default method (good enough fpor most cases)
         meth = self._methods_xml[method_name]
         in_args = [
-            arg.getAttribute("type")
-            for arg in meth.childNodes
-            if arg.nodeType == arg.ELEMENT_NODE
-            and arg.getAttribute("direction") == "in"
+            arg.attrib.get("type")
+            for arg in meth.getchildren()
+            if etree.iselement(arg) and arg.attrib.get("direction") == "in"
         ]
 
         return self._auto_call_dbus_method(method_name, in_args, *args)
@@ -224,11 +224,11 @@ def meta_interface(interface):
             _call_method = attrs["_call_method"]
             _get_property = attrs["_get_property"]
             _set_property = attrs["_set_property"]
-            elements = [n for n in interface.childNodes if n.nodeType == 1]
+            elements = [n for n in interface.getchildren() if etree.iselement(n)]
 
             for element in elements:
-                if element.tagName == "property":
-                    property_name = element.getAttribute("name")
+                if element.tag == "property":
+                    property_name = element.attrib.get("name")
 
                     attrs["properties"].append(property_name)
                     attrs["_properties_xml"][property_name] = element
@@ -237,8 +237,8 @@ def meta_interface(interface):
                         _wrap_call_with_name(_set_property, property_name),
                     )
 
-                elif element.tagName == "method":
-                    method_name = element.getAttribute("name")
+                elif element.tag == "method":
+                    method_name = element.attrib.get("name")
                     attrs["methods"].append(method_name)
                     attrs["_methods_xml"][method_name] = element
 

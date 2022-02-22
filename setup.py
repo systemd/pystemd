@@ -110,8 +110,6 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -125,6 +123,7 @@ setup(
     package_data={
         "pystemd": [str(Path(p).relative_to("pystemd")) for p in package_data]
     },
+    install_requires=["lxml"],
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="LGPL-2.1+",

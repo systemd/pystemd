@@ -9,8 +9,8 @@
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from xml.dom.minidom import parseString as xmlparse
 
+from lxml import etree
 from pystemd.base import SDObject
 
 
@@ -26,7 +26,7 @@ class TestContextManager(TestCase):
 
 class TestLoad(TestCase):
     def setUp(self):
-        xml = xmlparse(
+        xml = etree.fromstring(
             """<node>
             <interface name='non.sysd.interface'></interface>
             <interface name='org.freebeer.obj1.I1'>
@@ -36,7 +36,7 @@ class TestLoad(TestCase):
                 </method>
             </interface>
             </node>"""
-        ).firstChild
+        )
 
         self.introspect_path_xml = xml
 

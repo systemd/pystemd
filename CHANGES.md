@@ -7,6 +7,8 @@ the one you find pypi, but its the one in development.
 0.11.0
 =====
 * native support for stop_cmd, (pre|post)_start_cmd and post_stop_cmd in pystemd.run.
+* adding lxml as a dependency.
+* drop support for python 3.4 and 3.5 (yey welcome f-strings)
 
 0.10.0
 =====
