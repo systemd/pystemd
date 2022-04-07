@@ -30,7 +30,7 @@ def notify(int unset_environment, *states, **kwstates):
 
   params:
     unset_environment[int] = 1 if we should remove the notify information,
-      otherwize 0.
+      otherwise 0.
     states/kwstates = array with states statements that are 'IDENTIFIER=VALUE'.
       e.g: 'READY=1' or keywords states like `ready=1`
       (This will be clear in usage).

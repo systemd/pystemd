@@ -35,7 +35,7 @@ but we will assume that this just another building block for your program.
     settings to the start_transient_unit method.
 machine: Machine name to execute the command, by default we connect to
     the host's dbus.
-* wait: Wait for command completition before returning control, defaults
+* wait: Wait for command completion before returning control, defaults
     to False.
 * remain_after_exit: If True, the transient unit will remain after cmd
     has finished, also if true, this methods will return
@@ -43,7 +43,7 @@ machine: Machine name to execute the command, by default we connect to
     returns None and the unit will be gone as soon as is done.
 * collect: Unload unit after it ran, even when failed.
 * raise_on_fail: Will raise a PystemdRunError is cmd exit with non 0
-    status code, it wont take affect unless you set wait=True,
+    status code, it won't take affect unless you set wait=True,
     defaults to False.
 * pty: Set this variable to True if you want a pty to be created. if you
     pass a `machine`, the pty will be created in the machine. Setting
@@ -179,12 +179,12 @@ frees the object, closing the file descriptor in the process.
         "-c",
         """
 if [ -n "${MAINPID}" ]; then
-    # send a signal to main proces to ask it to stop, and then
+    # send a signal to main process to ask it to stop, and then
     # lets wait for it to actually stop.
     /bin/tail -f  --pid ${MAINPID}
     echo we are done with $MAINPID
 else
-    echo process not runing
+    echo process not running
 fi
          """
     ],

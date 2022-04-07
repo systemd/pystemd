@@ -11,7 +11,7 @@ import pathlib
 from unittest import TestCase
 from unittest.mock import sentinel
 
-from pystemd.utils import x2char_star, x2cmdlist, str2cmd
+from pystemd.utils import x2char_star, x2cmdlist
 
 
 class TestContextToCharStar(TestCase):

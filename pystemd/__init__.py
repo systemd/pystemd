@@ -11,7 +11,7 @@
 
 This library allows you to talk to systemd over dbus from python, without
 actually thinking that you are talking to systemd over dbus. This is focus so
-you can programatically, start/stop/restart/kill and verify services status from
+you can programmatically, start/stop/restart/kill and verify services status from
 systemd point of view, and avoiding `subprocess.Popen(['systemctl', ...`
 
 Usage in interactive mode:
@@ -91,7 +91,7 @@ Extra read (mostly if you want to develop or extend this):
       https://github.com/systemd/systemd/blob/master/src/systemd/sd-bus.h
       https://github.com/systemd/systemd/blob/master/src/libsystemd/sd-bus/sd-bus.c
 
-    similar library but with a diferent aproach (they hardcode all the method
+    similar library but with a different approach (they hardcode all the method
     they want). https://github.com/wiliamsouza/python-systemd . with that said.
     this is build in a way that we can extend the Base Classes to have hardcoded
     methods (example we can have SDUnit.Start that calls SDUnit.Unit.Start)

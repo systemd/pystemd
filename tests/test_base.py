@@ -18,7 +18,7 @@ class TestContextManager(TestCase):
     def test_context(self):
         with patch.object(SDObject, "load") as load:
             with self.assertRaises(ZeroDivisionError), SDObject(b"d", b"p"):
-                raise ZeroDivisionError("we shoudl raise this error")
+                raise ZeroDivisionError("we should raise this error")
             # Do not use Mock.assert_called_once(), because its not
             # present in python3.5
             self.assertEqual(load.call_count, 1)
