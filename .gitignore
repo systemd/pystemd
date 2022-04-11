@@ -87,3 +87,8 @@ ENV/
 # it)
 pystemd/*.c
 pystemd/RELEASE
+
+# PackIt
+/pystemd-*.tar.gz
+/python-pystemd-*.src.rpm
+/python-pystemd.spec
