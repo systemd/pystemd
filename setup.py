@@ -46,8 +46,6 @@ with (THIS_DIR / "README.md").open() as f:
 
 # get and compute the version string
 version_file = THIS_DIR / "pystemd" / "__version__.py"
-release_file = THIS_DIR / "pystemd" / "RELEASE"
-
 with version_file.open() as f:
     parsed_file = ast.parse(f.read())
 
@@ -59,20 +57,6 @@ __version__ = [
     and isinstance(expr.value, ast.Str)
     and expr.targets[0].id == "__version__"
 ][0]
-
-release_tag = "{}".format(int(time.time()))
-
-
-if release_file.exists():
-    __version__ += ".0"
-elif "sdist" in sys.argv:
-    with release_file.open("w") as f:
-        atexit.register(lambda *x: f.unlink())
-        f.write(release_tag)
-    __version__ += ".0"
-else:
-    __version__ += ".{}".format(release_tag)
-
 
 # Use C extensions if respective files are present. Else let Cython modules be
 # compiled to C code. The latter is the case when using a clone of the git
@@ -94,7 +78,7 @@ else:
     except ImportError:
         raise RuntimeError("Cython not installed.")
 
-package_data = ["pystemd/RELEASE"]
+package_data = []
 package_data.extend(glob.glob("pystemd/*.pyi"))
 package_data.extend(glob.glob("pystemd/*/*.pyi"))
 
