@@ -1,0 +1,66 @@
+# See the documentation for more information:
+# https://packit.dev/docs/configuration/
+
+specfile_path: python-pystemd.spec
+files_to_sync:
+  - python-pystemd.spec
+  - .packit.yaml
+
+upstream_package_name: pystemd
+downstream_package_name: python-pystemd
+actions:
+  get-current-version: "python3 setup.py --version"
+  # Fetch the specfile from Rawhide, remove the snapshot and drop any patches
+  post-upstream-clone: "bash -c \"curl -s https://src.fedoraproject.org/rpms/python-pystemd/raw/main/f/python-pystemd.spec | sed -e '/^Patch[0-9]/d' > python-pystemd.spec\""
+
+jobs:
+- job: copr_build
+  trigger: commit
+  metadata:
+    owner: "@meta"
+    project: pystemd
+    targets:
+      - fedora-all-aarch64
+      - fedora-all-armhfp
+      - fedora-all-i386
+      - fedora-all-ppc64le
+      - fedora-all-s390x
+      - fedora-all-x86_64
+      - fedora-eln-aarch64
+      - fedora-eln-i386
+      - fedora-eln-ppc64le
+      - fedora-eln-s390x
+      - fedora-eln-x86_64
+      - epel-8-aarch64
+      - epel-8-ppc64le
+      - epel-8-s390x
+      - epel-8-x86_64
+      - epel-9-aarch64
+      - epel-9-ppc64le
+      - epel-9-s390x
+      - epel-9-x86_64
+- job: copr_build
+  trigger: pull_request
+  metadata:
+    owner: "@meta"
+    project: pystemd
+    targets:
+      - fedora-all-aarch64
+      - fedora-all-armhfp
+      - fedora-all-i386
+      - fedora-all-ppc64le
+      - fedora-all-s390x
+      - fedora-all-x86_64
+      - fedora-eln-aarch64
+      - fedora-eln-i386
+      - fedora-eln-ppc64le
+      - fedora-eln-s390x
+      - fedora-eln-x86_64
+      - epel-8-aarch64
+      - epel-8-ppc64le
+      - epel-8-s390x
+      - epel-8-x86_64
+      - epel-9-aarch64
+      - epel-9-ppc64le
+      - epel-9-s390x
+      - epel-9-x86_64

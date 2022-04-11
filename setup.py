@@ -75,8 +75,13 @@ else:
             [Extension("*", ["pystemd/*.pyx"], libraries=["systemd"])],
             compile_time_env=compile_time_env,
         )
-    except ImportError:
-        raise RuntimeError("Cython not installed.")
+    except (ImportError, ModuleNotFoundError):
+        # If we're just asking for the version, we don't actually need Cython
+        if len(sys.argv) == 2 and sys.argv[1] == "--version":
+            external_modules = []
+            pass
+        else:
+            raise RuntimeError("Cython not installed.")
 
 package_data = []
 package_data.extend(glob.glob("pystemd/*.pyi"))
