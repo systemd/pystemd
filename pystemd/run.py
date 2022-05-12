@@ -160,7 +160,7 @@ def run(
             return DBus(user_mode=user_mode)
 
     name = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
-    runtime_max_usec = (runtime_max_sec or 0) * 10 ** 6 or runtime_max_sec
+    runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
     env = env or {}

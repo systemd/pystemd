@@ -98,20 +98,20 @@ KNOWN_UNIT_SIGNATURES = {
     b"SystemCallFilter": b"(bas)",
     # timeouts
     b"RuntimeMaxUSec": b"t",
-    b"RuntimeMaxSec": lambda _, value: (b"RuntimeMaxUSec", b"t", int(value * 10 ** 6)),
+    b"RuntimeMaxSec": lambda _, value: (b"RuntimeMaxUSec", b"t", int(value * 10**6)),
     b"WatchdogUSec": b"t",
-    b"WatchdogSec": lambda _, value: (b"WatchdogUSec", b"t", int(value * 10 ** 6)),
+    b"WatchdogSec": lambda _, value: (b"WatchdogUSec", b"t", int(value * 10**6)),
     b"TimeoutStopUSec": b"t",
     b"TimeoutStopSec": lambda _, value: (
         b"TimeoutStopUSec",
         b"t",
-        int(value * 10 ** 6),
+        int(value * 10**6),
     ),
     b"TimeoutStartUSec": b"t",
     b"TimeoutStartSec": lambda _, value: (
         b"TimeoutStartUSec",
         b"t",
-        int(value * 10 ** 6),
+        int(value * 10**6),
     ),
     # syslog
     b"SyslogIdentifier": b"s",
@@ -239,7 +239,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"TasksAccounting": b"b",
     b"TasksMax": b"t",
     b"TasksMaxScale": b"u",
-    b"CPUQuota": lambda _, value: (b"CPUQuotaPerSecUSec", b"t", int(value * 10 ** 6)),
+    b"CPUQuota": lambda _, value: (b"CPUQuotaPerSecUSec", b"t", int(value * 10**6)),
     b"CPUQuotaPerSecUSec": b"t",
     b"IPAccounting": b"b",
     b"IPAddressAllow": b"a(iayu)",
