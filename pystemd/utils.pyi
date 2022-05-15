@@ -7,7 +7,7 @@
 # the root directory of this source tree.
 #
 
-from typing import Any, Union, Tuple, Iterable, List
+from typing import Any, Iterable, List, Tuple, Union
 
 def x2char_star(what_to_convert: Any, convert_all: bool = False) -> bytes: ...
 def str2cmd(

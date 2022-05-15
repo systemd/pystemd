@@ -100,7 +100,7 @@ Extra read (mostly if you want to develop or extend this):
         https://www.freedesktop.org/software/systemd/man/index.html#S
 """
 
-from pystemd import DBus, __version__, machine1, systemd1
+from pystemd import __version__, DBus, machine1, systemd1
 
 
 # handy shortcuts for systemd resources

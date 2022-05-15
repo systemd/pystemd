@@ -11,7 +11,7 @@ import re
 from contextlib import contextmanager
 
 from lxml import etree
-from pystemd.dbuslib import DBus, apply_signature
+from pystemd.dbuslib import apply_signature, DBus
 from pystemd.utils import x2char_star
 
 

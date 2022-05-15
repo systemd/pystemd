@@ -6,7 +6,7 @@
 # the root directory of this source tree.
 #
 
-from pystemd import DBus, __version__, machine1, systemd1
+from pystemd import __version__, DBus, machine1, systemd1
 
 SDUnit = systemd1.Unit
 SDManager = systemd1.Manager
