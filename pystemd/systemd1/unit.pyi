@@ -98,9 +98,10 @@ class Unit_Unit(SDInterface):
     UnitFileState: bytes  # s
     WantedBy: List[bytes]  # as
     Wants: List[bytes]  # as
-    def Stop(self, mode): ...
-    def ResetFailed(self): ...
-    def Restart(self, mode): ...
+    def Start(self, mode: bytes) -> bytes: ...  # s # o
+    def Stop(self, mode: bytes) -> bytes: ...  # s # o
+    def ResetFailed(self) -> bytes: ...  # s # o
+    def Restart(self, mode: bytes) -> bytes: ...  # s # o
     def Reload(self, arg0: bytes) -> bytes: ...  # s  # o
     def TryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
     def ReloadOrRestart(self, arg0: bytes) -> bytes: ...  # s  # o
