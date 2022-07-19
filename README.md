@@ -209,23 +209,27 @@ will result in the message (shorten for sake of example).
 Install
 -------
 
-pystemd is packaged in Fedora as of Fedora 32 and in EPEL as of EPEL 8. It can
-be installed with:
-
-```bash
-$ sudo dnf install python3-pystemd
-```
-
-which will also take care of installing any required dependencies.
-
-Build and install from source
------------------------------
-
-So you like what you see, the simplest way to install is by:
+So you like what you see, the simplest way to install pystemd is by:
 
 ```bash
 $ pip install pystemd
 ```
+
+pystemd is packaged in a few distros like Fedora and Debian. As of Fedora 32 and in EPEL as of EPEL 8.
+
+It can be installed with:
+
+```bash
+$ sudo dnf install python3-pystemd # fedora
+$ sudo apt install python3-pystemd # debian
+```
+
+which will also take care of installing any required dependencies. Keep in mind that most distros manage their own repos and version, and you may be getting old versions.
+
+
+Build  from source
+------------------
+
 
 you'll need to have:
 
