@@ -10,12 +10,14 @@
 import fcntl
 import os
 import pty as ptylib
-import select
 import struct
 import sys
 import termios
 import tty
 import uuid
+
+from contextlib import ExitStack
+from selectors import DefaultSelector, EVENT_READ
 
 import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
@@ -25,21 +27,7 @@ from pystemd.utils import x2char_star, x2cmdlist
 
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
-
-
-class CExit:
-    def __init__(self):
-        self.pipe = []
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *excargs, **exckw):
-        for call, args, kwargs in reversed(self.pipe):
-            call(*args, **kwargs)
-
-    def register(self, meth, *args, **kwargs):
-        self.pipe.append((meth, args, kwargs))
+USER_MODE = os.getuid() != 0
 
 
 def get_fno(obj):
@@ -52,7 +40,7 @@ def get_fno(obj):
         return None
     elif isinstance(obj, int):
         return obj
-    elif hasattr(obj, "fileno") and callable(getattr(obj, "fileno")):
+    elif hasattr(obj, "fileno") and callable(obj.fileno):
         return obj.fileno()
 
     raise TypeError("Expected None, int or fileobject with fileno method")
@@ -64,7 +52,7 @@ def run(
     service_type=None,
     name=None,
     user=None,
-    user_mode=os.getuid() != 0,
+    user_mode=USER_MODE,
     nice=None,
     runtime_max_sec=None,
     env=None,
@@ -165,7 +153,6 @@ def run(
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
     env = env or {}
     unit_properties = {}
-    selectors = []
 
     extra = extra or {}
     start_cmd = x2cmdlist(cmd, False) + extra.pop(b"ExecStart", [])
@@ -177,7 +164,9 @@ def run(
     if user_mode:
         _wait_polling = _wait_polling or 0.5
 
-    with CExit() as ctexit, bus_factory() as bus, SDManager(bus=bus) as manager:
+    with ExitStack() as ctexit, DefaultSelector() as sel, bus_factory() as bus, SDManager(
+        bus=bus
+    ) as manager:
 
         if pty:
             if machine:
@@ -186,7 +175,7 @@ def run(
             else:
                 pty_master, pty_follower = ptylib.openpty()
                 pty_path = os.ttyname(pty_follower).encode()
-                ctexit.register(os.close, pty_master)
+                ctexit.callback(os.close, pty_master)
 
         if slice_:
             unit_properties[b"Slice"] = x2char_star(slice_)
@@ -207,14 +196,14 @@ def run(
                 # attributes as they where after this method is done
                 stdin_attrs = tty.tcgetattr(stdin)
                 tty.setraw(stdin)
-                ctexit.register(tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
-                selectors.append(stdin)
+                ctexit.callback(tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
+                sel.register(stdin, EVENT_READ)
 
             if None not in (stdout, pty_master):
                 if os.getenv("TERM"):
                     env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
 
-                selectors.append(pty_master)
+                sel.register(pty_master, EVENT_READ)
                 # lets be a friend and set the size of the pty.
                 winsize = fcntl.ioctl(
                     stdout, termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)
@@ -275,13 +264,13 @@ def run(
 
             monbus = bus_factory()
             monbus.open()
-            ctexit.register(monbus.close)
+            ctexit.callback(monbus.close)
 
             monitor = pystemd.DBus.Manager(bus=monbus, _autoload=True)
             monitor.Monitoring.BecomeMonitor([mstr], 0)
 
             monitor_fd = monbus.get_fd()
-            selectors.append(monitor_fd)
+            sel.register(monitor_fd, EVENT_READ)
 
         # start the process
         unit_start_job = manager.Manager.StartTransientUnit(
@@ -289,7 +278,9 @@ def run(
         )
 
         while wait:
-            _in, _, _ = select.select(selectors, [], [], _wait_polling)
+
+            events = sel.select(timeout=_wait_polling)
+            _in = [key.fileobj for key, _ in events]
 
             if stdin in _in:
                 data = os.read(stdin, 1024)
@@ -300,7 +291,7 @@ def run(
                 try:
                     data = os.read(pty_master, 1024)
                 except OSError:
-                    selectors.remove(pty_master)
+                    sel.unregister(pty_master)
                 else:
                     os.write(stdout, data)
 
