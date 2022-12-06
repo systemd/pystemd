@@ -4,6 +4,10 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.12.0
+=====
+
+
 0.11.0
 =====
 * native support for stop_cmd, (pre|post)_start_cmd and post_stop_cmd in pystemd.run.

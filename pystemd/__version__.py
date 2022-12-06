@@ -9,6 +9,8 @@
 
 import sys
 
-__version__ = "0.11.0"
+# during development this version is always at least "one up" the
+# latest release.
+__version__ = "0.12.0"
 
 sys.modules[__name__] = __version__
