@@ -9,11 +9,9 @@
 
 
 import ast
-import atexit
 import glob
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 from setuptools import setup
@@ -114,7 +112,10 @@ setup(
     package_data={
         "pystemd": [str(Path(p).relative_to("pystemd")) for p in package_data]
     },
-    install_requires=["lxml"],
+    install_requires=[
+        "lxml",
+        "psutil",
+    ],
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="LGPL-2.1+",

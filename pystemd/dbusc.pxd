@@ -24,6 +24,11 @@ cdef extern from "sys/uio.h":
         size_t iov_len
 
 
+cdef extern from "sys/syscall.h":
+    int __NR_setns
+    long syscall(long number, ...)
+
+
 cdef extern from "systemd/sd-journal.h":
     int sd_journal_sendv(iovec *iov, int n);
 

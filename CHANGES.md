@@ -6,6 +6,7 @@ the one you find pypi, but its the one in development.
 
 0.12.0
 =====
+* initial support for pystemd.futures
 
 
 0.11.0

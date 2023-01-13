@@ -14,7 +14,9 @@ into a nice ipython shell, to run commands interactively.
 Needless to say that you need to have the ipython installed.
 """
 
+import runpy
 import sys
+from pathlib import Path
 
 import pystemd
 import pystemd.daemon
@@ -29,7 +31,20 @@ Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.vers
     pystemd=pystemd, sys=sys
 )
 
-if __name__ == "__main__":
+
+def shell() -> None:
     shell = InteractiveShellEmbed()
     shell.show_banner(display_banner)
     shell.mainloop()
+
+
+def main(mod: Path) -> None:
+    runpy.run_path(mod, {}, "__main__")
+
+
+if __name__ == "__main__":
+
+    if len(sys.argv) > 1:
+        main(Path(__file__).resolve().absolute().parent / sys.argv[1])
+    else:
+        shell()
