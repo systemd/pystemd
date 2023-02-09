@@ -36,6 +36,4 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Run black
-      uses: lgeiger/black-action@v1.0.1
-      with:
-        args: "--check ."
+      uses: psf/black@stable
