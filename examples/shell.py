@@ -43,7 +43,6 @@ def main(mod: Path) -> None:
 
 
 if __name__ == "__main__":
-
     if len(sys.argv) > 1:
         main(Path(__file__).resolve().absolute().parent / sys.argv[1])
     else:

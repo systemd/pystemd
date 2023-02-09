@@ -42,11 +42,9 @@ def process(msg, error=None, userdata=None):
 
 
 def monitor(name):
-
     unit = Unit(name)
 
     with DBus() as bus:
-
         bus.match_signal(
             unit.destination,
             unit.path,

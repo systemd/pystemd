@@ -167,7 +167,6 @@ def run(
     with ExitStack() as ctexit, DefaultSelector() as sel, bus_factory() as bus, SDManager(
         bus=bus
     ) as manager:
-
         if pty:
             if machine:
                 with pystemd.machine1.Machine(machine) as m:
@@ -278,7 +277,6 @@ def run(
         )
 
         while wait:
-
             events = sel.select(timeout=_wait_polling)
             _in = [key.fileobj for key, _ in events]
 
@@ -287,7 +285,6 @@ def run(
                 os.write(pty_master, data)
 
             if pty_master in _in:
-
                 try:
                     data = os.read(pty_master, 1024)
                 except OSError:

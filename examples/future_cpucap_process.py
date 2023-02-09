@@ -22,7 +22,6 @@ class Process(TransientUnitProcess):
 
 
 def main(cpu_quota=0.2):
-
     p = Process(timeout=30, properties={"CPUQuota": cpu_quota, "User": "nobody"})
     p.start()
     process = psutil.Process(p.pid)

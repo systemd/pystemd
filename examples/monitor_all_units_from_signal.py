@@ -33,9 +33,7 @@ def process(msg, error=None, userdata=None):
 
 
 def monitor():
-
     with DBus() as bus:
-
         bus.match_signal(
             b"org.freedesktop.systemd1",
             None,
