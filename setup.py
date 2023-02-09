@@ -92,7 +92,7 @@ setup(
     author="Alvaro Leiva",
     author_email="aleivag@meta.com",
     ext_modules=external_modules,
-    url="https://github.com/facebookincubator/pystemd",
+    url="https://github.com/systemd/pystemd",
     classifiers=[
         "Operating System :: POSIX :: Linux",
         "Intended Audience :: Developers",

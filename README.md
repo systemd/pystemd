@@ -1,7 +1,7 @@
 pystemd
 =======
 
-![Continuous Integration](https://github.com/facebookincubator/pystemd/workflows/Continuous%20Integration/badge.svg?event=push)
+![Continuous Integration](https://github.com/systemd/pystemd/workflows/Continuous%20Integration/badge.svg?event=push)
 
 This library allows you to talk to systemd over dbus from python, without
 actually thinking that you are talking to systemd over dbus. This allows you to

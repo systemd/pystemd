@@ -135,7 +135,7 @@ def run(
         slice_: the slice under you want to run the unit.
 
     More info and examples in:
-    https://github.com/facebookincubator/pystemd/blob/master/_docs/pystemd.run.md
+    https://github.com/systemd/pystemd/blob/master/_docs/pystemd.run.md
 
     """
 
