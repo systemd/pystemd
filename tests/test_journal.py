@@ -20,7 +20,6 @@ class TestJournalLog(TestCase):
 
     @patch("pystemd.journal.sendv")
     def test_msg(self, sendv):
-
         pystemd.journal.log(self.PRIORITY, self.MESSAGE)
         LOG_LINE = 24
         # ^^ that should be the line we called pystemd.journal.log.

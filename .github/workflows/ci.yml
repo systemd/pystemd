@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python: ['3.7', '3.8', '3.9', '3.10', '3.11']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -36,6 +36,4 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Run black
-      uses: lgeiger/black-action@v1.0.1
-      with:
-        args: "--check ."
+      uses: psf/black@stable

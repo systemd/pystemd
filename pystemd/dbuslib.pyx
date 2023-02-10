@@ -497,7 +497,7 @@ cdef class DBus:
       This method will register a <callback> (a python function) when the signal
       <member> on <interface> is trigger for the specify interface. An example
       on how to use it can be found in
-      https://github.com/facebookincubator/pystemd/blob/master/examples/monitor.py
+      https://github.com/systemd/pystemd/blob/master/examples/monitor.py
       """
 
       IF LIBSYSTEMD_VERSION < 237:
