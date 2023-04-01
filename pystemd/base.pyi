@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from typing import Any, AnyStr, Iterator, Optional
 from xml.dom.minidom import Element
 
-from pystemd.dbuslib import apply_signature, DBus
+from pystemd.dbuslib import DBus, apply_signature
 from pystemd.utils import x2char_star
 
 class SDObject(object):

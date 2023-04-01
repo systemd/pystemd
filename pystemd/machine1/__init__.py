@@ -9,5 +9,4 @@
 from .machine import Machine
 from .manager import Manager
 
-
 __all__ = ["Manager", "Machine"]

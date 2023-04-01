@@ -30,10 +30,25 @@ jobs:
     - name: Run unit tests
       run: python -m unittest discover
       working-directory: ./tests
-  black:
+
+  formatting:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Run black
       uses: psf/black@stable
+    - name: Run isort
+      uses: isort/isort-action@v1
+      with:
+        sort-paths: "pystemd"
+
+  typing:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: install mypy
+      run:  pip install mypy types-psutil
+    - name: run mypy
+      run: mypy
