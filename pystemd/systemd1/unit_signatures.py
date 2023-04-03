@@ -184,6 +184,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"RestartPreventExitStatus": b"(aiai)",
     b"RestartForceExitStatus": b"(aiai)",
     b"SuccessExitStatus": b"(aiai)",
+    b"Restart": b"s",
     # Limits
     b"LimitCPU": b"t",
     b"LimitCPUSoft": b"t",
