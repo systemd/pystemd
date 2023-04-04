@@ -12,4 +12,4 @@ import sys
 # latest release.
 __version__ = "0.12.0"
 
-sys.modules[__name__] = __version__
+sys.modules[__name__] = __version__  # type: ignore

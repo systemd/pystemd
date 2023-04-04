@@ -6,7 +6,7 @@
 # the root directory of this source tree.
 #
 
-from pystemd.base import overwrite_interface_method, SDObject
+from pystemd.base import SDObject, overwrite_interface_method
 from pystemd.dbuslib import apply_signature
 from pystemd.systemd1.unit_signatures import signature_array
 

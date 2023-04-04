@@ -11,22 +11,22 @@ import os
 
 cimport pystemd.dbusc as dbusc
 
-from pystemd.dbusexc import DBusError
-from pystemd.utils import x2char_star
 from pprint import pformat
 
-from libcpp cimport bool
-from libc.stdlib cimport free
-from libc.stdint cimport (
-  int16_t,
-  int32_t,
-  uint8_t,
-  int64_t,
-  uint16_t,
-  uint32_t,
-  uint64_t,
-)
+from pystemd.dbusexc import DBusError
+from pystemd.utils import x2char_star
 
+from libc.stdint cimport (
+    int16_t,
+    int32_t,
+    int64_t,
+    uint8_t,
+    uint16_t,
+    uint32_t,
+    uint64_t,
+)
+from libc.stdlib cimport free
+from libcpp cimport bool
 
 CONTAINER_TYPES = (
   dbusc.SD_BUS_TYPE_ARRAY,

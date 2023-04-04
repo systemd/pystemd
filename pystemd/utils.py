@@ -8,9 +8,12 @@
 
 import shlex
 from pathlib import Path
+from typing import Any, Iterable, List, Optional, Tuple, TypeVar, Union
+
+T = TypeVar("T")
 
 
-def x2char_star(what_to_convert, convert_all=False):
+def x2char_star(what_to_convert: Any, convert_all: bool = False) -> bytes:
     """
     Converts `what_to_convert` to whatever the platform understand as char*.
     For python2, if this is unicode we turn it into a string. If this is
@@ -34,7 +37,9 @@ def x2char_star(what_to_convert, convert_all=False):
         return what_to_convert
 
 
-def str2cmd(cmd, cont=False):
+def str2cmd(
+    cmd: Union[str, bytes], cont: bool = False
+) -> Tuple[bytes, Tuple[bytes, ...], bool]:
     """
     coverts a string (or bytes) into a cmd list usable by the Exec* family of Unit Signatures, you could do
 
@@ -55,7 +60,9 @@ def str2cmd(cmd, cont=False):
     return (cmdlist[0], cmdlist, cont)
 
 
-def strlist2cmd(strlist, cont=False):
+def strlist2cmd(
+    strlist: Iterable[Union[str, bytes]], cont: bool = False
+) -> Tuple[bytes, Tuple[bytes, ...], bool]:
     """
     coverts a command (an array of strings or bytes) into a cmd list usable by the Exec* family of Unit Signatures, you could do
 
@@ -73,7 +80,9 @@ def strlist2cmd(strlist, cont=False):
     return (cmdlist[0], tuple(cmdlist), cont)
 
 
-def x2cmdlist(what_to_convert, cont=False):
+def x2cmdlist(
+    what_to_convert: Any, cont: bool = False
+) -> List[Tuple[bytes, Tuple[bytes, ...], bool]]:
     """
     a really overloaded helper to convert most things into a cmd list that can be passed natevly to the Exec* family. it should
 
@@ -103,3 +112,9 @@ def x2cmdlist(what_to_convert, cont=False):
         return [strlist2cmd(what_to_convert, cont)]
 
     return [strlist2cmd(_, cont) for _ in what_to_convert]
+
+
+def unwrap(obj: Optional[T], msg="object was None") -> T:
+    if obj is None:
+        raise ValueError(msg)
+    return obj

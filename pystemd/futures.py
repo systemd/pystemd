@@ -3,9 +3,10 @@ from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Process
 from multiprocessing.context import BaseContext
 from pathlib import Path
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Optional, Sequence, cast
 
 import psutil
+
 import pystemd.cutils
 import pystemd.run
 import pystemd.utils
@@ -21,9 +22,9 @@ class TransientUnitContext(BaseContext):
     def __init__(
         self,
         properties: Dict[str, Any],
-        main_process: Sequence[str] = None,
+        main_process: Sequence[str] = (),
     ) -> None:
-        self.unit = None
+        self.unit: Optional[pystemd.systemd1.Unit] = None
         self.properties = properties
         self.main_process_cmd = main_process or [
             "/bin/bash",
@@ -42,14 +43,15 @@ class TransientUnitContext(BaseContext):
                 "Delegate": True,
             },
         )
-        return self.unit
+        return cast(pystemd.systemd1.Unit, self.unit)
 
     def stop_unit(self) -> None:
-        self.unit.Unit.Stop(b"replace")
+        pystemd.utils.unwrap(self.unit, "unit not started").Unit.Stop(b"replace")
 
     def Process(self, **kwargs) -> "ProcessFromTransientUnit":
-        assert self.unit, "unit not started"
-        return ProcessFromTransientUnit(**kwargs, unit=self.unit)
+        return ProcessFromTransientUnit(
+            **kwargs, unit=pystemd.utils.unwrap(self.unit, "unit not started")
+        )
 
 
 def enter_unit(unit):
@@ -88,7 +90,7 @@ class _ProcessWithPreRun(Process):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.original_run = self.run
-        self.run = self.pre_run
+        self.run = self.pre_run  # type: ignore
 
     def pre_run(self):
         self.original_run()

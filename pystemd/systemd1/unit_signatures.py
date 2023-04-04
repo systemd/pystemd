@@ -10,7 +10,6 @@
 from pystemd.dbuslib import apply_signature
 from pystemd.utils import x2char_star
 
-
 # This is where we add the units and signatures, we steal most of this from
 # https://github.com/systemd/systemd/tree/master/src/core/ any of the dbus-*.c
 # has that data.

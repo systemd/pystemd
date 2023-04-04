@@ -14,16 +14,15 @@ import sys
 import termios
 import tty
 import uuid
-
 from contextlib import ExitStack
-from selectors import DefaultSelector, EVENT_READ
+from selectors import EVENT_READ, DefaultSelector
 
 import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
-from pystemd.systemd1 import Manager as SDManager, Unit
+from pystemd.systemd1 import Manager as SDManager
+from pystemd.systemd1 import Unit
 from pystemd.utils import x2char_star, x2cmdlist
-
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 USER_MODE = os.getuid() != 0
@@ -328,5 +327,5 @@ def run(
 
 
 # do pystemd.run callable.
-run.__module__ = sys.modules[__name__]
-sys.modules[__name__] = run
+run.__module__ = sys.modules[__name__]  # type: ignore
+sys.modules[__name__] = run  # type: ignore

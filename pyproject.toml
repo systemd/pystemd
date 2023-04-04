@@ -1,0 +1,10 @@
+[tool.mypy]
+strict = false
+packages = ["pystemd"]
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 88
+skip_gitignore = true
+
