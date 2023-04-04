@@ -22,7 +22,7 @@ jobs:
         pip install -r requirements.txt Cython
         pip install Cython
     - name: Install dependencies
-      run: sudo apt-get install -y libsystemd-dev pandoc
+      run: sudo apt-get install -y libsystemd-dev
     - name: Build pystemd
       run: python setup.py sdist
     - name: Install pystemd
