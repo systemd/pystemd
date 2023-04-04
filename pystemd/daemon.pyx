@@ -8,11 +8,11 @@
 #
 
 
+from libc.stdint cimport uint64_t
+
 cimport pystemd.dbusc as dbusc
 
-from libc.stdint cimport uint64_t
 from pystemd.utils import x2char_star
-
 
 LISTEN_FDS_START = dbusc.SD_LISTEN_FDS_START
 

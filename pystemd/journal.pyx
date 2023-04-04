@@ -12,7 +12,8 @@ cimport pystemd.dbusc as dbusc
 import inspect
 
 from pystemd.utils import x2char_star
-from libc.stdlib cimport malloc, free
+
+from libc.stdlib cimport free, malloc
 
 
 def sendv(*args, **kwargs):

@@ -17,7 +17,6 @@ from pathlib import Path
 from setuptools import setup
 from setuptools.extension import Extension
 
-
 compile_time_env = {"LIBSYSTEMD_VERSION": 500}
 
 try:
