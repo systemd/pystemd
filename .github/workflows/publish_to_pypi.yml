@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   main:
-    name: sdist
+    name: Publish artifacts
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,9 @@ jobs:
         run: |
           python -m pip install --upgrade --disable-pip-version-check pip
           python -m pip install --upgrade cython twine build wheel
-          
+
+      - name: Install dependencies
+        run: sudo apt-get install -y libsystemd-dev
 
       - name: Build wheel and source distributions
         run: python setup.py sdist
