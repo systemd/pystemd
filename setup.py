@@ -8,7 +8,6 @@
 #
 
 
-import ast
 import glob
 import subprocess
 import sys
@@ -36,25 +35,6 @@ except subprocess.CalledProcessError as e:
 except ValueError:
     sys.exit("libsystemd version returned by pkg-config is not a plain integer!")
 
-THIS_DIR = Path(__file__).parent
-
-with (THIS_DIR / "README.md").open() as f:
-    long_description = f.read()
-
-# get and compute the version string
-version_file = THIS_DIR / "pystemd" / "__version__.py"
-with version_file.open() as f:
-    parsed_file = ast.parse(f.read())
-
-__version__ = [
-    expr.value.s
-    for expr in parsed_file.body
-    if isinstance(expr, ast.Assign)
-    and isinstance(expr.targets[0], ast.Name)
-    and isinstance(expr.value, ast.Str)
-    and expr.targets[0].id == "__version__"
-][0]
-
 # Use C extensions if respective files are present. Else let Cython modules be
 # compiled to C code. The latter is the case when using a clone of the git
 # repository, unlike the source distribution which includes both .pyx and .c
@@ -80,42 +60,17 @@ else:
         else:
             raise RuntimeError("Cython not installed.")
 
-package_data = []
-package_data.extend(glob.glob("pystemd/*.pyi"))
-package_data.extend(glob.glob("pystemd/*/*.pyi"))
 
 setup(
     name="pystemd",
-    version=__version__,
+    version="0.13.0",
+    author="Alvaro Leiva Geisse",
+    author_email="aleivag@gmail.com",
     packages=["pystemd", "pystemd.systemd1", "pystemd.machine1", "pystemd.DBus"],
-    author="Alvaro Leiva",
-    author_email="aleivag@meta.com",
     ext_modules=external_modules,
-    url="https://github.com/systemd/pystemd",
-    classifiers=[
-        "Operating System :: POSIX :: Linux",
-        "Intended Audience :: Developers",
-        "Intended Audience :: System Administrators",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Development Status :: 5 - Production/Stable",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
-    ],
-    keywords=["systemd"],
-    description="A systemd binding for python",
     package_data={
-        "pystemd": [str(Path(p).relative_to("pystemd")) for p in package_data]
+        "pystemd": [
+            str(Path(p).relative_to("pystemd")) for p in glob.glob("pystemd/**/*.pyi")
+        ]
     },
-    install_requires=[
-        "lxml",
-        "psutil",
-    ],
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    license="LGPL-2.1+",
 )
