@@ -10,7 +10,7 @@
 from itertools import chain
 from pprint import pprint
 
-from pystemd.dbuslib import apply_signature, DBus
+from pystemd.dbuslib import DBus, apply_signature
 
 
 def monitor(*args):

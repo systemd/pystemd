@@ -14,7 +14,7 @@ and then parsing the output to know the result.
 Show don't tell
 ---------------
 
-In software as in screenwriting, its better to show how things work instead of
+In software as in screenwriting, it's better to show how things work instead of
 tell. So this is how you would use the library from a interactive shell.
 
     In [1]: from pystemd.systemd1 import Unit
@@ -22,8 +22,9 @@ tell. So this is how you would use the library from a interactive shell.
     In [3]: unit.load()
 
 Note: you need to call `unit.load()` because by default `Unit` will not load the
-unit information as that would require do some IO. You can auto load the unit by
-`Unit(b'postfix.service', _autoload=True)`
+unit information as that would require do some IO (and we dont like doing io on a class constructor). 
+You can autoload the unit by `Unit(b'postfix.service', _autoload=True)` or using the unit as a 
+contextmanager like `with Unit(b'postfix.service'): ...`
 
 Once the unit is loaded, you can interact with it, you can do by accessing its
 systemd's interfaces:
@@ -246,14 +247,10 @@ v237.
 * gcc: or any compiler that `setup.py` will accept.
 * [`pkg-config`](https://www.freedesktop.org/wiki/Software/pkg-config/) command. Depending on your distro, the package is called "pkg-config", "pkgconfig" or a compatible substitute like "pkgconf"
 
-if you want to install from source then after you clone this repo you need to
+if you want to install from source then after you clone this repo all you need to do its `pip install . `
 
-```bash
-$ pip install -r requirements.txt # get six
-$ python3 setup.py install # only python3 supported
-```
 
-but in addition to previous requirements you'll need:
+In addition to previous requirements you'll need:
 
   * setuptools: Just use your distro's package (e.g. python-setuptools).
   * Cython: at least version 0.21a1, just pip install it or use the official

@@ -4,6 +4,7 @@ from contextlib import suppress
 
 import psutil
 from psutil import NoSuchProcess
+
 from pystemd.futures import TransientUnitProcess
 
 

@@ -17,19 +17,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python }}
-    - name: Setup Cython
-      run: |
-        pip install -r requirements.txt Cython
-        pip install Cython
     - name: Install dependencies
       run: sudo apt-get install -y libsystemd-dev
-    - name: Build pystemd
-      run: python setup.py sdist
     - name: Install pystemd
-      run: pip install dist/pystemd*.tar.gz
+      run: pip install -e '.[t]'
     - name: Run unit tests
-      run: python -m unittest discover
-      working-directory: ./tests
+      run: pytest --cov=pystemd tests
 
   formatting:
     runs-on: ubuntu-latest
@@ -40,8 +33,7 @@ jobs:
       uses: psf/black@stable
     - name: Run isort
       uses: isort/isort-action@v1
-      with:
-        sort-paths: "pystemd"
+
 
   typing:
     runs-on: ubuntu-latest

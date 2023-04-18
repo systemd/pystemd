@@ -42,6 +42,9 @@ tmtagsHistory
 
 # Distribution / packaging
 .Python
+.pytest_cache/
+.mypy_cache/
+.coverage
 env/
 build/
 develop-eggs/

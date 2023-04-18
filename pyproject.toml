@@ -1,3 +1,53 @@
+[build-system]
+requires = ["setuptools>=46.4.0", "wheel", "cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pystemd"
+version = "0.13.0"
+readme = "README.md"
+description="A systemd binding for python"
+dependencies = [
+    "lxml",
+    "psutil"
+]
+authors = [{name = "Alvaro Leiva Geisse", email = "aleivag@gmail.com"}]
+maintainers = [
+    {name = "Alvaro Leiva Geisse", email = "aleivag@gmail.com"},
+    {name = "Davide Cavalca", email = "dcavalca@meta.com"},
+    {name = "Anita Zhang", email = "the.anitazha@gmail.com"}
+]
+classifiers = [
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Utilities",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+]
+license = { text = "LGPL-2.1+" }
+keywords = ["systemd", "linux", "dbus"]
+
+[project.optional-dependencies]
+# Used for runing tests
+t = ["pytest", "pytest-cov"]
+lint = [
+    "black",
+    "mypi",
+    "isort",
+]
+
+[project.urls]
+changelog = "https://github.com/systemd/pystemd/blob/main/CHANGES.md"
+homepage = "https://github.com/systemd/pystemd"
+repository = "https://github.com/systemd/pystemd.git"
+
 [tool.mypy]
 strict = false
 packages = ["pystemd"]
