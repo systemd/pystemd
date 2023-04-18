@@ -6,7 +6,10 @@ the one you find pypi, but its the one in development.
 
 0.13.0
 =====
-* 
+* adding coverage information
+* changes tests to pystes
+* adding support for pyproject.toml
+* adding extra properties for unit 
 
 0.12.0
 =====
