@@ -63,7 +63,7 @@ else:
 
 setup(
     name="pystemd",
-    version="0.13.0",
+    version="0.13.1",
     author="Alvaro Leiva Geisse",
     author_email="aleivag@gmail.com",
     packages=["pystemd", "pystemd.systemd1", "pystemd.machine1", "pystemd.DBus"],
@@ -73,4 +73,9 @@ setup(
             str(Path(p).relative_to("pystemd")) for p in glob.glob("pystemd/**/*.pyi")
         ]
     },
+    install_requires=[
+        "lxml",
+        "psutil",
+    ],
+    description="A systemd binding for python",
 )
