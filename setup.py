@@ -63,14 +63,14 @@ else:
 
 setup(
     name="pystemd",
-    version="0.13.1",
+    version="0.13.2",
     author="Alvaro Leiva Geisse",
     author_email="aleivag@gmail.com",
     packages=["pystemd", "pystemd.systemd1", "pystemd.machine1", "pystemd.DBus"],
     ext_modules=external_modules,
     package_data={
         "pystemd": [
-            str(Path(p).relative_to("pystemd")) for p in glob.glob("pystemd/**/*.pyi")
+            str(p.relative_to("pystemd")) for p in Path("pystemd").glob("**/*.pyi")
         ]
     },
     install_requires=[
