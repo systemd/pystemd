@@ -574,7 +574,7 @@ cdef class DBusRemote(DBus):
     self.host = host
 
   cdef int open_dbus_bus(self):
-    return dbusc.sd_bus_open_system_remote(&(self.bus), self.remote)
+    return dbusc.sd_bus_open_system_remote(&(self.bus), self.host)
 
 cdef class DBusAddress(DBus):
   "DBus class that connects to custom address"
