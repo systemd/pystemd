@@ -26,6 +26,7 @@ from libc.stdint cimport (
     uint64_t,
 )
 from libc.stdlib cimport free
+from libc.string cimport strdup
 from libcpp cimport bool
 
 CONTAINER_TYPES = (
@@ -571,10 +572,13 @@ cdef class DBusRemote(DBus):
   cdef char* host
 
   def __init__(self, char* host):
-    self.host = host
+    self.host = strdup(host)
 
   cdef int open_dbus_bus(self):
     return dbusc.sd_bus_open_system_remote(&(self.bus), self.host)
+
+  def __dealloc__(self):
+    free(self.host)
 
 cdef class DBusAddress(DBus):
   "DBus class that connects to custom address"
