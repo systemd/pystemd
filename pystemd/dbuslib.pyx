@@ -566,7 +566,16 @@ cdef class DBusMachine(DBus):
 
 
 cdef class DBusRemote(DBus):
-  "DBus class that connects to a remote host"
+  """
+  DBus class that connects to a remote host, this is using ssh, 
+  this uses [sd_bus_open_system_remote](https://manpages.debian.org/testing/libsystemd-dev/sd_bus_open_system_remote.3.en.html)
+  that will:
+
+    connects to the system bus on the specified host using ssh(1). host consists of an optional user name followed by the "@" symbol, 
+    and the hostname, optionally followed by a ":" and a port, optionally followed by a "/" and a machine name. If the machine name is 
+    given, a connection is created to the system bus in the specified container on the remote machine, and otherwise a connection to 
+    the system bus on the specified host is created.
+  """
 
   cdef char* host
 
@@ -574,7 +583,7 @@ cdef class DBusRemote(DBus):
     self.host = host
 
   cdef int open_dbus_bus(self):
-    return dbusc.sd_bus_open_system_remote(&(self.bus), self.remote)
+    return dbusc.sd_bus_open_system_remote(&(self.bus), self.host)
 
 cdef class DBusAddress(DBus):
   "DBus class that connects to custom address"

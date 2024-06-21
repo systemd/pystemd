@@ -210,12 +210,12 @@ def run(
             unit_properties.update(
                 {
                     b"StandardInputFileDescriptor": get_fno(stdin) if stdin else stdin,
-                    b"StandardOutputFileDescriptor": get_fno(stdout)
-                    if stdout
-                    else stdout,
-                    b"StandardErrorFileDescriptor": get_fno(stderr)
-                    if stderr
-                    else stderr,
+                    b"StandardOutputFileDescriptor": (
+                        get_fno(stdout) if stdout else stdout
+                    ),
+                    b"StandardErrorFileDescriptor": (
+                        get_fno(stderr) if stderr else stderr
+                    ),
                 }
             )
 
