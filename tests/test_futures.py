@@ -20,7 +20,7 @@ class TestFuturesRun(unittest.TestCase):
         poold = TransientUnitPoolExecutor.return_value.__enter__.return_value
         self.assertEqual(result, poold.submit.return_value.result.return_value)
         TransientUnitPoolExecutor.assert_called_once_with(
-            properties=properties, max_workers=1
+            properties=properties, max_workers=1, user_mode=False
         )
         poold.submit.assert_called_once_with(function, kwargs="kwarg")
 
@@ -31,7 +31,7 @@ class TestFuturesPool(unittest.TestCase):
         properties = Mock()
         context = TransientUnitContext.return_value
         with pystemd.futures.TransientUnitPoolExecutor(properties):
-            TransientUnitContext.assert_called_once_with(properties)
+            TransientUnitContext.assert_called_once_with(properties, user_mode=False)
             context.start_unit.assert_called_once()
         context.stop_unit.assert_called_once()
 
@@ -78,6 +78,7 @@ class TestTransientUnitProcess(unittest.TestCase):
         p.pre_run()
         TransientUnitContext.assert_called_once_with(
             properties=properties,
+            user_mode=False,
             main_process=[
                 "/bin/bash",
                 "-c",

@@ -23,9 +23,11 @@ class TransientUnitContext(BaseContext):
         self,
         properties: Dict[str, Any],
         main_process: Sequence[str] = (),
+        user_mode: bool = False,
     ) -> None:
         self.unit: Optional[pystemd.systemd1.Unit] = None
         self.properties = properties
+        self.user_mode = user_mode
         self.main_process_cmd = main_process or [
             "/bin/bash",
             "-c",
@@ -37,7 +39,7 @@ class TransientUnitContext(BaseContext):
         assert self.unit is None, "Unit already started"
         self.unit = pystemd.run(
             self.main_process_cmd,
-            user_mode=False,
+            user_mode=self.user_mode,
             extra={
                 **self.properties,
                 "Delegate": True,
@@ -119,8 +121,9 @@ class TransientUnitProcess(_ProcessWithPreRun):
     the unit will finish.
     """
 
-    def __init__(self, *, properties=None, **kwargs) -> None:
+    def __init__(self, *, properties=None, user_mode=False, **kwargs) -> None:
         super().__init__(**kwargs)
+        self.user_mode = user_mode
         self.properties = {
             pystemd.utils.x2char_star(k): v for k, v in (properties or {}).items()
         }
@@ -128,6 +131,7 @@ class TransientUnitProcess(_ProcessWithPreRun):
     def pre_run(self):
         context = TransientUnitContext(
             properties=self.properties,
+            user_mode=self.user_mode,
             main_process=[
                 "/bin/bash",
                 "-c",
@@ -145,8 +149,10 @@ class TransientUnitPoolExecutor(ProcessPoolExecutor):
     started in a systemd transient unit
     """
 
-    def __init__(self, properties, **kwargs):
-        self.pool_transient_unit_context = TransientUnitContext(properties)
+    def __init__(self, properties, user_mode: bool = False, **kwargs):
+        self.pool_transient_unit_context = TransientUnitContext(
+            properties, user_mode=user_mode
+        )
         super().__init__(**{**kwargs, "mp_context": self.pool_transient_unit_context})
 
     def __enter__(self):
@@ -160,10 +166,12 @@ class TransientUnitPoolExecutor(ProcessPoolExecutor):
             self.pool_transient_unit_context.stop_unit()
 
 
-def run(fnc, properties, *args, **kwargs):
+def run(fnc, properties, *args, _user_mode: bool = False, **kwargs):
     """
     Simple helper to call a method in a single worker
     """
-    with TransientUnitPoolExecutor(properties=properties or {}, max_workers=1) as poold:
+    with TransientUnitPoolExecutor(
+        properties=properties or {}, max_workers=1, user_mode=_user_mode
+    ) as poold:
         future = poold.submit(fnc, *args, **kwargs)
     return future.result()
