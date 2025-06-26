@@ -25,6 +25,9 @@ jobs:
           python -m pip install --upgrade cython twine build wheel
 
       - name: Install dependencies
+        run: sudo apt-get update
+      
+      - name: Install dependencies
         run: sudo apt-get install -y libsystemd-dev
 
       - name: Build wheel and source distributions
