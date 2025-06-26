@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -51,6 +52,7 @@ def main(cpu_quota=0.25):
     with TransientUnitPoolExecutor(
         properties={"CPUQuota": cpu_quota, "User": "nobody"},
         max_workers=10,
+        user_mode=os.getuid() != 0,
     ) as poold:
         top = MyTop(poold.unit)
         top.start()
