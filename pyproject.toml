@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pystemd"
-version = "0.13.2"
+version = "0.13.4"
 readme = "README.md"
 description="A systemd binding for python"
 dependencies = [
@@ -36,7 +36,12 @@ keywords = ["systemd", "linux", "dbus"]
 
 [project.optional-dependencies]
 # Used for runing tests
-t = ["pytest", "pytest-cov"]
+t = [
+  "pytest", 
+  "pytest-cov", 
+  # cstq and toml are used for testing version
+  "cstq", "toml"
+]
 lint = [
     "black",
     "mypi",
