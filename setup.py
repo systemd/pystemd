@@ -68,6 +68,7 @@ setup(
     author_email="aleivag@gmail.com",
     packages=["pystemd", "pystemd.systemd1", "pystemd.machine1", "pystemd.DBus"],
     ext_modules=external_modules,
+    include_package_data=False,
     package_data={
         "pystemd": [
             str(p.relative_to("pystemd")) for p in Path("pystemd").glob("**/*.pyi")
