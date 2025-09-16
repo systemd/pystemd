@@ -1,6 +1,6 @@
 from pathlib import Path
-import toml
 
+import toml
 from cstq import Query
 
 

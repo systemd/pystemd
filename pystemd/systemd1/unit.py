@@ -21,3 +21,10 @@ class Unit(SDObject):
             bus=bus,
             _autoload=_autoload,
         )
+
+    def __getstate__(self):
+        return {
+            "external_id": self.external_id,
+            "bus": self._bus,
+            "_autoload": self._loaded,
+        }
