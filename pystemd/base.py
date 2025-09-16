@@ -27,6 +27,17 @@ class SDObject(object):
         if _autoload:
             self.load()
 
+    def __getstate__(self):
+        return {
+            "destination": self.destination,
+            "path": self.path,
+            "bus": self._bus,
+            "_autoload": self._loaded,
+        }
+
+    def __setstate__(self, state):
+        self.__init__(**state)
+
     def __enter__(self):
         self.load()
         return self
@@ -112,6 +123,7 @@ class SDObject(object):
                 )
             elif interface_name == "org.freedesktop.DBus.Properties":
                 self.Properties = self._interfaces[interface_name]
+        self._loaded = True
 
 
 class SDInterface(object):
