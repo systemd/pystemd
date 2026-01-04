@@ -5,9 +5,11 @@
 # This source code is licensed under the license found in the LICENSE file in
 # the root directory of this source tree.
 #
+from __future__ import annotations
 
 import re
 from contextlib import contextmanager
+from typing import AnyStr, Iterator, Optional
 
 from lxml import etree
 
@@ -16,7 +18,13 @@ from pystemd.utils import x2char_star
 
 
 class SDObject(object):
-    def __init__(self, destination, path, bus=None, _autoload=False):
+    def __init__(
+        self,
+        destination: AnyStr,
+        path: AnyStr,
+        bus: Optional[DBus] = None,
+        _autoload: bool = False,
+    ):
         self.destination = x2char_star(destination)
         self.path = x2char_star(path)
 
@@ -35,14 +43,14 @@ class SDObject(object):
             "_autoload": self._loaded,
         }
 
-    def __setstate__(self, state):
+    def __setstate__(self, state) -> None:
         self.__init__(**state)
 
-    def __enter__(self):
+    def __enter__(self) -> SDObject:
         self.load()
         return self
 
-    def __exit__(self, exception_type, exception_value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback) -> None:
         pass
 
     def __getattr__(self, name):
@@ -57,7 +65,7 @@ class SDObject(object):
 
         # At some point we should verify that 2 interface do not have the same
         # methods and/or properties. But in the meantime, we can trust that
-        # the fine folks at systemd will not do this. they have actually go
+        # the fine folks at systemd will not do this. They have actually go
         # out of their way to make this true:
         # https://github.com/systemd/systemd/blob/119f0f2876ea340cc41525e844487aa88551c219/src/core/dbus-unit.c#L1738-L1746
 
@@ -67,7 +75,7 @@ class SDObject(object):
         raise AttributeError()
 
     @contextmanager
-    def bus_context(self):
+    def bus_context(self) -> Iterator[DBus]:
         close_bus_at_end = self._bus is None
         try:
             if self._bus is None:
@@ -80,7 +88,7 @@ class SDObject(object):
             if close_bus_at_end:
                 bus.close()
 
-    def get_introspect_xml(self):
+    def get_introspect_xml(self) -> etree._Element:
         with self.bus_context() as bus:
             xml_doc = etree.fromstring(
                 bus.call_method(
@@ -94,7 +102,7 @@ class SDObject(object):
 
             return xml_doc
 
-    def load(self, force=False):
+    def load(self, force=False) -> Optional[bool]:
         if self._loaded and not force:
             return
 
@@ -127,11 +135,13 @@ class SDObject(object):
 
 
 class SDInterface(object):
-    def __init__(self, sd_object, interface_name):
+    def __init__(self, sd_object: SDObject, interface_name: AnyStr) -> None:
         self.sd_object = sd_object
         self.interface_name = x2char_star(interface_name)
+        self._properties_xml = getattr(self, "_properties_xml", {})
+        self._methods_xml = getattr(self, "_methods_xml", {})
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s of %s>" % (self.interface_name, self.sd_object.path.decode())
 
     def _get_property(self, property_name):
@@ -145,7 +155,7 @@ class SDInterface(object):
                 x2char_star(prop_type),
             )
 
-    def _set_property(self, property_name, value):
+    def _set_property(self, property_name, value) -> None:
         prop_access = self._properties_xml[property_name].attrib.get("access")
         if prop_access == "read":
             raise AttributeError("{} is read-only".format(property_name))
@@ -182,7 +192,7 @@ class SDInterface(object):
         block_chars = re.compile(r"v|\{")
         if any(any(block_chars.finditer(arg)) for arg in in_args):
             raise NotImplementedError(
-                "still not implemented methods with complex " "arguments"
+                "still not implemented methods with complex arguments"
             )
 
         in_signature = "".join(in_args)

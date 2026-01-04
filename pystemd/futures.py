@@ -37,6 +37,7 @@ class TransientUnitContext(BaseContext):
 
     def start_unit(self) -> pystemd.systemd1.Unit:
         assert self.unit is None, "Unit already started"
+        # pyrefly: ignore [not-callable]
         self.unit = pystemd.run(
             self.main_process_cmd,
             user_mode=self.user_mode,
@@ -95,6 +96,7 @@ class _ProcessWithPreRun(Process):
         self.run = self.pre_run  # type: ignore
 
     def pre_run(self):
+        # pyrefly: ignore [missing-argument]
         self.original_run()
 
 
@@ -130,6 +132,7 @@ class TransientUnitProcess(_ProcessWithPreRun):
 
     def pre_run(self):
         context = TransientUnitContext(
+            # pyrefly: ignore [bad-argument-type]
             properties=self.properties,
             user_mode=self.user_mode,
             main_process=[
@@ -153,6 +156,7 @@ class TransientUnitPoolExecutor(ProcessPoolExecutor):
         self.pool_transient_unit_context = TransientUnitContext(
             properties, user_mode=user_mode
         )
+        # pyrefly: ignore [no-matching-overload]
         super().__init__(**{**kwargs, "mp_context": self.pool_transient_unit_context})
 
     def __enter__(self):

@@ -377,6 +377,7 @@ KNOWN_UNIT_SIGNATURES = {
 
 def signature_array(properties):
     args = [(ord(b"a"), b"(sv)")]
+    # pyrefly: ignore [bad-assignment]
     for prop_name, prop_value in properties.items():
         prop_name = x2char_star(prop_name)
         signature = KNOWN_UNIT_SIGNATURES[prop_name]

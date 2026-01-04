@@ -48,6 +48,7 @@ def monitor(*args):
             cargs,
         )
 
+        # pyrefly: ignore [missing-attribute]
         name = bus.get_unique_name()
         while True:
             msg = bus.process()

@@ -16,7 +16,9 @@ from pystemd.systemd1 import Manager
 
 def list_units():
     with Manager() as manager:
+        # pyrefly: ignore [missing-attribute]
         print("Version", manager.Manager.Version)
+        # pyrefly: ignore [missing-attribute]
         print("Architecture", manager.Manager.Architecture)
 
         # List Units

@@ -9,7 +9,7 @@
 
 from unittest import TestCase
 
-from pystemd.dbuslib import (
+from pystemd.dbuslib import (  # pyrefly: ignore [missing-module-attribute]
     compile_args,
     compile_array,
     compile_simple,

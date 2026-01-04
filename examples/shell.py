@@ -18,6 +18,7 @@ import runpy
 import sys
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 from IPython.terminal.embed import InteractiveShellEmbed
 
 import pystemd
@@ -27,9 +28,7 @@ import pystemd.run
 
 display_banner = """
 Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.version}.
-""".format(
-    pystemd=pystemd, sys=sys
-)
+""".format(pystemd=pystemd, sys=sys)
 
 
 def shell() -> None:
@@ -39,6 +38,7 @@ def shell() -> None:
 
 
 def main(mod: Path) -> None:
+    # pyrefly: ignore [bad-argument-type]
     runpy.run_path(mod, {}, "__main__")
 
 

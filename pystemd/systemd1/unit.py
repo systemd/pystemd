@@ -22,6 +22,7 @@ class Unit(SDObject):
             _autoload=_autoload,
         )
 
+    # pyrefly: ignore [bad-override]
     def __getstate__(self):
         return {
             "external_id": self.external_id,

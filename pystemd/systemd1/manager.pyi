@@ -43,17 +43,25 @@ class Manager_Manager(SDInterface):
     def GetUnitByControlGroup(self, arg0: bytes) -> bytes: ...  # s  # o
     def LoadUnit(self, arg0: bytes) -> bytes: ...  # s  # o
     def StartUnitReplace(
-        self, arg0: bytes, arg1: bytes, arg2: bytes  # s  # s  # s
+        self,
+        arg0: bytes,
+        arg1: bytes,
+        arg2: bytes,  # s  # s  # s
     ) -> bytes: ...  # o
     def ReloadUnit(self, arg0: bytes, arg1: bytes) -> bytes: ...  # s  # s  # o
     def RestartUnit(self, arg0: bytes, arg1: bytes) -> bytes: ...  # s  # s  # o
     def TryRestartUnit(self, arg0: bytes, arg1: bytes) -> bytes: ...  # s  # s  # o
     def ReloadOrRestartUnit(self, arg0: bytes, arg1: bytes) -> bytes: ...  # s  # s  # o
     def ReloadOrTryRestartUnit(
-        self, arg0: bytes, arg1: bytes  # s  # s
+        self,
+        arg0: bytes,
+        arg1: bytes,  # s  # s
     ) -> bytes: ...  # o
     def EnqueueUnitJob(
-        self, arg0: bytes, arg1: bytes, arg2: bytes  # s  # s  # s
+        self,
+        arg0: bytes,
+        arg1: bytes,
+        arg2: bytes,  # s  # s  # s
     ) -> Tuple[
         int, bytes, bytes, bytes, bytes, List[Tuple[int, bytes, bytes, bytes, bytes]]
     ]: ...  # (uososa(uosos))
@@ -63,18 +71,24 @@ class Manager_Manager(SDInterface):
     def RefUnit(self, arg0: bytes) -> None: ...  # s
     def UnrefUnit(self, arg0: bytes) -> None: ...  # s
     def GetUnitProcesses(
-        self, arg0: bytes  # s
+        self,
+        arg0: bytes,  # s
     ) -> List[Tuple[bytes, int, bytes]]: ...  # a(sus)
     def AttachProcessesToUnit(
-        self, arg0: bytes, arg1: bytes, arg2: List[int]  # s  # s  # au
+        self,
+        arg0: bytes,
+        arg1: bytes,
+        arg2: List[int],  # s  # s  # au
     ) -> None: ...
     def AbandonScope(self, arg0: bytes) -> None: ...  # s
     def GetJob(self, arg0: int) -> bytes: ...  # u  # o
     def GetJobAfter(
-        self, arg0: int  # u
+        self,
+        arg0: int,  # u
     ) -> List[Tuple[int, bytes, bytes, bytes, bytes, bytes]]: ...  # a(usssoo)
     def GetJobBefore(
-        self, arg0: int  # u
+        self,
+        arg0: int,  # u
     ) -> List[Tuple[int, bytes, bytes, bytes, bytes, bytes]]: ...  # a(usssoo)
     def CancelJob(self, arg0: int) -> None: ...  # u
     def ClearJobs(self) -> None: ...
@@ -85,17 +99,21 @@ class Manager_Manager(SDInterface):
         Tuple[bytes, bytes, bytes, bytes, bytes, bytes, bytes, int, bytes, bytes]
     ]: ...  # a(ssssssouso)
     def ListUnitsFiltered(
-        self, arg0: List[bytes]  # as
+        self,
+        arg0: List[bytes],  # as
     ) -> List[
         Tuple[bytes, bytes, bytes, bytes, bytes, bytes, bytes, int, bytes, bytes]
     ]: ...  # a(ssssssouso)
     def ListUnitsByPatterns(
-        self, arg0: List[bytes], arg1: List[bytes]  # as  # as
+        self,
+        arg0: List[bytes],
+        arg1: List[bytes],  # as  # as
     ) -> List[
         Tuple[bytes, bytes, bytes, bytes, bytes, bytes, bytes, int, bytes, bytes]
     ]: ...  # a(ssssssouso)
     def ListUnitsByNames(
-        self, arg0: List[bytes]  # as
+        self,
+        arg0: List[bytes],  # as
     ) -> List[
         Tuple[bytes, bytes, bytes, bytes, bytes, bytes, bytes, int, bytes, bytes]
     ]: ...  # a(ssssssouso)
@@ -117,21 +135,34 @@ class Manager_Manager(SDInterface):
     def SetEnvironment(self, arg0: List[bytes]) -> None: ...  # as
     def UnsetEnvironment(self, arg0: List[bytes]) -> None: ...  # as
     def UnsetAndSetEnvironment(
-        self, arg0: List[bytes], arg1: List[bytes]  # as  # as
+        self,
+        arg0: List[bytes],
+        arg1: List[bytes],  # as  # as
     ) -> None: ...
     def ListUnitFiles(self) -> List[Tuple[bytes, bytes]]: ...  # a(ss)
     def ListUnitFilesByPatterns(
-        self, arg0: List[bytes], arg1: List[bytes]  # as  # as
+        self,
+        arg0: List[bytes],
+        arg1: List[bytes],  # as  # as
     ) -> List[Tuple[bytes, bytes]]: ...  # a(ss)
     def GetUnitFileState(self, arg0: bytes) -> bytes: ...  # s  # s
     def ReenableUnitFiles(
-        self, arg0: List[bytes], arg1: bool, arg2: bool  # as  # b  # b
+        self,
+        arg0: List[bytes],
+        arg1: bool,
+        arg2: bool,  # as  # b  # b
     ) -> Tuple[bool, List[Tuple[bytes, bytes, bytes]]]: ...  # (ba(sss))
     def LinkUnitFiles(
-        self, arg0: List[bytes], arg1: bool, arg2: bool  # as  # b  # b
+        self,
+        arg0: List[bytes],
+        arg1: bool,
+        arg2: bool,  # as  # b  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def PresetUnitFiles(
-        self, arg0: List[bytes], arg1: bool, arg2: bool  # as  # b  # b
+        self,
+        arg0: List[bytes],
+        arg1: bool,
+        arg2: bool,  # as  # b  # b
     ) -> Tuple[bool, List[Tuple[bytes, bytes, bytes]]]: ...  # (ba(sss))
     def PresetUnitFilesWithMode(
         self,
@@ -141,20 +172,31 @@ class Manager_Manager(SDInterface):
         arg3: bool,  # b
     ) -> Tuple[bool, List[Tuple[bytes, bytes, bytes]]]: ...  # (ba(sss))
     def MaskUnitFiles(
-        self, arg0: List[bytes], arg1: bool, arg2: bool  # as  # b  # b
+        self,
+        arg0: List[bytes],
+        arg1: bool,
+        arg2: bool,  # as  # b  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def UnmaskUnitFiles(
-        self, arg0: List[bytes], arg1: bool  # as  # b
+        self,
+        arg0: List[bytes],
+        arg1: bool,  # as  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def RevertUnitFiles(
-        self, arg0: List[bytes]  # as
+        self,
+        arg0: List[bytes],  # as
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def SetDefaultTarget(
-        self, arg0: bytes, arg1: bool  # s  # b
+        self,
+        arg0: bytes,
+        arg1: bool,  # s  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def GetDefaultTarget(self) -> bytes: ...  # s
     def PresetAllUnitFiles(
-        self, arg0: bytes, arg1: bool, arg2: bool  # s  # b  # b
+        self,
+        arg0: bytes,
+        arg1: bool,
+        arg2: bool,  # s  # b  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def AddDependencyUnitFiles(
         self,
@@ -165,7 +207,9 @@ class Manager_Manager(SDInterface):
         arg4: bool,  # b
     ) -> List[Tuple[bytes, bytes, bytes]]: ...  # a(sss)
     def GetUnitFileLinks(
-        self, arg0: bytes, arg1: bool  # s  # b
+        self,
+        arg0: bytes,
+        arg1: bool,  # s  # b
     ) -> List[bytes]: ...  # as
     def SetExitCode(self, arg0: int) -> None: ...  # y
     def LookupDynamicUserByName(self, arg0: bytes) -> int: ...  # s  # u

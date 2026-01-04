@@ -8,7 +8,7 @@
 
 from typing import Any
 
-from pystemd import DBus, __version__, machine1, systemd1
+from pystemd import machine1, systemd1
 
 SDUnit = systemd1.Unit
 SDManager = systemd1.Manager
