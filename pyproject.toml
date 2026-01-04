@@ -54,10 +54,6 @@ changelog = "https://github.com/systemd/pystemd/blob/main/CHANGES.md"
 homepage = "https://github.com/systemd/pystemd"
 repository = "https://github.com/systemd/pystemd.git"
 
-[tool.mypy]
-strict = false
-packages = ["pystemd"]
-
 [tool.isort]
 atomic = true
 profile = "black"

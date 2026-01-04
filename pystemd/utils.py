@@ -7,6 +7,7 @@
 #
 
 import shlex
+import uuid
 from pathlib import Path
 from typing import Any, Iterable, List, Optional, Tuple, TypeVar, Union
 
@@ -118,3 +119,6 @@ def unwrap(obj: Optional[T], msg="object was None") -> T:
     if obj is None:
         raise ValueError(msg)
     return obj
+
+def random_unit_name(*, unit_type="service", prefix="pystemd"):
+    return f"{prefix}{uuid.uuid4().hex}.{unit_type}"
