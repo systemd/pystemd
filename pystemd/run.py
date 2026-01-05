@@ -13,7 +13,6 @@ import struct
 import sys
 import termios
 import tty
-import uuid
 from contextlib import ExitStack
 from selectors import EVENT_READ, DefaultSelector
 
@@ -22,7 +21,7 @@ from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
 from pystemd.systemd1 import Manager as SDManager
 from pystemd.systemd1 import Unit
-from pystemd.utils import x2char_star, x2cmdlist
+from pystemd.utils import random_unit_name, x2char_star, x2cmdlist
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 USER_MODE = os.getuid() != 0
@@ -146,7 +145,7 @@ def run(
         else:
             return DBus(user_mode=user_mode)
 
-    name = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
+    name = x2char_star(name or random_unit_name())
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)

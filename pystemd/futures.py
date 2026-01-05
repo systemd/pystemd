@@ -1,5 +1,6 @@
 import os
 from concurrent.futures import ProcessPoolExecutor
+from functools import cached_property
 from multiprocessing import Process
 from multiprocessing.context import BaseContext
 from pathlib import Path
@@ -10,6 +11,7 @@ import psutil
 import pystemd.cutils
 import pystemd.run
 import pystemd.utils
+from pystemd.dbuslib import DBus
 
 
 class TransientUnitContext(BaseContext):
@@ -24,10 +26,12 @@ class TransientUnitContext(BaseContext):
         properties: Dict[str, Any],
         main_process: Sequence[str] = (),
         user_mode: bool = False,
+        unit_name: Optional[str] = None,
     ) -> None:
         self.unit: Optional[pystemd.systemd1.Unit] = None
         self.properties = properties
         self.user_mode = user_mode
+        self.unit_name = unit_name 
         self.main_process_cmd = main_process or [
             "/bin/bash",
             "-c",
@@ -40,6 +44,7 @@ class TransientUnitContext(BaseContext):
         # pyrefly: ignore [not-callable]
         self.unit = pystemd.run(
             self.main_process_cmd,
+            name=self.unit_name,
             user_mode=self.user_mode,
             extra={
                 **self.properties,
@@ -123,18 +128,26 @@ class TransientUnitProcess(_ProcessWithPreRun):
     the unit will finish.
     """
 
-    def __init__(self, *, properties=None, user_mode=False, **kwargs) -> None:
+    def __init__(self, *, properties=None, user_mode=False, unit_name=None, **kwargs) -> None:
         super().__init__(**kwargs)
         self.user_mode = user_mode
+        self.unit_name = unit_name or pystemd.utils.random_unit_name(prefix="pystemd-future-")  
         self.properties = {
             pystemd.utils.x2char_star(k): v for k, v in (properties or {}).items()
         }
 
+    @cached_property
+    def unit(self):
+        bus = DBus(user_mode=self.user_mode)
+        bus.__enter__()
+        return pystemd.systemd1.Unit(self.unit_name, bus, _autoload=True)
+    
     def pre_run(self):
         context = TransientUnitContext(
             # pyrefly: ignore [bad-argument-type]
             properties=self.properties,
             user_mode=self.user_mode,
+            unit_name=self.unit_name,
             main_process=[
                 "/bin/bash",
                 "-c",
