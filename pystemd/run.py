@@ -57,6 +57,7 @@ def run(
     cwd=None,
     machine=None,
     wait=False,
+    wait_for_activation=False,
     remain_after_exit=False,
     collect=False,
     raise_on_fail=False,
@@ -96,10 +97,15 @@ def run(
         env: A dict with environment variables.
         extra: If you know what you are doing, you can pass extra configuration
             settings to the start_transient_unit method.
+        cwd: Working directory for the command. If not specified, systemd's
+            default working directory will be used.
         machine: Machine name to execute the command, by default we connect to
             the host's dbus.
         wait: Wait for command completion before returning control, defaults
             to False.
+        wait_for_activation: If True, wait only for the service to reach the
+            'running' state, then return immediately without waiting for completion.
+            Defaults to False.
         remain_after_exit: If True, the transient unit will remain after cmd
             has finished, also if true, this methods will return
             pystemd.systemd1.Unit object. defaults to False and this method
@@ -259,7 +265,7 @@ def run(
         unit_properties = {k: v for k, v in unit_properties.items() if v is not None}
 
         unit = Unit(name, bus=bus, _autoload=True)
-        if wait:
+        if wait or wait_for_activation:
             mstr = (
                 (
                     "type='signal',"
@@ -289,7 +295,7 @@ def run(
             name, b"fail", unit_properties
         )
 
-        while wait:
+        while wait or wait_for_activation:
             events = sel.select(timeout=_wait_polling)
             _in = [key.fileobj for key, _ in events]
 
@@ -323,13 +329,20 @@ def run(
                     m.get_path() == unit.path
                     and m.body[0] == b"org.freedesktop.systemd1.Unit"
                 ):
-                    _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
 
-                    if (
-                        message_job_path != unit_start_job
-                        and m.body[1].get(b"SubState") in EXIT_SUBSTATES
-                    ):
-                        break
+                    _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
+                    if wait:
+                        if (
+                            message_job_path != unit_start_job
+                            and m.body[1].get(b"SubState") in EXIT_SUBSTATES
+                        ):
+                            break
+                    elif wait_for_activation:
+                        if (
+                            message_job_path == unit_start_job
+                            and m.body[1].get(b"SubState") in (b"running",)
+                        ):
+                            break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
                 # on usermode the subscribe to events does not work that well
