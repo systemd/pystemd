@@ -46,6 +46,7 @@ class TransientUnitContext(BaseContext):
             self.main_process_cmd,
             name=self.unit_name,
             user_mode=self.user_mode,
+            wait_for_activation=True,
             extra={
                 **self.properties,
                 "Delegate": True,

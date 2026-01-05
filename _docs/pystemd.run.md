@@ -33,10 +33,15 @@ but we will assume that this just another building block for your program.
 * env: A dict with environment variables.
 * extra: If you know what you are doing, you can pass extra configuration
     settings to the start_transient_unit method.
-machine: Machine name to execute the command, by default we connect to
+* cwd: Working directory for the command. If not specified, systemd's
+    default working directory will be used.
+* machine: Machine name to execute the command, by default we connect to
     the host's dbus.
 * wait: Wait for command completion before returning control, defaults
     to False.
+* wait_for_activation: If True, wait only for the service to reach the
+    'running' state, then return immediately without waiting for completion.
+    Defaults to False.
 * remain_after_exit: If True, the transient unit will remain after cmd
     has finished, also if true, this methods will return
     pystemd.systemd1.Unit object. defaults to False and this method
