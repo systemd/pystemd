@@ -28,7 +28,9 @@ def start_transient_unit(cmd="/bin/sleep 15"):
     }
     # if we need interactive prompts for passwords, we can create our own DBus object.
     # if we dont need interactive, we would just do `with Manager() as manager:`.
+    # pyrefly: ignore [unexpected-keyword]
     with DBus(interactive=True) as bus, Manager(bus=bus) as manager:
+        # pyrefly: ignore [missing-argument]
         manager.Manager.StartTransientUnit(random_unit_name, b"fail", unit)
 
         with Unit(random_unit_name, bus=bus) as unit:

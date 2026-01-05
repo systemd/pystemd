@@ -53,12 +53,14 @@ class TestLoad(TestCase):
         obj.I1.prop1  # getting a property
         # Do not use Mock.assert_called_once(), because its not
         # present in python3.5
+        # pyrefly: ignore [missing-attribute]
         self.assertEqual(obj._bus.get_property.call_count, 1)
 
         self.assertIn("meth1", obj.I1.methods)
         obj.I1.meth1(b"arg1")  # just calling a method
         # Do not use Mock.assert_called_once(), because its not
         # present in python3.5
+        # pyrefly: ignore [missing-attribute]
         self.assertEqual(obj._bus.call_method.call_count, 1)
 
         with self.assertRaises(TypeError):

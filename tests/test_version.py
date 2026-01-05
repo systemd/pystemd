@@ -12,6 +12,7 @@ def test_version():
     version = root / "pystemd/__version__.py"
 
     setup_version = (
+        # pyrefly: ignore [missing-attribute]
         Query(setup)
         .find_function_call(func_name="setup")
         .extended_node()

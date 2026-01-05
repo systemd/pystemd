@@ -36,6 +36,7 @@ def process(msg, error=None, userdata=None):
 
     if msg.body[1].get(b"SubState") in (b"exited", b"failed", b"dead"):
         print("Unit is dead, exiting select loop")
+        # pyrefly: ignore [missing-attribute]
         userdata.EXIT = True
     print("#" * 80)
     print("\n")

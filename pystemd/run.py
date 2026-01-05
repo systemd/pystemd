@@ -139,6 +139,7 @@ def run(
 
     def bus_factory():
         if address:
+            # pyrefly: ignore [missing-argument]
             return DBusAddress(x2char_star(address))
         elif machine:
             return DBusMachine(x2char_star(machine))
@@ -162,9 +163,12 @@ def run(
     if user_mode:
         _wait_polling = _wait_polling or 0.5
 
-    with ExitStack() as ctexit, DefaultSelector() as sel, bus_factory() as bus, SDManager(
-        bus=bus
-    ) as manager:
+    with (
+        ExitStack() as ctexit,
+        DefaultSelector() as sel,
+        bus_factory() as bus,
+        SDManager(bus=bus) as manager,
+    ):
         if pty:
             if machine:
                 with pystemd.machine1.Machine(machine) as m:
@@ -191,22 +195,31 @@ def run(
                 # lets set raw mode for stdin so we can forward input without
                 # waiting for a new line, but lets also make sure we return the
                 # attributes as they where after this method is done
+                # pyrefly: ignore [missing-attribute]
                 stdin_attrs = tty.tcgetattr(stdin)
+                # pyrefly: ignore [bad-argument-type]
                 tty.setraw(stdin)
+                # pyrefly: ignore [missing-attribute]
                 ctexit.callback(tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
+                # pyrefly: ignore [bad-argument-type]
                 sel.register(stdin, EVENT_READ)
 
             if None not in (stdout, pty_master):
                 if os.getenv("TERM"):
+                    # pyrefly: ignore [missing-attribute]
                     env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
 
+                # pyrefly: ignore [bad-argument-type]
                 sel.register(pty_master, EVENT_READ)
                 # lets be a friend and set the size of the pty.
+                # pyrefly: ignore [no-matching-overload]
                 winsize = fcntl.ioctl(
                     stdout, termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)
                 )
+                # pyrefly: ignore [no-matching-overload]
                 fcntl.ioctl(pty_master, termios.TIOCSWINSZ, winsize)
         else:
+            # pyrefly: ignore [no-matching-overload]
             unit_properties.update(
                 {
                     b"StandardInputFileDescriptor": get_fno(stdin) if stdin else stdin,
@@ -219,6 +232,7 @@ def run(
                 }
             )
 
+        # pyrefly: ignore [no-matching-overload]
         unit_properties.update(
             {
                 b"Type": service_type,
@@ -263,6 +277,7 @@ def run(
             monbus.open()
             ctexit.callback(monbus.close)
 
+            # pyrefly: ignore [implicit-import]
             monitor = pystemd.DBus.Manager(bus=monbus, _autoload=True)
             monitor.Monitoring.BecomeMonitor([mstr], 0)
 
@@ -270,6 +285,7 @@ def run(
             sel.register(monitor_fd, EVENT_READ)
 
         # start the process
+        # pyrefly: ignore [missing-argument]
         unit_start_job = manager.Manager.StartTransientUnit(
             name, b"fail", unit_properties
         )
@@ -279,24 +295,32 @@ def run(
             _in = [key.fileobj for key, _ in events]
 
             if stdin in _in:
+                # pyrefly: ignore [bad-argument-type]
                 data = os.read(stdin, 1024)
+                # pyrefly: ignore [bad-argument-type]
                 os.write(pty_master, data)
 
             if pty_master in _in:
                 try:
+                    # pyrefly: ignore [bad-argument-type]
                     data = os.read(pty_master, 1024)
                 except OSError:
+                    # pyrefly: ignore [bad-argument-type]
                     sel.unregister(pty_master)
                 else:
+                    # pyrefly: ignore [bad-argument-type]
                     os.write(stdout, data)
 
+            # pyrefly: ignore [unbound-name]
             if monitor_fd in _in:
+                # pyrefly: ignore [unbound-name]
                 m = monbus.process()
                 if m.is_empty():
                     continue
 
                 m.process_reply(False)
                 if (
+                    # pyrefly: ignore [missing-attribute]
                     m.get_path() == unit.path
                     and m.body[0] == b"org.freedesktop.systemd1.Unit"
                 ):
@@ -322,6 +346,7 @@ def run(
                 )
 
         unit.load()
+        # pyrefly: ignore [bad-assignment]
         unit.bus_context = bus_factory
         return unit
 

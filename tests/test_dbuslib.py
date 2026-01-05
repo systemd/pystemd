@@ -46,6 +46,7 @@ class TestDBusError(TestCase):
             ) as server:
                 server.bind(bytes(socket_path))
 
+                # pyrefly: ignore [missing-argument]
                 dbus = DBusAddress(self.dbus_address_from_unix_socket_path(socket_path))
                 with self.assertRaises(DBusConnectionRefusedError) as expectation:
                     dbus.open()
@@ -54,6 +55,7 @@ class TestDBusError(TestCase):
     def test_connecting_to_missing_socket_raises_file_not_found_error(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             socket_path = pathlib.Path(temporary_directory) / "test_socket"
+            # pyrefly: ignore [missing-argument]
             dbus = DBusAddress(self.dbus_address_from_unix_socket_path(socket_path))
             with self.assertRaises(DBusFileNotFoundError) as expectation:
                 dbus.open()

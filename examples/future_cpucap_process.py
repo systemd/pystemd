@@ -13,6 +13,7 @@ class Process(TransientUnitProcess):
         self.timeout = timeout
         super().__init__(properties=properties)
 
+    # pyrefly: ignore [bad-override]
     def run(self):
         """
         This is suppose to waste a bunch of CPU.
