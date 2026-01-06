@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 from pystemd.base import SDObject
 from pystemd.dbuslib import path_encode
 from pystemd.utils import x2char_star

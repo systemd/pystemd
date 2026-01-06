@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import re
 from contextlib import contextmanager
-from typing import AnyStr, Iterator, Optional
+from types import TracebackType
+from typing import AnyStr, Iterator
 
 from lxml import etree
 
@@ -22,7 +23,7 @@ class SDObject(object):
         self,
         destination: AnyStr,
         path: AnyStr,
-        bus: Optional[DBus] = None,
+        bus: DBus | None = None,
         _autoload: bool = False,
     ):
         self.destination = x2char_star(destination)
@@ -50,7 +51,12 @@ class SDObject(object):
         self.load()
         return self
 
-    def __exit__(self, exception_type, exception_value, traceback) -> None:
+    def __exit__(
+        self,
+        exception_type: type[BaseException] | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         pass
 
     def __getattr__(self, name):
@@ -102,7 +108,7 @@ class SDObject(object):
 
             return xml_doc
 
-    def load(self, force=False) -> Optional[bool]:
+    def load(self, force=False) -> bool | None:
         if self._loaded and not force:
             return
 
