@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 import sys
 
 # during development this version is always at least "one up" the

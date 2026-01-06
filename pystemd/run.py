@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 import fcntl
 import os
 import pty as ptylib
@@ -15,6 +17,7 @@ import termios
 import tty
 from contextlib import ExitStack
 from selectors import EVENT_READ, DefaultSelector
+from typing import Any, Protocol
 
 import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
@@ -27,7 +30,13 @@ EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 USER_MODE = os.getuid() != 0
 
 
-def get_fno(obj):
+class SupportsFileno(Protocol):
+    """Protocol for objects that have a fileno() method."""
+
+    def fileno(self) -> int: ...
+
+
+def get_fno(obj: int | SupportsFileno | None) -> int | None:
     """
     Try to get the best fileno of a obj:
         * If the obj is a integer, it return that integer.
@@ -44,36 +53,36 @@ def get_fno(obj):
 
 
 def run(
-    cmd,
-    address=None,
-    service_type=None,
-    name=None,
-    user=None,
-    user_mode=USER_MODE,
-    nice=None,
-    runtime_max_sec=None,
-    env=None,
-    extra=None,
-    cwd=None,
-    machine=None,
-    wait=False,
-    wait_for_activation=False,
-    remain_after_exit=False,
-    collect=False,
-    raise_on_fail=False,
-    pty=None,
-    pty_master=None,
-    pty_path=None,
-    stdin=None,
-    stdout=None,
-    stderr=None,
-    _wait_polling=None,
-    slice_=None,
-    stop_cmd=None,
-    stop_post_cmd=None,
-    start_pre_cmd=None,
-    start_post_cmd=None,
-):
+    cmd: list[str | bytes] | str | bytes,
+    address: str | bytes | None = None,
+    service_type: str | bytes | None = None,
+    name: str | bytes | None = None,
+    user: str | bytes | None = None,
+    user_mode: bool = USER_MODE,
+    nice: int | None = None,
+    runtime_max_sec: int | float | None = None,
+    env: dict[str | bytes, str | bytes] | None = None,
+    extra: dict[bytes, Any] | None = None,
+    cwd: str | bytes | None = None,
+    machine: str | bytes | None = None,
+    wait: bool = False,
+    wait_for_activation: bool = False,
+    remain_after_exit: bool = False,
+    collect: bool = False,
+    raise_on_fail: bool = False,
+    pty: bool | None = None,
+    pty_master: int | None = None,
+    pty_path: str | bytes | None = None,
+    stdin: int | SupportsFileno | None = None,
+    stdout: int | SupportsFileno | None = None,
+    stderr: int | SupportsFileno | None = None,
+    _wait_polling: int | float | None = None,
+    slice_: str | bytes | None = None,
+    stop_cmd: list[str | bytes] | str | bytes | None = None,
+    stop_post_cmd: list[str | bytes] | str | bytes | None = None,
+    start_pre_cmd: list[str | bytes] | str | bytes | None = None,
+    start_post_cmd: list[str | bytes] | str | bytes | None = None,
+) -> Unit:
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
 
@@ -156,7 +165,7 @@ def run(
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
     env = env or {}
-    unit_properties = {}
+    unit_properties: dict[bytes, object] = {}
 
     extra = extra or {}
     start_cmd = x2cmdlist(cmd, False) + extra.pop(b"ExecStart", [])
@@ -329,7 +338,6 @@ def run(
                     m.get_path() == unit.path
                     and m.body[0] == b"org.freedesktop.systemd1.Unit"
                 ):
-
                     _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
                     if wait:
                         if (
@@ -338,10 +346,9 @@ def run(
                         ):
                             break
                     elif wait_for_activation:
-                        if (
-                            message_job_path == unit_start_job
-                            and m.body[1].get(b"SubState") in (b"running",)
-                        ):
+                        if message_job_path == unit_start_job and m.body[1].get(
+                            b"SubState"
+                        ) in (b"running",):
                             break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
