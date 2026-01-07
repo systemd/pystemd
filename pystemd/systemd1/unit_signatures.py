@@ -79,6 +79,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"ExecStop": b"a(sasb)",
     b"ExecStopPost": b"a(sasb)",
     # execute properties
+    b"AmbientCapabilities": b"t",
     b"UtmpIdentifier": b"s",
     b"UtmpMode": b"s",
     b"PAMName": b"s",
