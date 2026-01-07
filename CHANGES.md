@@ -4,6 +4,28 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+0.14.0
+=====
+* allow SDObject and Unit to be pickled
+
+0.13.4
+=====
+* add apt-get update to release
+
+0.13.3
+=====
+* Fix deprecation warning: LICENSE is autodetected
+* fixing DbusRemote
+* enable user_mode in futures
+
+0.13.2
+=====
+* selecting all .pyi files
+
+0.13.1
+=====
+* fix setup.py
+
 0.13.0
 =====
 * adding coverage information
@@ -14,7 +36,6 @@ the one you find pypi, but its the one in development.
 0.12.0
 =====
 * initial support for pystemd.futures
-
 
 0.11.0
 =====
