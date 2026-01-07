@@ -95,3 +95,6 @@ pystemd/RELEASE
 /pystemd-*.tar.gz
 /python-pystemd-*.src.rpm
 /python-pystemd.spec
+
+# not a fan of keeping uv lock files around
+uv.lock

@@ -6,11 +6,10 @@
 # the root directory of this source tree.
 #
 
-from typing import Any, AnyStr, Iterator, List, Optional, Tuple
+from typing import Any, AnyStr, List, Optional, Tuple
 
 from pystemd.base import SDInterface, SDObject
-from pystemd.dbuslib import DBus, path_encode
-from pystemd.utils import x2char_star
+from pystemd.dbuslib import DBus
 
 class Unit_Unit(SDInterface):
     ActiveEnterTimestamp: int  # t
@@ -106,13 +105,17 @@ class Unit_Unit(SDInterface):
     def ReloadOrRestart(self, arg0: bytes) -> bytes: ...  # s  # o
     def ReloadOrTryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
     def EnqueueJob(
-        self, arg0: bytes, arg1: bytes  # s  # s
+        self,
+        arg0: bytes,
+        arg1: bytes,  # s  # s
     ) -> Tuple[
         int, bytes, bytes, bytes, bytes, List[Tuple[int, bytes, bytes, bytes, bytes]]
     ]: ...  # (uososa(uosos))
     def Kill(self, arg0: bytes, arg1: int) -> None: ...  # s  # i
     def SetProperties(
-        self, arg0: bool, arg1: List[Tuple[bytes, Any]]  # b  # a(sv)
+        self,
+        arg0: bool,
+        arg1: List[Tuple[bytes, Any]],  # b  # a(sv)
     ) -> None: ...
     def Ref(self) -> None: ...
     def Unref(self) -> None: ...

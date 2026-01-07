@@ -8,31 +8,40 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13', '3.14']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Setup Python
-      uses: actions/setup-python@v2
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: ${{ matrix.python }}
     - name: update APT
       run: sudo apt-get update
     - name: Install dependencies
       run: sudo apt-get install -y libsystemd-dev
-    - name: Install pystemd
-      run: pip install -e '.[t]'
+    - name: Install environment
+      run: uv sync --all-extras --dev
+
+    - name: Assert Python Version
+      run: uv run python -V
+
     - name: Run unit tests
-      run: pytest --cov=pystemd tests
+      run: uv run pytest --cov=pystemd tests
 
   formatting:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: Run black
-      uses: psf/black@stable
+    - name: Run ruff
+      uses: astral-sh/ruff-action@v3
+      with:
+        src: >-
+          pystemd
+          examples
+          tests
     - name: Run isort
       uses: isort/isort-action@v1
 
@@ -42,7 +51,16 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    - name: install mypy
-      run:  pip install mypy types-psutil
-    - name: run mypy
-      run: mypy
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: update APT
+      run: sudo apt-get update
+    - name: Install dependencies
+      run: sudo apt-get install -y libsystemd-dev
+    
+    - name: install environment
+      run: uv sync --all-extras --dev
+    - name: run pyrefly
+      run: uv run pyrefly check pystemd examples tests
+

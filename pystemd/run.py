@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 import fcntl
 import os
 import pty as ptylib
@@ -13,22 +15,28 @@ import struct
 import sys
 import termios
 import tty
-import uuid
 from contextlib import ExitStack
 from selectors import EVENT_READ, DefaultSelector
+from typing import Any, Protocol
 
 import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
 from pystemd.systemd1 import Manager as SDManager
 from pystemd.systemd1 import Unit
-from pystemd.utils import x2char_star, x2cmdlist
+from pystemd.utils import random_unit_name, x2char_star, x2cmdlist
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
 USER_MODE = os.getuid() != 0
 
 
-def get_fno(obj):
+class SupportsFileno(Protocol):
+    """Protocol for objects that have a fileno() method."""
+
+    def fileno(self) -> int: ...
+
+
+def get_fno(obj: int | SupportsFileno | None) -> int | None:
     """
     Try to get the best fileno of a obj:
         * If the obj is a integer, it return that integer.
@@ -45,35 +53,36 @@ def get_fno(obj):
 
 
 def run(
-    cmd,
-    address=None,
-    service_type=None,
-    name=None,
-    user=None,
-    user_mode=USER_MODE,
-    nice=None,
-    runtime_max_sec=None,
-    env=None,
-    extra=None,
-    cwd=None,
-    machine=None,
-    wait=False,
-    remain_after_exit=False,
-    collect=False,
-    raise_on_fail=False,
-    pty=None,
-    pty_master=None,
-    pty_path=None,
-    stdin=None,
-    stdout=None,
-    stderr=None,
-    _wait_polling=None,
-    slice_=None,
-    stop_cmd=None,
-    stop_post_cmd=None,
-    start_pre_cmd=None,
-    start_post_cmd=None,
-):
+    cmd: list[str | bytes] | str | bytes,
+    address: str | bytes | None = None,
+    service_type: str | bytes | None = None,
+    name: str | bytes | None = None,
+    user: str | bytes | None = None,
+    user_mode: bool = USER_MODE,
+    nice: int | None = None,
+    runtime_max_sec: int | float | None = None,
+    env: dict[str | bytes, str | bytes] | None = None,
+    extra: dict[bytes, Any] | None = None,
+    cwd: str | bytes | None = None,
+    machine: str | bytes | None = None,
+    wait: bool = False,
+    wait_for_activation: bool = False,
+    remain_after_exit: bool = False,
+    collect: bool = False,
+    raise_on_fail: bool = False,
+    pty: bool | None = None,
+    pty_master: int | None = None,
+    pty_path: str | bytes | None = None,
+    stdin: int | SupportsFileno | None = None,
+    stdout: int | SupportsFileno | None = None,
+    stderr: int | SupportsFileno | None = None,
+    _wait_polling: int | float | None = None,
+    slice_: str | bytes | None = None,
+    stop_cmd: list[str | bytes] | str | bytes | None = None,
+    stop_post_cmd: list[str | bytes] | str | bytes | None = None,
+    start_pre_cmd: list[str | bytes] | str | bytes | None = None,
+    start_post_cmd: list[str | bytes] | str | bytes | None = None,
+) -> Unit:
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
 
@@ -97,10 +106,15 @@ def run(
         env: A dict with environment variables.
         extra: If you know what you are doing, you can pass extra configuration
             settings to the start_transient_unit method.
+        cwd: Working directory for the command. If not specified, systemd's
+            default working directory will be used.
         machine: Machine name to execute the command, by default we connect to
             the host's dbus.
         wait: Wait for command completion before returning control, defaults
             to False.
+        wait_for_activation: If True, wait only for the service to reach the
+            'running' state, then return immediately without waiting for completion.
+            Defaults to False.
         remain_after_exit: If True, the transient unit will remain after cmd
             has finished, also if true, this methods will return
             pystemd.systemd1.Unit object. defaults to False and this method
@@ -139,18 +153,19 @@ def run(
 
     def bus_factory():
         if address:
+            # pyrefly: ignore [missing-argument]
             return DBusAddress(x2char_star(address))
         elif machine:
             return DBusMachine(x2char_star(machine))
         else:
             return DBus(user_mode=user_mode)
 
-    name = x2char_star(name or "pystemd{}.service".format(uuid.uuid4().hex))
+    name = x2char_star(name or random_unit_name())
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
     env = env or {}
-    unit_properties = {}
+    unit_properties: dict[bytes, object] = {}
 
     extra = extra or {}
     start_cmd = x2cmdlist(cmd, False) + extra.pop(b"ExecStart", [])
@@ -162,9 +177,12 @@ def run(
     if user_mode:
         _wait_polling = _wait_polling or 0.5
 
-    with ExitStack() as ctexit, DefaultSelector() as sel, bus_factory() as bus, SDManager(
-        bus=bus
-    ) as manager:
+    with (
+        ExitStack() as ctexit,
+        DefaultSelector() as sel,
+        bus_factory() as bus,
+        SDManager(bus=bus) as manager,
+    ):
         if pty:
             if machine:
                 with pystemd.machine1.Machine(machine) as m:
@@ -191,22 +209,31 @@ def run(
                 # lets set raw mode for stdin so we can forward input without
                 # waiting for a new line, but lets also make sure we return the
                 # attributes as they where after this method is done
+                # pyrefly: ignore [missing-attribute]
                 stdin_attrs = tty.tcgetattr(stdin)
+                # pyrefly: ignore [bad-argument-type]
                 tty.setraw(stdin)
+                # pyrefly: ignore [missing-attribute]
                 ctexit.callback(tty.tcsetattr, stdin, tty.TCSAFLUSH, stdin_attrs)
+                # pyrefly: ignore [bad-argument-type]
                 sel.register(stdin, EVENT_READ)
 
             if None not in (stdout, pty_master):
                 if os.getenv("TERM"):
+                    # pyrefly: ignore [missing-attribute]
                     env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
 
+                # pyrefly: ignore [bad-argument-type]
                 sel.register(pty_master, EVENT_READ)
                 # lets be a friend and set the size of the pty.
+                # pyrefly: ignore [no-matching-overload]
                 winsize = fcntl.ioctl(
                     stdout, termios.TIOCGWINSZ, struct.pack("HHHH", 0, 0, 0, 0)
                 )
+                # pyrefly: ignore [no-matching-overload]
                 fcntl.ioctl(pty_master, termios.TIOCSWINSZ, winsize)
         else:
+            # pyrefly: ignore [no-matching-overload]
             unit_properties.update(
                 {
                     b"StandardInputFileDescriptor": get_fno(stdin) if stdin else stdin,
@@ -219,6 +246,7 @@ def run(
                 }
             )
 
+        # pyrefly: ignore [no-matching-overload]
         unit_properties.update(
             {
                 b"Type": service_type,
@@ -246,7 +274,7 @@ def run(
         unit_properties = {k: v for k, v in unit_properties.items() if v is not None}
 
         unit = Unit(name, bus=bus, _autoload=True)
-        if wait:
+        if wait or wait_for_activation:
             mstr = (
                 (
                     "type='signal',"
@@ -263,6 +291,7 @@ def run(
             monbus.open()
             ctexit.callback(monbus.close)
 
+            # pyrefly: ignore [implicit-import]
             monitor = pystemd.DBus.Manager(bus=monbus, _autoload=True)
             monitor.Monitoring.BecomeMonitor([mstr], 0)
 
@@ -270,43 +299,57 @@ def run(
             sel.register(monitor_fd, EVENT_READ)
 
         # start the process
+        # pyrefly: ignore [missing-argument]
         unit_start_job = manager.Manager.StartTransientUnit(
             name, b"fail", unit_properties
         )
 
-        while wait:
+        while wait or wait_for_activation:
             events = sel.select(timeout=_wait_polling)
             _in = [key.fileobj for key, _ in events]
 
             if stdin in _in:
+                # pyrefly: ignore [bad-argument-type]
                 data = os.read(stdin, 1024)
+                # pyrefly: ignore [bad-argument-type]
                 os.write(pty_master, data)
 
             if pty_master in _in:
                 try:
+                    # pyrefly: ignore [bad-argument-type]
                     data = os.read(pty_master, 1024)
                 except OSError:
+                    # pyrefly: ignore [bad-argument-type]
                     sel.unregister(pty_master)
                 else:
+                    # pyrefly: ignore [bad-argument-type]
                     os.write(stdout, data)
 
+            # pyrefly: ignore [unbound-name]
             if monitor_fd in _in:
+                # pyrefly: ignore [unbound-name]
                 m = monbus.process()
                 if m.is_empty():
                     continue
 
                 m.process_reply(False)
                 if (
+                    # pyrefly: ignore [missing-attribute]
                     m.get_path() == unit.path
                     and m.body[0] == b"org.freedesktop.systemd1.Unit"
                 ):
                     _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
-
-                    if (
-                        message_job_path != unit_start_job
-                        and m.body[1].get(b"SubState") in EXIT_SUBSTATES
-                    ):
-                        break
+                    if wait:
+                        if (
+                            message_job_path != unit_start_job
+                            and m.body[1].get(b"SubState") in EXIT_SUBSTATES
+                        ):
+                            break
+                    elif wait_for_activation:
+                        if message_job_path == unit_start_job and m.body[1].get(
+                            b"SubState"
+                        ) in (b"running",):
+                            break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
                 # on usermode the subscribe to events does not work that well
@@ -322,6 +365,7 @@ def run(
                 )
 
         unit.load()
+        # pyrefly: ignore [bad-assignment]
         unit.bus_context = bus_factory
         return unit
 

@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pystemd"
-version = "0.14.0"
+version = "0.15.1"
 readme = "README.md"
 description="A systemd binding for python"
+requires-python=">=3.11"
 dependencies = [
     "lxml",
     "psutil"
@@ -21,12 +22,11 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Development Status :: 5 - Production/Stable",
     "Topic :: Utilities",
     "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
@@ -40,11 +40,12 @@ t = [
   "pytest", 
   "pytest-cov", 
   # cstq and toml are used for testing version
-  "cstq", "toml"
+  "cstq", 
+  "toml",
 ]
 lint = [
-    "black",
-    "mypi",
+    "ruff",
+    "pyrefly",
     "isort",
 ]
 
@@ -52,10 +53,6 @@ lint = [
 changelog = "https://github.com/systemd/pystemd/blob/main/CHANGES.md"
 homepage = "https://github.com/systemd/pystemd"
 repository = "https://github.com/systemd/pystemd.git"
-
-[tool.mypy]
-strict = false
-packages = ["pystemd"]
 
 [tool.isort]
 atomic = true

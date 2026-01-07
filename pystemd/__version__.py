@@ -6,10 +6,12 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 import sys
 
 # during development this version is always at least "one up" the
 # latest release.
-__version__ = "0.14.0"
+__version__ = "0.15.1"
 
 sys.modules[__name__] = __version__  # type: ignore

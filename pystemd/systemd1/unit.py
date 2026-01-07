@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 from pystemd.base import SDObject
 from pystemd.dbuslib import path_encode
 from pystemd.utils import x2char_star
@@ -22,6 +24,7 @@ class Unit(SDObject):
             _autoload=_autoload,
         )
 
+    # pyrefly: ignore [bad-override]
     def __getstate__(self):
         return {
             "external_id": self.external_id,

@@ -6,9 +6,12 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 import shlex
+import uuid
 from pathlib import Path
-from typing import Any, Iterable, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Iterable, TypeVar
 
 T = TypeVar("T")
 
@@ -38,8 +41,8 @@ def x2char_star(what_to_convert: Any, convert_all: bool = False) -> bytes:
 
 
 def str2cmd(
-    cmd: Union[str, bytes], cont: bool = False
-) -> Tuple[bytes, Tuple[bytes, ...], bool]:
+    cmd: str | bytes, cont: bool = False
+) -> tuple[bytes, tuple[bytes, ...], bool]:
     """
     coverts a string (or bytes) into a cmd list usable by the Exec* family of Unit Signatures, you could do
 
@@ -61,8 +64,8 @@ def str2cmd(
 
 
 def strlist2cmd(
-    strlist: Iterable[Union[str, bytes]], cont: bool = False
-) -> Tuple[bytes, Tuple[bytes, ...], bool]:
+    strlist: Iterable[str | bytes], cont: bool = False
+) -> tuple[bytes, tuple[bytes, ...], bool]:
     """
     coverts a command (an array of strings or bytes) into a cmd list usable by the Exec* family of Unit Signatures, you could do
 
@@ -82,7 +85,7 @@ def strlist2cmd(
 
 def x2cmdlist(
     what_to_convert: Any, cont: bool = False
-) -> List[Tuple[bytes, Tuple[bytes, ...], bool]]:
+) -> list[tuple[bytes, tuple[bytes, ...], bool]]:
     """
     a really overloaded helper to convert most things into a cmd list that can be passed natevly to the Exec* family. it should
 
@@ -114,7 +117,11 @@ def x2cmdlist(
     return [strlist2cmd(_, cont) for _ in what_to_convert]
 
 
-def unwrap(obj: Optional[T], msg="object was None") -> T:
+def unwrap(obj: T | None, msg="object was None") -> T:
     if obj is None:
         raise ValueError(msg)
     return obj
+
+
+def random_unit_name(*, unit_type="service", prefix="pystemd"):
+    return f"{prefix}{uuid.uuid4().hex}.{unit_type}"

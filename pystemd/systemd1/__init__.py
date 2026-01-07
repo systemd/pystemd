@@ -6,6 +6,8 @@
 # the root directory of this source tree.
 #
 
+from __future__ import annotations
+
 from .manager import Manager
 from .unit import Unit
 
