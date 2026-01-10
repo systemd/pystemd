@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.11', '3.12', '3.13', '3.14']
+        python: ['3.11', '3.12', '3.13', '3.14', '3.14t']
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -42,6 +42,7 @@ jobs:
           pystemd
           examples
           tests
+          e2e
     - name: Run isort
       uses: isort/isort-action@v1
 

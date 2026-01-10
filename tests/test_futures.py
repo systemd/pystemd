@@ -69,9 +69,18 @@ class TestEnterUnit(unittest.TestCase):
 
 @patch.object(pystemd.futures, "enter_unit", autospec=True)
 @patch.object(pystemd.futures, "TransientUnitContext", autospec=True)
-@patch("pystemd.utils.random_unit_name", autospec=True, return_value="pystemd-future-test.service")
+@patch(
+    "pystemd.utils.random_unit_name",
+    autospec=True,
+    return_value="pystemd-future-test.service",
+)
 class TestTransientUnitProcess(unittest.TestCase):
-    def test_pre_run(self, random_unit_name: MagicMock, TransientUnitContext: MagicMock, enter_unit: Mock):
+    def test_pre_run(
+        self,
+        random_unit_name: MagicMock,
+        TransientUnitContext: MagicMock,
+        enter_unit: Mock,
+    ):
         properties = {b"foo": b"bar"}
         target = Mock()
         p = pystemd.futures.TransientUnitProcess(properties=properties, target=target)

@@ -1,0 +1,86 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e-tests:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.14t']
+
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+      UNIT_NAME: pystemd-e2e-py${{ matrix.python-version }}.service
+      MACHINE_NAME: pystemd-test-py${{ matrix.python-version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up latest Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.14'
+
+    - name: setup-mkosi
+      uses: systemd/mkosi@v26
+
+    - name: Install systemd-container
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y systemd-container
+
+    - name: Generate mkosi keys
+      run: |
+        sudo mkosi genkey
+
+    - name: Build mkosi test image
+      run: |
+        sudo mkosi -E "$PYTHON_VERSION" build
+
+    - name: Boot container
+      run: |
+        sudo systemd-run --unit "$UNIT_NAME" --same-dir \
+          systemd-nspawn \
+            --machine="$MACHINE_NAME" \
+            --boot \
+            --directory=pystemd-test \
+            --bind-ro=${{ github.workspace }}/e2e:/opt/pystemd/e2e
+
+        # Wait for container to be ready
+        for i in {1..30}; do
+          if sudo systemd-run --machine="$MACHINE_NAME" --wait --pipe /bin/true 2>/dev/null; then
+            echo "Container is ready"
+            break
+          fi
+          echo "Waiting for container to start... ($i/30)"
+          sleep 1
+        done
+        sudo journalctl -u "$UNIT_NAME"
+        sleep 1
+        sudo systemd-run --machine="$MACHINE_NAME" --wait --pipe /bin/echo 'hello world' || exit 1
+
+    - name: Run E2E tests
+      run: |
+        sudo systemd-run \
+            --machine="$MACHINE_NAME" \
+            --wait \
+            --pipe \
+            --setenv=PYSTEMD_E2E_CONTAINER=1\
+            --property=PrivateTmp=true \
+            -- \
+            /opt/pystemd/venv/bin/pytest \
+              -o cache_dir=/tmp/pytest_cache \
+              /opt/pystemd/e2e/ -v
+
+    - name: Stop container
+      if: always()
+      run: |
+        sudo machinectl terminate "$MACHINE_NAME" || true
