@@ -98,3 +98,10 @@ pystemd/RELEASE
 
 # not a fan of keeping uv lock files around
 uv.lock
+
+# mkosi generated files
+pystemd-test/
+pystemd-test-*/
+.#pystemd-test*.lck
+mkosi.key
+mkosi.crt

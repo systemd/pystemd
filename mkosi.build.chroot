@@ -1,0 +1,23 @@
+#!/bin/bash
+# mkosi build script - builds and installs pystemd in the test image
+
+set -ex
+
+PYTHON_VERSION=${PYTHON_VERSION:-3.11}
+PYSTEMD_ROOT=/opt/pystemd
+
+export UV_PYTHON_INSTALL_DIR="$PYSTEMD_ROOT/uvpython"
+export UV_PROJECT_ENVIRONMENT="$PYSTEMD_ROOT/venv"
+
+# Install Python and sync dependencies
+uv python install "$PYTHON_VERSION"
+uv sync --python "$PYTHON_VERSION" --all-extras
+
+# Install pystemd as non-editable
+"$UV_PROJECT_ENVIRONMENT/bin/python3" -m ensurepip
+"$UV_PROJECT_ENVIRONMENT/bin/python3" -m pip install . --no-deps
+
+# Copy to destination image
+mkdir -p "$DESTDIR/opt"
+cp -r "$PYSTEMD_ROOT" "$DESTDIR/opt/"
+cp -r e2e "$DESTDIR$PYSTEMD_ROOT/e2e"
