@@ -1,0 +1,29 @@
+#!/bin/bash
+# mkosi build script - builds and installs pystemd in the test image
+
+set -ex
+
+PYTHON_VERSION=${PYTHON_VERSION:-3.14}
+PYSTEMD_ROOT=/opt/pystemd
+TEST_USER=${TEST_USER:-pystemd-test-user}
+
+export UV_PYTHON_INSTALL_DIR="$PYSTEMD_ROOT/uvpython"
+export UV_PROJECT_ENVIRONMENT="$PYSTEMD_ROOT/venv"
+
+# Create test user for running tests as non-root
+useradd -m -s /bin/bash "$TEST_USER"
+
+# Install Python and sync dependencies
+uv python install "$PYTHON_VERSION"
+uv sync --python "$PYTHON_VERSION" --all-extras
+
+# Install pystemd as non-editable
+"$UV_PROJECT_ENVIRONMENT/bin/python3" -m ensurepip
+"$UV_PROJECT_ENVIRONMENT/bin/python3" -m pip install . --no-deps
+
+# Copy to destination image
+mkdir -p "$DESTDIR/opt"
+cp -r "$PYSTEMD_ROOT" "$DESTDIR/opt/"
+
+# Create mount point for e2e tests (will be bind-mounted at runtime)
+mkdir -p "$DESTDIR$PYSTEMD_ROOT/e2e"
