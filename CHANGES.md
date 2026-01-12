@@ -4,6 +4,26 @@ Changelog
 We annotate all changes here, keep in mind that the high version may not be
 the one you find pypi, but its the one in development.
 
+dev
+=====
+* Add E2E testing infrastructure using mkosi for running tests in a real systemd environment
+* Improve type annotations throughout pystemd, modernizing to Python 3.10+ syntax
+* Add AmbientCapabilities to systemd1 KNOWN_UNIT_SIGNATURES
+* Improve README.md clarity, spelling, and grammar
+
+0.15.1
+=====
+* Add `wait_for_activation` parameter to pystemd.run to wait only for service activation without blocking until completion
+* Document `cwd` and `wait_for_activation` parameters in pystemd.run
+
+0.15.0
+=====
+* Drop support for Python 3.6-3.10, now requires Python 3.11+
+* Add `unit` property and `unit_name` to TransientUnitProcess for easy access to the running unit
+* Change development tooling to use uv for package management
+* Change lint/format stack from black/mypy to ruff/pyrefly
+* Add a lot of typing
+
 0.14.0
 =====
 * allow SDObject and Unit to be pickled
