@@ -4,10 +4,10 @@ pystemd
 [![Continuous Integration](https://github.com/systemd/pystemd/workflows/Continuous%20Integration/badge.svg?event=push)](https://github.com/systemd/pystemd/actions) [![Matrix](https://img.shields.io/matrix/pystemd:matrix.org)](https://matrix.to/#/#pystemd:matrix.org)
 
 
-This library allows you to talk to systemd over dbus from python, without
-actually thinking that you are talking to systemd over dbus. This allows you to
-programmatically start/stop/restart/kill and verify services status from
-systemd point of view, avoiding executing `subprocess.Popen(['systemctl', ...`
+This library allows you to talk to systemd over D-Bus from Python, without
+actually thinking that you are talking to systemd over D-Bus. This allows you to
+programmatically start/stop/restart/kill and verify service status from
+systemd's point of view, avoiding executing `subprocess.Popen(['systemctl', ...`
 and then parsing the output to know the result.
 
 
@@ -15,19 +15,19 @@ Show don't tell
 ---------------
 
 In software as in screenwriting, it's better to show how things work instead of
-tell. So this is how you would use the library from a interactive shell.
+tell. So this is how you would use the library from an interactive shell.
 
     In [1]: from pystemd.systemd1 import Unit
     In [2]: unit = Unit(b'postfix.service')
     In [3]: unit.load()
 
 Note: you need to call `unit.load()` because by default `Unit` will not load the
-unit information as that would require do some IO (and we dont like doing io on a class constructor). 
-You can autoload the unit by `Unit(b'postfix.service', _autoload=True)` or using the unit as a 
-contextmanager like `with Unit(b'postfix.service'): ...`
+unit information as that would require doing some I/O (and we don't like doing I/O in a class constructor).
+You can autoload the unit by `Unit(b'postfix.service', _autoload=True)` or using the unit as a
+context manager like `with Unit(b'postfix.service'): ...`
 
-Once the unit is loaded, you can interact with it, you can do by accessing its
-systemd's interfaces:
+Once the unit is loaded, you can interact with it by accessing its
+systemd interfaces:
 
     In [4]: unit.Unit.ActiveState
     Out[4]: b'active'
@@ -35,7 +35,7 @@ systemd's interfaces:
     In [5]: unit.Unit.StopWhenUnneeded
     Out[5]: False
 
-    In [6]: unit.Unit.Stop(b'replace') # require privilege account
+    In [6]: unit.Unit.Stop(b'replace') # requires a privileged account
     Out[6]: b'/org/freedesktop/systemd1/job/6601531'
 
     In [7]: unit.Unit.ActiveState
@@ -44,13 +44,13 @@ systemd's interfaces:
     In [8]: unit.Unit.SubState
     Out[8]: b'running'
 
-    In [9]: unit.Unit.Start(b'replace') # require privilege account
+    In [9]: unit.Unit.Start(b'replace') # requires a privileged account
     Out[9]: b'/org/freedesktop/systemd1/job/6601532'
 
     In [10]: unit.Unit.ActiveState
     Out[10]: b'active'
 
-    In [11]: unit.Service.GetProcesses() # require systemd v238 and above
+    In [11]: unit.Service.GetProcesses() # requires systemd v238 and above
     Out[11]:
     [(b'/system.slice/postfix.service',
         1754222,
@@ -62,9 +62,9 @@ systemd's interfaces:
     Out[12]: 1754222
 
 The `systemd1.Unit` class provides shortcuts for the interfaces in the systemd
-namespace, as you se above, we have  Service (org.freedesktop.systemd1.Service)
+namespace. As shown above, we have Service (org.freedesktop.systemd1.Service)
 and Unit (org.freedesktop.systemd1.Unit). Others can be found in
-`unit._interfaces` as:
+`unit._interfaces`:
 
 ```
 In [12]: unit._interfaces
@@ -79,11 +79,11 @@ Out[12]:
  Out[13]: <org.freedesktop.systemd1.Service of /org/freedesktop/systemd1/unit/postfix_2eservice>
 ```
 
-Each interface has methods and properties, that can access directly as
-`unit.Service.MainPID`, the list of properties and methods is in `.properties`
+Each interface has methods and properties that you can access directly as
+`unit.Service.MainPID`. The list of properties and methods is in `.properties`
 and `.methods` of each interface.
 
-The above code operates on root user units by default. To operate on userspace units, explicitly pass in a user mode DBus instance:
+The above code operates on system (a.k.a root) units by default. To operate on user units, explicitly pass in a user mode D-Bus instance:
 ```
 from pystemd.dbuslib import DBus
 with DBus(user_mode=True) as bus:
@@ -91,8 +91,8 @@ with DBus(user_mode=True) as bus:
     unit.load()
 ```
 
-Alongside the `systemd1.Unit`, we also have a `systemd1.Manager`, that allows
-you to interact with systemd manager.
+Alongside `systemd1.Unit`, we also have `systemd1.Manager`, which allows
+you to interact with the systemd manager.
 
 
 ```
@@ -119,10 +119,10 @@ Out[19]: b'kvm'
 
 ```
 
-Extras:
--------
+Extras
+------
 We also include `pystemd.run`, the spiritual port of systemd-run
-to python. [example of usage](_docs/pystemd.run.md):
+to Python. [Example of usage](_docs/pystemd.run.md):
 
 ```python
 # run this as root
@@ -138,7 +138,7 @@ to python. [example of usage](_docs/pystemd.run.md):
 )
 ```
 
-will open a postgres interactive prompt in a local nspawn-machine.
+will open a PostgreSQL interactive prompt in a local nspawn machine.
 
 You also get an interface to `sd_notify` in the form of `pystemd.daemon.notify` [docs](_docs/daemon.md).
 
@@ -148,7 +148,7 @@ You also get an interface to `sd_notify` in the form of `pystemd.daemon.notify` 
 >>> pystemd.daemon.notify(False, ready=1, status='Gimme! Gimme! Gimme!')
 ```
 
-And access to listen file descriptors for socket activation scripts.
+And access to listen file descriptors for socket-activated scripts.
 
 ```python
 # run this as root
@@ -159,7 +159,7 @@ And access to listen file descriptors for socket activation scripts.
 1 # you normally only open 1 socket
 ```
 
-And access if watchdog is enabled and ping it.
+And access to check if watchdog is enabled and ping it.
 
 ```python
 import time
@@ -169,7 +169,7 @@ watchdog_usec = pystemd.daemon.watchdog_enabled()
 watchdog_sec = watchdog_usec/10**6
 
 if not watchdog_usec:
-  print(f'watchdog was not enabled!')
+  print('watchdog was not enabled!')
 
 for i in range(20):
     pystemd.daemon.notify(False, watchdog=1, status=f'count {i+1}')
@@ -194,7 +194,7 @@ pystemd.journal.sendv(
 )
 ```
 
-will result in the message (shorten for sake of example).
+will result in the following message (shortened for the sake of the example).
 
 ```json
 
@@ -211,13 +211,13 @@ will result in the message (shorten for sake of example).
 Install
 -------
 
-So you like what you see, the simplest way to install pystemd is by:
+If you like what you see, the simplest way to install pystemd is:
 
 ```bash
 $ pip install pystemd
 ```
 
-pystemd is packaged in a few distros like Fedora and Debian. As of Fedora 32 and in EPEL as of EPEL 8.
+pystemd is packaged in a few distros like Fedora and Debian. It is available in Fedora 32+ and in EPEL 8+.
 
 It can be installed with:
 
@@ -226,14 +226,14 @@ $ sudo dnf install python3-pystemd # fedora
 $ sudo apt install python3-pystemd # debian
 ```
 
-which will also take care of installing any required dependencies. Keep in mind that most distros manage their own repos and version, and you may be getting old versions.
+which will also take care of installing any required dependencies. Keep in mind that most distros manage their own repos and versions, so you may be getting older versions.
 
 
-Build  from source
-------------------
+Build from source
+-----------------
 
 
-you'll need to have:
+You'll need to have:
 
 * Python headers: Just use your distro's package (e.g. python-dev).
 * systemd headers: Chances are you already have this. Normally, it is called
@@ -247,14 +247,14 @@ v237.
 * gcc: or any compiler that `setup.py` will accept.
 * [`pkg-config`](https://www.freedesktop.org/wiki/Software/pkg-config/) command. Depending on your distro, the package is called "pkg-config", "pkgconfig" or a compatible substitute like "pkgconf"
 
-if you want to install from source then after you clone this repo all you need to do its `pip install . `
+If you want to install from source, after cloning this repo all you need to do is `pip install .`
 
 
-In addition to previous requirements you'll need:
+In addition to the previous requirements, you'll need:
 
   * setuptools: Just use your distro's package (e.g. python-setuptools).
-  * Cython: at least version 0.21a1, just pip install it or use the official
-  installation guide from cython homepage to get latest
+  * Cython: at least version 0.21a1. Just pip install it or use the official
+  installation guide from the Cython homepage to get the latest version:
    http://cython.readthedocs.io/en/latest/src/quickstart/install.html.
 
 

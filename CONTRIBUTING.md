@@ -2,10 +2,6 @@
 We want to make contributing to this project as easy and transparent as
 possible.
 
-## Our Development Process
-This repository is synced from an internal repository. We gladly accept
-pull requests and will deal with the merging appropriately.
-
 ## Issues
 We use GitHub issues to track public bugs. Please ensure your description is
 clear and has sufficient instructions to be able to reproduce the issue.
