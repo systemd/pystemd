@@ -63,7 +63,7 @@ else:
 
 setup(
     name="pystemd",
-    version="0.15.1",
+    version="0.15.2",
     author="Alvaro Leiva Geisse",
     author_email="aleivag@gmail.com",
     packages=["pystemd", "pystemd.systemd1", "pystemd.machine1", "pystemd.DBus"],

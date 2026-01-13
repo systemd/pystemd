@@ -6,6 +6,9 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+
+0.15.2
+=====
 * Add E2E testing infrastructure using mkosi for running tests in a real systemd environment
 * Improve type annotations throughout pystemd, modernizing to Python 3.10+ syntax
 * Add AmbientCapabilities to systemd1 KNOWN_UNIT_SIGNATURES
