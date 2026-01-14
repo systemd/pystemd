@@ -15,16 +15,15 @@ import struct
 import sys
 import termios
 import tty
-from contextlib import ExitStack
-from selectors import EVENT_READ, DefaultSelector
 from collections.abc import Mapping, Sequence
+from contextlib import ExitStack
+from selectors import DefaultSelector, EVENT_READ
 from typing import Any, Protocol
 
 import pystemd
 from pystemd.dbuslib import DBus, DBusAddress, DBusMachine
 from pystemd.exceptions import PystemdRunError
-from pystemd.systemd1 import Manager as SDManager
-from pystemd.systemd1 import Unit
+from pystemd.systemd1 import Manager as SDManager, Unit
 from pystemd.utils import random_unit_name, x2char_star, x2cmdlist
 
 EXIT_SUBSTATES = (b"exited", b"failed", b"dead")
