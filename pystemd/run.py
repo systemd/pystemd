@@ -164,7 +164,7 @@ def run(
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
-    env = env or {}
+    env_dict: dict[bytes, str | bytes] = {x2char_star(k): v for k, v in env.items()} if env else {}
     unit_properties: dict[bytes, object] = {}
 
     extra = extra or {}
@@ -220,8 +220,7 @@ def run(
 
             if None not in (stdout, pty_master):
                 if os.getenv("TERM"):
-                    # pyrefly: ignore [missing-attribute]
-                    env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
+                    env_dict[b"TERM"] = env_dict.get(b"TERM", os.getenv("TERM").encode())
 
                 # pyrefly: ignore [bad-argument-type]
                 sel.register(pty_master, EVENT_READ)
@@ -263,8 +262,8 @@ def run(
                 b"Nice": nice,
                 b"RuntimeMaxUSec": runtime_max_usec,
                 b"Environment": [
-                    b"%s=%s" % (x2char_star(key), x2char_star(value))
-                    for key, value in env.items()
+                    b"%s=%s" % (key, x2char_star(value))
+                    for key, value in env_dict.items()
                 ]
                 or None,
             }
