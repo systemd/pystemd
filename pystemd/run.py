@@ -164,7 +164,9 @@ def run(
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
-    env_dict: dict[bytes, str | bytes] = {x2char_star(k): v for k, v in env.items()} if env else {}
+    env_dict: dict[bytes, str | bytes] = (
+        {x2char_star(k): v for k, v in env.items()} if env else {}
+    )
     unit_properties: dict[bytes, object] = {}
 
     extra = extra or {}
@@ -219,8 +221,9 @@ def run(
                 sel.register(stdin, EVENT_READ)
 
             if None not in (stdout, pty_master):
-                if os.getenv("TERM"):
-                    env_dict[b"TERM"] = env_dict.get(b"TERM", os.getenv("TERM").encode())
+                term = os.getenv("TERM")
+                if term:
+                    env_dict[b"TERM"] = env_dict.get(b"TERM", term.encode())
 
                 # pyrefly: ignore [bad-argument-type]
                 sel.register(pty_master, EVENT_READ)
