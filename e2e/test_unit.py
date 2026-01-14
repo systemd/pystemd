@@ -3,8 +3,9 @@
 import os
 import time
 
-import pystemd.run
 import pytest
+
+import pystemd.run
 
 
 def test_unit_start_stop():

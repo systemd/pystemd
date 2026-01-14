@@ -10,7 +10,12 @@
 from unittest import TestCase
 
 from pystemd.dbuslib import (  # pyrefly: ignore [missing-module-attribute]
-    compile_args, compile_array, compile_simple, compile_struct, find_closure)
+    compile_args,
+    compile_array,
+    compile_simple,
+    compile_struct,
+    find_closure,
+)
 
 
 class TestCompileSimple(TestCase):
