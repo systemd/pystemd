@@ -18,13 +18,12 @@ import runpy
 import sys
 from pathlib import Path
 
-# pyrefly: ignore [missing-import]
-from IPython.terminal.embed import InteractiveShellEmbed
-
 import pystemd
 import pystemd.daemon
 import pystemd.journal
 import pystemd.run
+# pyrefly: ignore [missing-import]
+from IPython.terminal.embed import InteractiveShellEmbed
 
 display_banner = """
 Welcome to pystemd  {pystemd.__version__} interactive shell for python {sys.version}.

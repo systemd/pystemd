@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any, Sequence, cast
 
 import psutil
-
 import pystemd.cutils
 import pystemd.run
 import pystemd.utils

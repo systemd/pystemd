@@ -3,9 +3,8 @@
 import os
 import time
 
-import pytest
-
 import pystemd.run
+import pytest
 from pystemd.exceptions import PystemdRunError
 
 

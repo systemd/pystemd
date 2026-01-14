@@ -7,7 +7,6 @@ from threading import Thread
 
 import psutil
 from psutil import NoSuchProcess
-
 from pystemd.futures import TransientUnitPoolExecutor
 
 

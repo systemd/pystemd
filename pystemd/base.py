@@ -13,7 +13,6 @@ from types import TracebackType
 from typing import AnyStr, Iterator
 
 from lxml import etree
-
 from pystemd.dbuslib import DBus, apply_signature
 from pystemd.utils import x2char_star
 

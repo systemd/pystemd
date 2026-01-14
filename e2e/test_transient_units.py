@@ -3,9 +3,8 @@
 import os
 import time
 
-import pytest
-
 import pystemd.run
+import pytest
 from pystemd.dbuslib import DBus
 from pystemd.systemd1 import Manager, Unit
 
