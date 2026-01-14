@@ -15,6 +15,7 @@ import struct
 import sys
 import termios
 import tty
+from collections.abc import Mapping, Sequence
 from contextlib import ExitStack
 from selectors import EVENT_READ, DefaultSelector
 from typing import Any, Protocol
@@ -53,7 +54,7 @@ def get_fno(obj: int | SupportsFileno | None) -> int | None:
 
 
 def run(
-    cmd: list[str | bytes] | str | bytes,
+    cmd: Sequence[str | bytes] | str | bytes,
     address: str | bytes | None = None,
     service_type: str | bytes | None = None,
     name: str | bytes | None = None,
@@ -61,7 +62,7 @@ def run(
     user_mode: bool = USER_MODE,
     nice: int | None = None,
     runtime_max_sec: int | float | None = None,
-    env: dict[str | bytes, str | bytes] | None = None,
+    env: Mapping[str, str | bytes] | Mapping[bytes, str | bytes] | None = None,
     extra: dict[bytes, Any] | None = None,
     cwd: str | bytes | None = None,
     machine: str | bytes | None = None,
@@ -78,10 +79,10 @@ def run(
     stderr: int | SupportsFileno | None = None,
     _wait_polling: int | float | None = None,
     slice_: str | bytes | None = None,
-    stop_cmd: list[str | bytes] | str | bytes | None = None,
-    stop_post_cmd: list[str | bytes] | str | bytes | None = None,
-    start_pre_cmd: list[str | bytes] | str | bytes | None = None,
-    start_post_cmd: list[str | bytes] | str | bytes | None = None,
+    stop_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    stop_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    start_pre_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    start_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
 ) -> Unit:
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
@@ -164,7 +165,9 @@ def run(
     runtime_max_usec = (runtime_max_sec or 0) * 10**6 or runtime_max_sec
 
     stdin, stdout, stderr = get_fno(stdin), get_fno(stdout), get_fno(stderr)
-    env = env or {}
+    env_dict: dict[bytes, str | bytes] = (
+        {x2char_star(k): v for k, v in env.items()} if env else {}
+    )
     unit_properties: dict[bytes, object] = {}
 
     extra = extra or {}
@@ -219,9 +222,9 @@ def run(
                 sel.register(stdin, EVENT_READ)
 
             if None not in (stdout, pty_master):
-                if os.getenv("TERM"):
-                    # pyrefly: ignore [missing-attribute]
-                    env[b"TERM"] = env.get(b"TERM", os.getenv("TERM").encode())
+                term = os.getenv("TERM")
+                if term:
+                    env_dict[b"TERM"] = env_dict.get(b"TERM", term.encode())
 
                 # pyrefly: ignore [bad-argument-type]
                 sel.register(pty_master, EVENT_READ)
@@ -263,8 +266,8 @@ def run(
                 b"Nice": nice,
                 b"RuntimeMaxUSec": runtime_max_usec,
                 b"Environment": [
-                    b"%s=%s" % (x2char_star(key), x2char_star(value))
-                    for key, value in env.items()
+                    b"%s=%s" % (key, x2char_star(value))
+                    for key, value in env_dict.items()
                 ]
                 or None,
             }

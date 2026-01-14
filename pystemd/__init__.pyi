@@ -6,6 +6,7 @@
 # the root directory of this source tree.
 #
 
+from collections.abc import Mapping, Sequence
 from typing import Any, Protocol
 
 from pystemd import machine1, systemd1
@@ -19,7 +20,7 @@ class SupportsFileno(Protocol):
     def fileno(self) -> int: ...
 
 def run(
-    cmd: list[str | bytes] | str | bytes,
+    cmd: Sequence[str | bytes] | str | bytes,
     address: str | bytes | None = None,
     service_type: str | bytes | None = None,
     name: str | bytes | None = None,
@@ -27,7 +28,7 @@ def run(
     user_mode: bool = ...,
     nice: int | None = None,
     runtime_max_sec: int | float | None = None,
-    env: dict[str | bytes, str | bytes] | None = None,
+    env: Mapping[str, str | bytes] | Mapping[bytes, str | bytes] | None = None,
     extra: dict[bytes, Any] | None = None,
     cwd: str | bytes | None = None,
     machine: str | bytes | None = None,
@@ -44,8 +45,8 @@ def run(
     stderr: int | SupportsFileno | None = None,
     _wait_polling: int | float | None = None,
     slice_: str | bytes | None = None,
-    stop_cmd: list[str | bytes] | str | bytes | None = None,
-    stop_post_cmd: list[str | bytes] | str | bytes | None = None,
-    start_pre_cmd: list[str | bytes] | str | bytes | None = None,
-    start_post_cmd: list[str | bytes] | str | bytes | None = None,
+    stop_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    stop_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    start_pre_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    start_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
 ) -> systemd1.Unit: ...
