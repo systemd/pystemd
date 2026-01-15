@@ -12,6 +12,6 @@ import sys
 
 # during development this version is always at least "one up" the
 # latest release.
-__version__ = "0.15.2"
+__version__ = "0.15.3"
 
 sys.modules[__name__] = __version__  # type: ignore

@@ -7,6 +7,10 @@ the one you find pypi, but its the one in development.
 dev
 =====
 
+0.15.3
+=====
+* Fix type invariance causing too strict typing
+
 0.15.2
 =====
 * Add E2E testing infrastructure using mkosi for running tests in a real systemd environment
