@@ -6,28 +6,34 @@
 # the root directory of this source tree.
 #
 
-from typing import Any, AnyStr, List, Optional, Tuple
+from __future__ import annotations
+
+from typing import Any, AnyStr
 
 from pystemd.base import SDInterface, SDObject
 from pystemd.dbuslib import DBus
 
 class Unit_Unit(SDInterface):
+    AccessSELinuxContext: bytes  # s
+    ActivationDetails: list[tuple[bytes, bytes]]  # a(ss)
     ActiveEnterTimestamp: int  # t
     ActiveEnterTimestampMonotonic: int  # t
     ActiveExitTimestamp: int  # t
     ActiveExitTimestampMonotonic: int  # t
     ActiveState: bytes  # s
-    After: List[bytes]  # as
+    After: list[bytes]  # as
     AllowIsolate: bool  # b
     AssertResult: bool  # b
     AssertTimestamp: int  # t
     AssertTimestampMonotonic: int  # t
-    Asserts: List[Tuple[bytes, bool, bool, bytes, int]]  # a(sbbsi)
-    Before: List[bytes]  # as
-    BindsTo: List[bytes]  # as
-    BoundBy: List[bytes]  # as
-    CanClean: List[bytes]  # as
+    Asserts: list[tuple[bytes, bool, bool, bytes, int]]  # a(sbbsi)
+    Before: list[bytes]  # as
+    BindsTo: list[bytes]  # as
+    BoundBy: list[bytes]  # as
+    CanClean: list[bytes]  # as
+    CanFreeze: bool  # b
     CanIsolate: bool  # b
+    CanLiveMount: bool  # b
     CanReload: bool  # b
     CanStart: bool  # b
     CanStop: bool  # b
@@ -35,107 +41,132 @@ class Unit_Unit(SDInterface):
     ConditionResult: bool  # b
     ConditionTimestamp: int  # t
     ConditionTimestampMonotonic: int  # t
-    Conditions: List[Tuple[bytes, bool, bool, bytes, int]]  # a(sbbsi)
-    ConflictedBy: List[bytes]  # as
-    Conflicts: List[bytes]  # as
-    ConsistsOf: List[bytes]  # as
+    Conditions: list[tuple[bytes, bool, bool, bytes, int]]  # a(sbbsi)
+    ConflictedBy: list[bytes]  # as
+    Conflicts: list[bytes]  # as
+    ConsistsOf: list[bytes]  # as
+    DebugInvocation: bool  # b
     DefaultDependencies: bool  # b
     Description: bytes  # s
-    Documentation: List[bytes]  # as
-    DropInPaths: List[bytes]  # as
+    Documentation: list[bytes]  # as
+    DropInPaths: list[bytes]  # as
     FailureAction: bytes  # s
     FailureActionExitStatus: int  # i
     Following: bytes  # s
     FragmentPath: bytes  # s
+    FreezerState: bytes  # s
     Id: bytes  # s
     IgnoreOnIsolate: bool  # b
     InactiveEnterTimestamp: int  # t
     InactiveEnterTimestampMonotonic: int  # t
     InactiveExitTimestamp: int  # t
     InactiveExitTimestampMonotonic: int  # t
-    InvocationID: List[bytes]  # ay
-    Job: Tuple[int, bytes]  # (uo)
+    InvocationID: list[bytes]  # ay
+    Job: tuple[int, bytes]  # (uo)
     JobRunningTimeoutUSec: int  # t
     JobTimeoutAction: bytes  # s
     JobTimeoutRebootArgument: bytes  # s
     JobTimeoutUSec: int  # t
-    JoinsNamespaceOf: List[bytes]  # as
-    LoadError: Tuple[bytes, bytes]  # (ss)
+    JoinsNamespaceOf: list[bytes]  # as
+    LoadError: tuple[bytes, bytes]  # (ss)
     LoadState: bytes  # s
-    Names: List[bytes]  # as
+    Markers: list[bytes]  # as
+    Names: list[bytes]  # as
     NeedDaemonReload: bool  # b
-    OnFailure: List[bytes]  # as
+    OnFailure: list[bytes]  # as
     OnFailureJobMode: bytes  # s
-    PartOf: List[bytes]  # as
+    OnFailureOf: list[bytes]  # as
+    OnSuccess: list[bytes]  # as
+    OnSuccessJobMode: bytes  # s
+    OnSuccessOf: list[bytes]  # as
+    PartOf: list[bytes]  # as
     Perpetual: bool  # b
-    PropagatesReloadTo: List[bytes]  # as
+    PropagatesReloadTo: list[bytes]  # as
+    PropagatesStopTo: list[bytes]  # as
     RebootArgument: bytes  # s
-    Refs: List[bytes]  # as
+    Refs: list[bytes]  # as
     RefuseManualStart: bool  # b
     RefuseManualStop: bool  # b
-    ReloadPropagatedFrom: List[bytes]  # as
-    RequiredBy: List[bytes]  # as
-    Requires: List[bytes]  # as
-    RequiresMountsFor: List[bytes]  # as
-    Requisite: List[bytes]  # as
-    RequisiteOf: List[bytes]  # as
+    ReloadPropagatedFrom: list[bytes]  # as
+    RequiredBy: list[bytes]  # as
+    Requires: list[bytes]  # as
+    RequiresMountsFor: list[bytes]  # as
+    Requisite: list[bytes]  # as
+    RequisiteOf: list[bytes]  # as
+    SliceOf: list[bytes]  # as
     SourcePath: bytes  # s
     StartLimitAction: bytes  # s
     StartLimitBurst: int  # u
     StartLimitIntervalUSec: int  # t
     StateChangeTimestamp: int  # t
     StateChangeTimestampMonotonic: int  # t
+    StopPropagatedFrom: list[bytes]  # as
     StopWhenUnneeded: bool  # b
     SubState: bytes  # s
     SuccessAction: bytes  # s
     SuccessActionExitStatus: int  # i
+    SurviveFinalKillSignal: bool  # b
     Transient: bool  # b
-    TriggeredBy: List[bytes]  # as
-    Triggers: List[bytes]  # as
+    TriggeredBy: list[bytes]  # as
+    Triggers: list[bytes]  # as
     UnitFilePreset: bytes  # s
     UnitFileState: bytes  # s
-    WantedBy: List[bytes]  # as
-    Wants: List[bytes]  # as
-    def Start(self, mode: bytes) -> bytes: ...  # s # o
-    def Stop(self, mode: bytes) -> bytes: ...  # s # o
-    def ResetFailed(self) -> bytes: ...  # s # o
-    def Restart(self, mode: bytes) -> bytes: ...  # s # o
-    def Reload(self, arg0: bytes) -> bytes: ...  # s  # o
-    def TryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
-    def ReloadOrRestart(self, arg0: bytes) -> bytes: ...  # s  # o
-    def ReloadOrTryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    UpheldBy: list[bytes]  # as
+    Upholds: list[bytes]  # as
+    WantedBy: list[bytes]  # as
+    Wants: list[bytes]  # as
+    WantsMountsFor: list[bytes]  # as
+    def Clean(self, arg0: list[bytes]) -> None: ...  # as
     def EnqueueJob(
         self,
         arg0: bytes,
         arg1: bytes,  # s  # s
-    ) -> Tuple[
-        int, bytes, bytes, bytes, bytes, List[Tuple[int, bytes, bytes, bytes, bytes]]
+    ) -> tuple[
+        int, bytes, bytes, bytes, bytes, list[tuple[int, bytes, bytes, bytes, bytes]]
     ]: ...  # (uososa(uosos))
+    def Freeze(self) -> None: ...
     def Kill(self, arg0: bytes, arg1: int) -> None: ...  # s  # i
+    def KillSubgroup(self, arg0: bytes, arg1: int) -> None: ...  # s  # i
+    def QueueSignal(self, arg0: bytes, arg1: int, arg2: int) -> None: ...  # s  # i  # i
+    def Ref(self) -> None: ...
+    def Reload(self, arg0: bytes) -> bytes: ...  # s  # o
+    def ReloadOrRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    def ReloadOrTryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
+    def ResetFailed(self) -> None: ...
+    def Restart(self, mode: bytes) -> bytes: ...  # s # o
     def SetProperties(
         self,
         arg0: bool,
-        arg1: List[Tuple[bytes, Any]],  # b  # a(sv)
+        arg1: list[tuple[bytes, Any]],  # b  # a(sv)
     ) -> None: ...
-    def Ref(self) -> None: ...
+    def Start(self, mode: bytes) -> bytes: ...  # s # o
+    def Stop(self, mode: bytes) -> bytes: ...  # s # o
+    def Thaw(self) -> None: ...
+    def TryRestart(self, arg0: bytes) -> bytes: ...  # s  # o
     def Unref(self) -> None: ...
-    def Clean(self, arg0: List[bytes]) -> None: ...  # as
 
 class Unit_Service(SDInterface):
-    AllowedCPUs: List[bytes]  # ay
-    AllowedMemoryNodes: List[bytes]  # ay
+    AllowedCPUs: list[bytes]  # ay
+    AllowedMemoryNodes: list[bytes]  # ay
     AmbientCapabilities: int  # t
-    AppArmorProfile: Tuple[bool, bytes]  # (bs)
-    BindPaths: List[Tuple[bytes, bytes, bool, int]]  # a(ssbt)
-    BindReadOnlyPaths: List[Tuple[bytes, bytes, bool, int]]  # a(ssbt)
+    AppArmorProfile: tuple[bool, bytes]  # (bs)
+    BPFDelegateAttachments: bytes  # s
+    BPFDelegateCommands: bytes  # s
+    BPFDelegateMaps: bytes  # s
+    BPFDelegatePrograms: bytes  # s
+    BPFProgram: list[tuple[bytes, bytes]]  # a(ss)
+    BindLogSockets: bool  # b
+    BindPaths: list[tuple[bytes, bytes, bool, int]]  # a(ssbt)
+    BindReadOnlyPaths: list[tuple[bytes, bytes, bool, int]]  # a(ssbt)
     BlockIOAccounting: bool  # b
-    BlockIODeviceWeight: List[Tuple[bytes, int]]  # a(st)
-    BlockIOReadBandwidth: List[Tuple[bytes, int]]  # a(st)
+    BlockIODeviceWeight: list[tuple[bytes, int]]  # a(st)
+    BlockIOReadBandwidth: list[tuple[bytes, int]]  # a(st)
     BlockIOWeight: int  # t
-    BlockIOWriteBandwidth: List[Tuple[bytes, int]]  # a(st)
+    BlockIOWriteBandwidth: list[tuple[bytes, int]]  # a(st)
     BusName: bytes  # s
     CPUAccounting: bool  # b
-    CPUAffinity: List[bytes]  # ay
+    CPUAffinity: list[bytes]  # ay
+    CPUAffinityFromNUMA: bool  # b
     CPUQuotaPerSecUSec: int  # t
     CPUQuotaPeriodUSec: int  # t
     CPUSchedulingPolicy: int  # i
@@ -144,105 +175,131 @@ class Unit_Service(SDInterface):
     CPUShares: int  # t
     CPUUsageNSec: int  # t
     CPUWeight: int  # t
-    CacheDirectory: List[bytes]  # as
+    CacheDirectory: list[bytes]  # as
+    CacheDirectoryAccounting: bool  # b
     CacheDirectoryMode: int  # u
+    CacheDirectoryQuota: tuple[int, int, bytes]  # (tus)
+    CacheDirectoryQuotaUsage: tuple[int, int]  # (tt)
+    CacheDirectorySymlink: list[tuple[bytes, bytes, int]]  # a(sst)
     CapabilityBoundingSet: int  # t
     CleanResult: bytes  # s
-    ConfigurationDirectory: List[bytes]  # as
+    ConfigurationDirectory: list[bytes]  # as
     ConfigurationDirectoryMode: int  # u
     ControlGroup: bytes  # s
+    ControlGroupId: int  # t
     ControlPID: int  # u
+    CoredumpFilter: int  # t
+    CoredumpReceive: bool  # b
     DefaultMemoryLow: int  # t
     DefaultMemoryMin: int  # t
+    DefaultStartupMemoryLow: int  # t
     Delegate: bool  # b
-    DelegateControllers: List[bytes]  # as
-    DeviceAllow: List[Tuple[bytes, bytes]]  # a(ss)
+    DelegateControllers: list[bytes]  # as
+    DelegateNamespaces: int  # t
+    DelegateSubgroup: bytes  # s
+    DeviceAllow: list[tuple[bytes, bytes]]  # a(ss)
     DevicePolicy: bytes  # s
-    DisableControllers: List[bytes]  # as
+    DisableControllers: list[bytes]  # as
     DynamicUser: bool  # b
-    EffectiveCPUs: List[bytes]  # ay
-    EffectiveMemoryNodes: List[bytes]  # ay
-    Environment: List[bytes]  # as
-    EnvironmentFiles: List[Tuple[bytes, bool]]  # a(sb)
-    ExecCondition: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    EffectiveCPUs: list[bytes]  # ay
+    EffectiveMemoryHigh: int  # t
+    EffectiveMemoryMax: int  # t
+    EffectiveMemoryNodes: list[bytes]  # ay
+    EffectiveTasksMax: int  # t
+    Environment: list[bytes]  # as
+    EnvironmentFiles: list[tuple[bytes, bool]]  # a(sb)
+    ExecCondition: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecConditionEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecConditionEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
     ExecMainCode: int  # i
     ExecMainExitTimestamp: int  # t
     ExecMainExitTimestampMonotonic: int  # t
+    ExecMainHandoffTimestamp: int  # t
+    ExecMainHandoffTimestampMonotonic: int  # t
     ExecMainPID: int  # u
     ExecMainStartTimestamp: int  # t
     ExecMainStartTimestampMonotonic: int  # t
     ExecMainStatus: int  # i
-    ExecReload: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecPaths: list[bytes]  # as
+    ExecReload: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecReloadEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecReloadEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStart: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecSearchPath: list[bytes]  # as
+    ExecStart: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStartEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStartEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStartPost: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStartPost: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStartPostEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStartPostEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStartPre: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStartPre: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStartPreEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStartPreEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStop: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStop: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStopEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStopEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStopPost: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStopPost: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
-    ExecStopPostEx: List[
-        Tuple[bytes, List[bytes], bool, int, int, int, int, int, int, int]
+    ExecStopPostEx: list[
+        tuple[bytes, list[bytes], bool, int, int, int, int, int, int, int]
     ]  # a(sasbttttuii)
+    ExitType: bytes  # s
+    ExtensionDirectories: list[bytes]  # as
+    ExtensionImagePolicy: bytes  # s
+    ExtensionImages: list[tuple[bytes, bool, list[tuple[bytes, bytes]]]]  # a(sba(ss))
+    ExtraFileDescriptorNames: list[bytes]  # as
     FileDescriptorStoreMax: int  # u
+    FileDescriptorStorePreserve: bytes  # s
     FinalKillSignal: int  # i
     GID: int  # u
     Group: bytes  # s
     GuessMainPID: bool  # b
     IOAccounting: bool  # b
-    IODeviceLatencyTargetUSec: List[Tuple[bytes, int]]  # a(st)
-    IODeviceWeight: List[Tuple[bytes, int]]  # a(st)
-    IOReadBandwidthMax: List[Tuple[bytes, int]]  # a(st)
+    IODeviceLatencyTargetUSec: list[tuple[bytes, int]]  # a(st)
+    IODeviceWeight: list[tuple[bytes, int]]  # a(st)
+    IOReadBandwidthMax: list[tuple[bytes, int]]  # a(st)
     IOReadBytes: int  # t
-    IOReadIOPSMax: List[Tuple[bytes, int]]  # a(st)
+    IOReadIOPSMax: list[tuple[bytes, int]]  # a(st)
     IOReadOperations: int  # t
     IOSchedulingClass: int  # i
     IOSchedulingPriority: int  # i
     IOWeight: int  # t
-    IOWriteBandwidthMax: List[Tuple[bytes, int]]  # a(st)
+    IOWriteBandwidthMax: list[tuple[bytes, int]]  # a(st)
     IOWriteBytes: int  # t
-    IOWriteIOPSMax: List[Tuple[bytes, int]]  # a(st)
+    IOWriteIOPSMax: list[tuple[bytes, int]]  # a(st)
     IOWriteOperations: int  # t
     IPAccounting: bool  # b
-    IPAddressAllow: List[Tuple[int, List[bytes], int]]  # a(iayu)
-    IPAddressDeny: List[Tuple[int, List[bytes], int]]  # a(iayu)
+    IPAddressAllow: list[tuple[int, list[bytes], int]]  # a(iayu)
+    IPAddressDeny: list[tuple[int, list[bytes], int]]  # a(iayu)
+    IPCNamespacePath: bytes  # s
     IPEgressBytes: int  # t
-    IPEgressFilterPath: List[bytes]  # as
+    IPEgressFilterPath: list[bytes]  # as
     IPEgressPackets: int  # t
     IPIngressBytes: int  # t
-    IPIngressFilterPath: List[bytes]  # as
+    IPIngressFilterPath: list[bytes]  # as
     IPIngressPackets: int  # t
     IgnoreSIGPIPE: bool  # b
-    InaccessiblePaths: List[bytes]  # as
+    ImportCredential: list[bytes]  # as
+    ImportCredentialEx: list[tuple[bytes, bytes]]  # a(ss)
+    InaccessiblePaths: list[bytes]  # as
     KeyringMode: bytes  # s
     KillMode: bytes  # s
     KillSignal: int  # i
@@ -278,117 +335,198 @@ class Unit_Service(SDInterface):
     LimitSIGPENDINGSoft: int  # t
     LimitSTACK: int  # t
     LimitSTACKSoft: int  # t
+    LiveMountResult: bytes  # s
+    LoadCredential: list[tuple[bytes, bytes]]  # a(ss)
+    LoadCredentialEncrypted: list[tuple[bytes, bytes]]  # a(ss)
     LockPersonality: bool  # b
-    LogExtraFields: List[List[bytes]]  # aay
+    LogExtraFields: list[list[bytes]]  # aay
+    LogFilterPatterns: list[tuple[bool, bytes]]  # a(bs)
     LogLevelMax: int  # i
+    LogNamespace: bytes  # s
     LogRateLimitBurst: int  # u
     LogRateLimitIntervalUSec: int  # t
-    LogsDirectory: List[bytes]  # as
+    LogsDirectory: list[bytes]  # as
+    LogsDirectoryAccounting: bool  # b
     LogsDirectoryMode: int  # u
+    LogsDirectoryQuota: tuple[int, int, bytes]  # (tus)
+    LogsDirectoryQuotaUsage: tuple[int, int]  # (tt)
+    LogsDirectorySymlink: list[tuple[bytes, bytes, int]]  # a(sst)
     MainPID: int  # u
+    ManagedOOMMemoryPressure: bytes  # s
+    ManagedOOMMemoryPressureDurationUSec: int  # t
+    ManagedOOMMemoryPressureLimit: int  # u
+    ManagedOOMPreference: bytes  # s
+    ManagedOOMSwap: bytes  # s
     MemoryAccounting: bool  # b
+    MemoryAvailable: int  # t
     MemoryCurrent: int  # t
     MemoryDenyWriteExecute: bool  # b
     MemoryHigh: int  # t
-    MemoryLimit: int  # t
+    MemoryKSM: bool  # b
     MemoryLow: int  # t
+    MemoryLimit: int  # t
     MemoryMax: int  # t
     MemoryMin: int  # t
+    MemoryPeak: int  # t
+    MemoryPressureThresholdUSec: int  # t
+    MemoryPressureWatch: bytes  # s
+    MemorySwapCurrent: int  # t
     MemorySwapMax: int  # t
+    MemorySwapPeak: int  # t
+    MemoryZSwapCurrent: int  # t
+    MemoryZSwapMax: int  # t
+    MemoryZSwapWriteback: bool  # b
     MountAPIVFS: bool  # b
     MountFlags: int  # t
+    MountImagePolicy: bytes  # s
+    MountImages: list[
+        tuple[bytes, bytes, bool, list[tuple[bytes, bytes]]]
+    ]  # a(ssba(ss))
+    NFTSet: list[tuple[int, int, bytes, bytes]]  # a(iiss)
     NFileDescriptorStore: int  # u
     NRestarts: int  # u
-    NUMAMask: List[bytes]  # ay
+    NUMAMask: list[bytes]  # ay
     NUMAPolicy: int  # i
     NetworkNamespacePath: bytes  # s
     Nice: int  # i
+    NoExecPaths: list[bytes]  # as
     NoNewPrivileges: bool  # b
     NonBlocking: bool  # b
     NotifyAccess: bytes  # s
     OOMPolicy: bytes  # s
     OOMScoreAdjust: int  # i
+    OpenFile: list[tuple[bytes, bytes, int]]  # a(sst)
     PAMName: bytes  # s
     PIDFile: bytes  # s
-    PassEnvironment: List[bytes]  # as
+    PassEnvironment: list[bytes]  # as
     Personality: bytes  # s
+    PrivateBPF: bytes  # s
     PrivateDevices: bool  # b
+    PrivateIPC: bool  # b
     PrivateMounts: bool  # b
     PrivateNetwork: bool  # b
+    PrivatePIDs: bytes  # s
     PrivateTmp: bool  # b
+    PrivateTmpEx: bytes  # s
     PrivateUsers: bool  # b
+    PrivateUsersEx: bytes  # s
+    ProcSubset: bytes  # s
+    ProtectClock: bool  # b
     ProtectControlGroups: bool  # b
+    ProtectControlGroupsEx: bytes  # s
     ProtectHome: bytes  # s
     ProtectHostname: bool  # b
+    ProtectHostnameEx: tuple[bytes, bytes]  # (ss)
     ProtectKernelLogs: bool  # b
     ProtectKernelModules: bool  # b
     ProtectKernelTunables: bool  # b
+    ProtectProc: bytes  # s
     ProtectSystem: bytes  # s
-    ReadOnlyPaths: List[bytes]  # as
-    ReadWritePaths: List[bytes]  # as
+    ReadOnlyPaths: list[bytes]  # as
+    ReadWritePaths: list[bytes]  # as
     ReloadResult: bytes  # s
+    ReloadSignal: int  # i
     RemainAfterExit: bool  # b
     RemoveIPC: bool  # b
     Restart: bytes  # s
-    RestartForceExitStatus: Tuple[List[int], List[int]]  # (aiai)
+    RestartForceExitStatus: tuple[list[int], list[int]]  # (aiai)
     RestartKillSignal: int  # i
-    RestartPreventExitStatus: Tuple[List[int], List[int]]  # (aiai)
+    RestartMaxDelayUSec: int  # t
+    RestartMode: bytes  # s
+    RestartPreventExitStatus: tuple[list[int], list[int]]  # (aiai)
+    RestartSteps: int  # u
     RestartUSec: int  # t
-    RestrictAddressFamilies: Tuple[bool, List[bytes]]  # (bas)
+    RestartUSecNext: int  # t
+    RestrictAddressFamilies: tuple[bool, list[bytes]]  # (bas)
+    RestrictFileSystems: tuple[bool, list[bytes]]  # (bas)
     RestrictNamespaces: int  # t
+    RestrictNetworkInterfaces: tuple[bool, list[bytes]]  # (bas)
     RestrictRealtime: bool  # b
     RestrictSUIDSGID: bool  # b
     Result: bytes  # s
     RootDirectory: bytes  # s
     RootDirectoryStartOnly: bool  # b
+    RootEphemeral: bool  # b
+    RootHash: list[bytes]  # ay
+    RootHashPath: bytes  # s
+    RootHashSignature: list[bytes]  # ay
+    RootHashSignaturePath: bytes  # s
     RootImage: bytes  # s
-    RuntimeDirectory: List[bytes]  # as
+    RootImageOptions: list[tuple[bytes, bytes]]  # a(ss)
+    RootImagePolicy: bytes  # s
+    RootVerity: bytes  # s
+    RuntimeDirectory: list[bytes]  # as
     RuntimeDirectoryMode: int  # u
     RuntimeDirectoryPreserve: bytes  # s
+    RuntimeDirectorySymlink: list[tuple[bytes, bytes, int]]  # a(sst)
     RuntimeMaxUSec: int  # t
-    SELinuxContext: Tuple[bool, bytes]  # (bs)
+    RuntimeRandomizedExtraUSec: int  # t
+    SELinuxContext: tuple[bool, bytes]  # (bs)
     SameProcessGroup: bool  # b
     SecureBits: int  # i
     SendSIGHUP: bool  # b
     SendSIGKILL: bool  # b
+    SetCredential: list[tuple[bytes, list[bytes]]]  # a(say)
+    SetCredentialEncrypted: list[tuple[bytes, list[bytes]]]  # a(say)
+    SetLoginEnvironment: bool  # b
     Slice: bytes  # s
-    SmackProcessLabel: Tuple[bool, bytes]  # (bs)
+    SmackProcessLabel: tuple[bool, bytes]  # (bs)
+    SocketBindAllow: list[tuple[int, int, int, int]]  # a(iiqq)
+    SocketBindDeny: list[tuple[int, int, int, int]]  # a(iiqq)
     StandardError: bytes  # s
     StandardErrorFileDescriptorName: bytes  # s
     StandardInput: bytes  # s
-    StandardInputData: List[bytes]  # ay
+    StandardInputData: list[bytes]  # ay
     StandardInputFileDescriptorName: bytes  # s
     StandardOutput: bytes  # s
     StandardOutputFileDescriptorName: bytes  # s
+    StartupAllowedCPUs: list[bytes]  # ay
+    StartupAllowedMemoryNodes: list[bytes]  # ay
     StartupBlockIOWeight: int  # t
     StartupCPUShares: int  # t
     StartupCPUWeight: int  # t
     StartupIOWeight: int  # t
-    StateDirectory: List[bytes]  # as
+    StartupMemoryHigh: int  # t
+    StartupMemoryLow: int  # t
+    StartupMemoryMax: int  # t
+    StartupMemorySwapMax: int  # t
+    StartupMemoryZSwapMax: int  # t
+    StateDirectory: list[bytes]  # as
+    StateDirectoryAccounting: bool  # b
     StateDirectoryMode: int  # u
+    StateDirectoryQuota: tuple[int, int, bytes]  # (tus)
+    StateDirectoryQuotaUsage: tuple[int, int]  # (tt)
+    StateDirectorySymlink: list[tuple[bytes, bytes, int]]  # a(sst)
+    StatusBusError: bytes  # s
     StatusErrno: int  # i
     StatusText: bytes  # s
-    SuccessExitStatus: Tuple[List[int], List[int]]  # (aiai)
-    SupplementaryGroups: List[bytes]  # as
+    StatusVarlinkError: bytes  # s
+    SuccessExitStatus: tuple[list[int], list[int]]  # (aiai)
+    SupplementaryGroups: list[bytes]  # as
     SyslogFacility: int  # i
     SyslogIdentifier: bytes  # s
     SyslogLevel: int  # i
     SyslogLevelPrefix: bool  # b
     SyslogPriority: int  # i
-    SystemCallArchitectures: List[bytes]  # as
+    SystemCallArchitectures: list[bytes]  # as
     SystemCallErrorNumber: int  # i
-    SystemCallFilter: Tuple[bool, List[bytes]]  # (bas)
+    SystemCallFilter: tuple[bool, list[bytes]]  # (bas)
+    SystemCallLog: tuple[bool, list[bytes]]  # (bas)
+    TTYColumns: int  # q
     TTYPath: bytes  # s
     TTYReset: bool  # b
+    TTYRows: int  # q
     TTYVHangup: bool  # b
     TTYVTDisallocate: bool  # b
     TasksAccounting: bool  # b
     TasksCurrent: int  # t
     TasksMax: int  # t
-    TemporaryFileSystem: List[Tuple[bytes, bytes]]  # a(ss)
+    TemporaryFileSystem: list[tuple[bytes, bytes]]  # a(ss)
     TimeoutAbortUSec: int  # t
     TimeoutCleanUSec: int  # t
+    TimeoutStartFailureMode: bytes  # s
     TimeoutStartUSec: int  # t
+    TimeoutStopFailureMode: bytes  # s
     TimeoutStopUSec: int  # t
     TimerSlackNSec: int  # t
     Type: bytes  # s
@@ -396,7 +534,7 @@ class Unit_Service(SDInterface):
     UMask: int  # u
     USBFunctionDescriptors: bytes  # s
     USBFunctionStrings: bytes  # s
-    UnsetEnvironment: List[bytes]  # as
+    UnsetEnvironment: list[bytes]  # as
     User: bytes  # s
     UtmpIdentifier: bytes  # s
     UtmpMode: bytes  # s
@@ -405,12 +543,29 @@ class Unit_Service(SDInterface):
     WatchdogTimestampMonotonic: int  # t
     WatchdogUSec: int  # t
     WorkingDirectory: bytes  # s
-    def GetProcesses(self) -> List[Tuple[bytes, int, bytes]]: ...  # a(sus)
-    def AttachProcesses(self, arg0: bytes, arg1: List[int]) -> None: ...  # s  # au
+    def AttachProcesses(self, arg0: bytes, arg1: list[int]) -> None: ...  # s  # au
+    def BindMount(
+        self, arg0: bytes, arg1: bytes, arg2: bool, arg3: bool
+    ) -> None: ...  # s  # s  # b  # b
+    def DumpFileDescriptorStore(
+        self,
+    ) -> list[
+        tuple[bytes, int, int, int, int, int, int, bytes, int]
+    ]: ...  # a(suuutuusu)
+    def GetProcesses(self) -> list[tuple[bytes, int, bytes]]: ...  # a(sus)
+    def MountImage(
+        self,
+        arg0: bytes,
+        arg1: bytes,
+        arg2: bool,
+        arg3: bool,
+        arg4: list[tuple[bytes, bytes]],
+    ) -> None: ...  # s  # s  # b  # b  # a(ss)
+    def RemoveSubgroup(self, arg0: bytes, arg1: int) -> None: ...  # s  # t
 
 class Unit(SDObject):
     def __init__(
-        self, external_id: AnyStr, bus: Optional[DBus] = None, _autoload: bool = False
+        self, external_id: AnyStr, bus: DBus | None = None, _autoload: bool = False
     ): ...
     def __enter__(self) -> Unit: ...
     Unit: Unit_Unit
