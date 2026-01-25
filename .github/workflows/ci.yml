@@ -45,6 +45,10 @@ jobs:
           e2e
     - name: Run isort
       uses: isort/isort-action@v1
+    - name: Formatting hint
+      if: failure()
+      run: |
+        echo "::notice::PROTIP: You can install pre-commit hooks to automatically format your code before each commit. Run 'uv run pre-commit install' and never have to resubmit a PR because of formatting errors! See CONTRIBUTING.md for more details."
 
 
   typing:
