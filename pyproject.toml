@@ -46,6 +46,7 @@ lint = [
     "ruff",
     "pyrefly",
     "isort",
+    "pre-commit",
 ]
 
 [project.urls]
