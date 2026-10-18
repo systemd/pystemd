@@ -6,6 +6,8 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+* Generate transient unit property signatures by probing systemd 255, 257 and 259 instead of keeping them by hand: fixes `Conditions` and `Asserts`, adds 227 missing properties, and drops 52 that systemd does not let you set
+* Fix leaked D-Bus messages, errors and passed file descriptors when `DBus.call_method` or `DBus.get_property` fails
 
 0.15.3
 =====

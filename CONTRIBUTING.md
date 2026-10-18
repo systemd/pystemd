@@ -61,6 +61,22 @@ each commit:
 uv run pre-commit install
 ```
 
+### Transient unit property signatures
+
+`pystemd/systemd1/transient_properties.py` lists the D-Bus signature systemd
+accepts for each property of a transient unit. It is generated, so do not edit
+it by hand. The data comes from asking a running systemd, one file per version
+in `tools/transient-properties/`.
+
+To add a systemd version, run the probe as root inside a throwaway container
+or VM with that systemd (it creates and stops transient units), then
+regenerate the module:
+
+```bash
+python3 tools/probe_transient_properties.py tools/transient-properties/systemd-NNN.json
+python3 tools/generate_transient_properties.py
+```
+
 ## Sending a pull request
 Have a fix or feature? Awesome! When you send the pull request we suggest you
 include a build output.

@@ -413,7 +413,6 @@ cdef class DBus:
             int arg_type
 
             dbusc.sd_bus_message *msg_call = NULL
-            dbusc.sd_bus_message *msg_reply = NULL
             dbusc.sd_bus_error error = dbusc.sd_bus_error(NULL, NULL, 0)
 
             DbusMessage msg = DbusMessage()
@@ -430,26 +429,27 @@ cdef class DBus:
         if r < 0:
             raise DBusError(r, None, 'Could not create DBus method')
 
-        for narg, (arg_type, arg_value) in enumerate(args or []):
-            try:
-                self._msg_append(msg_call, arg_type, arg_value)
-            except TypeError as e:
-              raise TypeError(
-                str(e) + ' for input "{}", element '
-                'number {} in input series:\n{}'.format(
-                  arg_value, narg, pformat(args)))
+        # msg_call (and any fds appended to it) and error must be released on
+        # every path, including failed calls and bad arguments.
+        try:
+            for narg, (arg_type, arg_value) in enumerate(args or []):
+                try:
+                    self._msg_append(msg_call, arg_type, arg_value)
+                except TypeError as e:
+                  raise TypeError(
+                    str(e) + ' for input "{}", element '
+                    'number {} in input series:\n{}'.format(
+                      arg_value, narg, pformat(args)))
 
+            r = dbusc.sd_bus_call(self.bus, msg_call, 0, &error, msg.ref())
 
-        r = dbusc.sd_bus_call(self.bus, msg_call, 0, &error, msg.ref())
+            if r < 0:
+                raise DBusError(r, error.name, error.message)
 
-        if r < 0:
-            raise DBusError(r, error.name, error.message)
-
-        msg.process_reply(False)
-
-        dbusc.sd_bus_message_unref(msg_call)
-        dbusc.sd_bus_message_unref(msg_reply)
-        dbusc.sd_bus_error_free(&error)
+            msg.process_reply(False)
+        finally:
+            dbusc.sd_bus_message_unref(msg_call)
+            dbusc.sd_bus_error_free(&error)
 
         return msg
 
@@ -467,19 +467,22 @@ cdef class DBus:
 
           DbusMessage msg = DbusMessage()
 
-        r = dbusc.sd_bus_get_property(
-          self.bus,
-          destination,
-          path,
-          interface,
-          property,
-          &error,
-          msg.ref(),
-          rtype
-        )
+        try:
+            r = dbusc.sd_bus_get_property(
+              self.bus,
+              destination,
+              path,
+              interface,
+              property,
+              &error,
+              msg.ref(),
+              rtype
+            )
 
-        if r < 0:
-            raise DBusError(r, error.name, error.message)
+            if r < 0:
+                raise DBusError(r, error.name, error.message)
+        finally:
+            dbusc.sd_bus_error_free(&error)
 
         msg.process_reply(False)
         return msg.body

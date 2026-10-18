@@ -1,3 +1,5 @@
 include README.md LICENSE
 recursive-include tests *.py
 recursive-include pystemd *.pyx *.pxd *.pxi
+include tools/generate_transient_properties.py
+recursive-include tools/transient-properties *.json

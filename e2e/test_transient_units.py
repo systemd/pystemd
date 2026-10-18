@@ -55,3 +55,21 @@ def test_transient_unit_with_dependencies():
 
     # Cleanup
     unit.Unit.Stop(b"replace")
+
+
+def test_transient_unit_with_conditions():
+    """Conditions is set as a(sbbs), not read type a(sbbsi)"""
+    if os.geteuid() != 0:
+        pytest.skip("Requires root privileges")
+
+    unit = pystemd.run(
+        [b"/bin/true"],
+        extra={
+            b"Conditions": [(b"ConditionPathExists", False, False, b"/")],
+        },
+        remain_after_exit=True,
+    )
+
+    assert unit.Unit.Conditions[0][:4] == (b"ConditionPathExists", False, False, b"/")
+
+    unit.Unit.Stop(b"replace")
