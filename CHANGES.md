@@ -6,6 +6,7 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+* Fix leaked D-Bus messages, errors and passed file descriptors when `DBus.call_method` or `DBus.get_property` fails
 
 0.15.3
 =====
