@@ -10,6 +10,7 @@ dev
 * Add `PrivatePIDs`, `ProtectHostnameEx` and `SystemCallErrorNumber` to systemd1 KNOWN_UNIT_SIGNATURES
 * Add `FileDescriptorStoreMax` and `FileDescriptorStorePreserve` to systemd1 KNOWN_UNIT_SIGNATURES
 * Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
+* Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
 
 0.15.3
 =====
