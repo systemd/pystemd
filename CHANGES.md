@@ -11,6 +11,7 @@ dev
 * Fix `pystemd.futures` on Python 3.14+, where the default multiprocessing start method is no longer fork
 * Fix `pystemd.futures` ignoring `User=` on systemd >= 255
 * Fix `pystemd.futures.TransientUnitPoolExecutor` leaking its unit when the parent process is killed
+* Fix `pystemd.run(wait_for_activation=True)` hanging forever when the unit fails to start
 * Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
 
 0.15.3

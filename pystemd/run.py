@@ -365,9 +365,14 @@ def run(
                                 and sub_state in EXIT_SUBSTATES
                             )
                         elif wait_for_activation:
+                            # active, or the start job is over and the unit
+                            # already exited (e.g. it failed to start)
                             done = (
                                 message_job_path == unit_start_job
                                 and sub_state == b"running"
+                            ) or (
+                                message_job_path != unit_start_job
+                                and sub_state in EXIT_SUBSTATES
                             )
                 if done:
                     break
