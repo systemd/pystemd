@@ -94,6 +94,7 @@ KNOWN_UNIT_SIGNATURES = {
     b"LockPersonality": b"b",
     b"SupplementaryGroups": b"as",
     b"SystemCallArchitectures": b"as",
+    b"SystemCallErrorNumber": b"i",
     b"SystemCallFilter": b"(bas)",
     # timeouts
     b"RuntimeMaxUSec": b"t",
@@ -168,8 +169,10 @@ KNOWN_UNIT_SIGNATURES = {
     b"PrivateIPC": b"b",
     b"PrivateMounts": b"b",
     b"PrivateNetwork": b"b",
+    b"PrivatePIDs": b"s",
     b"PrivateTmp": b"b",
     b"PrivateUsers": b"b",
+    b"ProtectHostnameEx": b"(ss)",
     b"ProtectKernelTunables": b"b",
     b"ProtectKernelModules": b"b",
     b"ProtectControlGroups": b"b",
