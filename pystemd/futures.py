@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 from concurrent.futures import ProcessPoolExecutor
 from functools import cached_property
-from multiprocessing import Process
-from multiprocessing.context import BaseContext
+from multiprocessing.context import BaseContext, ForkProcess
 from pathlib import Path
 from typing import Any, Sequence, cast
 
@@ -34,10 +33,12 @@ class TransientUnitContext(BaseContext):
         self.properties = properties
         self.user_mode = user_mode
         self.unit_name = unit_name
+        # The unit's main process lives exactly as long as we do, so the unit
+        # is not leaked if we die without reaching stop_unit() (e.g. SIGTERM).
         self.main_process_cmd = main_process or [
             "/bin/bash",
             "-c",
-            "exec sleep infinity",
+            f"exec tail --pid={os.getpid()} -f /dev/null",
         ]
         super().__init__()
 
@@ -49,6 +50,11 @@ class TransientUnitContext(BaseContext):
             name=self.unit_name,
             user_mode=self.user_mode,
             wait_for_activation=True,
+            # "exec": only report the unit running once the main process has
+            # exec'd, i.e. once its user and namespaces are final. With
+            # "simple", enter_unit could read the uid of the not-yet-dropped
+            # executor (systemd >= 255) and keep running as root.
+            service_type="exec",
             extra={
                 **self.properties,
                 "Delegate": True,
@@ -93,9 +99,12 @@ def enter_unit(unit):
     os.setuid(uid)
 
 
-class _ProcessWithPreRun(Process):
+class _ProcessWithPreRun(ForkProcess):
     """
-    Parent class that its just a subprocess, but it execute a pre_run hook
+    Parent class that its just a subprocess, but it execute a pre_run hook.
+
+    Always forks (enter_unit relies on it), even on Python 3.14+ where the
+    default start method on Linux is no longer fork.
     """
 
     def __init__(self, *args, **kwargs) -> None:

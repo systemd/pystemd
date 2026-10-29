@@ -6,6 +6,11 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+* Fix `pystemd.run(wait=True)` / `wait_for_activation=True` hanging forever on hosts where no other client is subscribed to systemd signals
+* Fix `pystemd.run` missing unit state changes when several D-Bus signals arrive at once
+* Fix `pystemd.futures` on Python 3.14+, where the default multiprocessing start method is no longer fork
+* Fix `pystemd.futures` ignoring `User=` on systemd >= 255
+* Fix `pystemd.futures.TransientUnitPoolExecutor` leaking its unit when the parent process is killed
 * Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
 
 0.15.3
