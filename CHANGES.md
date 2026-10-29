@@ -10,6 +10,7 @@ dev
 * Add `PrivatePIDs`, `ProtectHostnameEx` and `SystemCallErrorNumber` to systemd1 KNOWN_UNIT_SIGNATURES
 * Add `FileDescriptorStoreMax` and `FileDescriptorStorePreserve` to systemd1 KNOWN_UNIT_SIGNATURES
 * Add `fds=` to `pystemd.daemon.notify` (sd_pid_notify_with_fds) and add `pystemd.daemon.listen_fds_with_names` (file descriptor store / named socket activation)
+* Add `pystemd.daemon.store_fd` and `pystemd.daemon.store_fds` helpers for the file descriptor store
 * Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
 
 0.15.3

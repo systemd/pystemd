@@ -110,6 +110,57 @@ master/src/systemd/sd-daemon.h#L173-L232
     free(c_fds)
 
 
+def store_fd(name, fds, unset_environment=False, **kwstates):
+  """
+  hand `fds` (a single fd or a list; ints or objects with fileno()) to
+  systemd's file descriptor store under `name`: systemd keeps them while the
+  service restarts, and listen_fds_with_names()[name] gives them back on the
+  next start. The unit needs FileDescriptorStoreMax= > 0.
+
+  Same as notify(unset_environment, fds=fds, fdstore=1, fdname=name, **kwstates).
+
+  usage:
+    * `pystemd.daemon.store_fd("db", memfd)`
+    * `pystemd.daemon.store_fd("listener", sock, ready=1)`
+  """
+  _check_fdname(name)
+  return notify(unset_environment, fds=fds, fdstore=1, fdname=name, **kwstates)
+
+
+def store_fds(fds_by_name, unset_environment=False, **kwstates):
+  """
+  store_fd() for several names at once: `fds_by_name` is {name: fds}, where
+  fds is a single fd or a list. One FDNAME= covers a whole notify message,
+  so this sends one message per name (not atomically). `unset_environment`
+  and the extra states (e.g. ready=1) only go with the last message.
+  Returns the lowest notify() result (negative errno if any send failed).
+
+  usage:
+    * `pystemd.daemon.store_fds({"listener": sock, "log": memfd}, ready=1)`
+    * `pystemd.daemon.store_fds({...}, True)` or `store_fds({...}, unset_environment=True)`
+  """
+  items = list(fds_by_name.items())
+  for name, _ in items:
+    _check_fdname(name)
+  if not items:
+    return notify(unset_environment, **kwstates) if kwstates else 0
+
+  results = [store_fd(name, fds) for name, fds in items[:-1]]
+  name, fds = items[-1]
+  results.append(store_fd(name, fds, unset_environment=unset_environment, **kwstates))
+  return min(results)
+
+
+def _check_fdname(name):
+  # systemd ignores invalid names *silently* (the fds are just not stored),
+  # so fail here instead: LISTEN_FDNAMES is ':'-separated, printable ASCII.
+  if (
+    not isinstance(name, str) or not 0 < len(name) <= 255
+    or ":" in name or not all(32 <= ord(c) < 127 for c in name)
+  ):
+    raise ValueError(f"invalid fd name {name!r}: 1-255 printable ASCII characters, no ':'")
+
+
 def _fd_list(fds):
   """
   normalize notify()'s `fds`: a single fd (int, or object with fileno()) or an

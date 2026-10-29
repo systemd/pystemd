@@ -49,6 +49,32 @@ class TestNotify(TestCase):
                 daemon.notify(False, fds=bad, ready=1)
 
 
+class TestStoreFds(TestCase):
+    # without $NOTIFY_SOCKET these are no-ops that return 0
+    def test_store_fd(self):
+        self.assertIn(daemon.store_fd("one", 1), {0, 1})
+        self.assertIn(daemon.store_fd("many", [1, sys.stderr], status="x"), {0, 1})
+
+    def test_store_fds(self):
+        self.assertIn(daemon.store_fds({"a": 1, "b": [1, 2]}, ready=1), {0, 1})
+        self.assertEqual(daemon.store_fds({}), 0)
+
+    def test_unset_environment_positional_or_keyword(self):
+        self.assertIn(daemon.store_fd("x", 1, False), {0, 1})
+        self.assertIn(daemon.store_fd("x", 1, unset_environment=False), {0, 1})
+        self.assertIn(daemon.store_fds({"x": 1}, False), {0, 1})
+        self.assertIn(daemon.store_fds({"x": 1}, unset_environment=False), {0, 1})
+
+    def test_invalid_names(self):
+        for bad in ("", "a:b", "x" * 256, "tab\there", "ñ", None):
+            with self.assertRaises(ValueError):
+                # pyrefly: ignore [bad-argument-type]
+                daemon.store_fd(bad, 1)
+            with self.assertRaises(ValueError):
+                # pyrefly: ignore [bad-argument-type]
+                daemon.store_fds({"ok": 1, bad: 1})
+
+
 class TestListen(TestCase):
     def test_notify(self):
         self.assertTrue(daemon.listen_fds(False) >= 0)
