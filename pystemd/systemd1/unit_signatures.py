@@ -65,6 +65,8 @@ KNOWN_UNIT_SIGNATURES = {
     b"DynamicUser": b"b",
     b"Personality": b"s",
     b"Description": b"s",
+    b"FileDescriptorStoreMax": b"u",
+    b"FileDescriptorStorePreserve": b"s",
     b"NotifyAccess": b"s",
     b"BusName": b"s",
     b"RemainAfterExit": b"b",
