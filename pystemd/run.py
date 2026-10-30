@@ -83,6 +83,7 @@ def run(
     stop_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
     start_pre_cmd: Sequence[str | bytes] | str | bytes | None = None,
     start_post_cmd: Sequence[str | bytes] | str | bytes | None = None,
+    delegate: bool | None = None,
 ) -> Unit:
     """
     pystemd.run imitates systemd-run, but with a pythonic feel to it.
@@ -146,6 +147,9 @@ def run(
         stderr: Specify a file descriptor for stderr. By default this is `None`
             and your unit will not have a stderr.
         slice_: the slice under you want to run the unit.
+        delegate: Set `Delegate=` on the unit. True hands the unit's cgroup
+            subtree to the service (needed for `AttachProcesses`), False turns
+            it off. None, the default, leaves systemd's default.
 
     More info and examples in:
     https://github.com/systemd/pystemd/blob/master/_docs/pystemd.run.md
@@ -263,6 +267,7 @@ def run(
                 b"CollectMode": b"inactive-or-failed" if collect else None,
                 b"WorkingDirectory": cwd,
                 b"User": user,
+                b"Delegate": delegate,
                 b"Nice": nice,
                 b"RuntimeMaxUSec": runtime_max_usec,
                 b"Environment": [
