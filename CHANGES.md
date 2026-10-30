@@ -6,6 +6,20 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+* Fix `pystemd.run(wait=True)` / `wait_for_activation=True` hanging forever on hosts where no other client is subscribed to systemd signals
+* Fix `pystemd.run` missing unit state changes when several D-Bus signals arrive at once
+* Fix `pystemd.futures` on Python 3.14+, where the default multiprocessing start method is no longer fork
+* Fix `pystemd.futures` ignoring `User=` on systemd >= 255
+* Fix `pystemd.futures.TransientUnitPoolExecutor` leaking its unit when the parent process is killed
+* Add `PrivatePIDs`, `ProtectHostnameEx` and `SystemCallErrorNumber` to systemd1 KNOWN_UNIT_SIGNATURES
+* Fix `pystemd.run(wait_for_activation=True)` hanging forever when the unit fails to start
+* Add `FileDescriptorStoreMax` and `FileDescriptorStorePreserve` to systemd1 KNOWN_UNIT_SIGNATURES
+* Add `fds=` to `pystemd.daemon.notify` (sd_pid_notify_with_fds) and add `pystemd.daemon.listen_fds_with_names` (file descriptor store / named socket activation)
+* Add `pystemd.daemon.store_fd` and `pystemd.daemon.store_fds` helpers for the file descriptor store
+* Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
+* Add `pystemd.utils.ns.join_namespaces` (atomic pidfd `setns`, with a per-namespace fallback); `pystemd.futures` uses it, which also fixes leaking one fd per namespace in every worker
+* Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
+* Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
 
 0.15.3
 =====

@@ -3,17 +3,15 @@ from __future__ import annotations
 import os
 from concurrent.futures import ProcessPoolExecutor
 from functools import cached_property
-from multiprocessing import Process
-from multiprocessing.context import BaseContext
-from pathlib import Path
+from multiprocessing.context import BaseContext, ForkProcess
 from typing import Any, Sequence, cast
 
 import psutil
 
-import pystemd.cutils
 import pystemd.run
 import pystemd.utils
 from pystemd.dbuslib import DBus
+from pystemd.utils.ns import join_namespaces
 
 
 class TransientUnitContext(BaseContext):
@@ -34,10 +32,12 @@ class TransientUnitContext(BaseContext):
         self.properties = properties
         self.user_mode = user_mode
         self.unit_name = unit_name
+        # The unit's main process lives exactly as long as we do, so the unit
+        # is not leaked if we die without reaching stop_unit() (e.g. SIGTERM).
         self.main_process_cmd = main_process or [
             "/bin/bash",
             "-c",
-            "exec sleep infinity",
+            f"exec tail --pid={os.getpid()} -f /dev/null",
         ]
         super().__init__()
 
@@ -49,6 +49,11 @@ class TransientUnitContext(BaseContext):
             name=self.unit_name,
             user_mode=self.user_mode,
             wait_for_activation=True,
+            # "exec": only report the unit running once the main process has
+            # exec'd, i.e. once its user and namespaces are final. With
+            # "simple", enter_unit could read the uid of the not-yet-dropped
+            # executor (systemd >= 255) and keep running as root.
+            service_type="exec",
             extra={
                 **self.properties,
                 "Delegate": True,
@@ -72,7 +77,7 @@ def enter_unit(unit):
     after fork, but before code to run. It basically do:
 
         1) Attach itself to the main transient unit (making it part of the cgroup)
-        2) Change its namespace too all the namespaces of the main transient unit, this is best effort
+        2) Join all the namespaces of the main transient unit (see pystemd.utils.ns.join_namespaces)
         3) Change group and user to the group and user of the main transient unit
     """
     # get the unit information
@@ -84,18 +89,20 @@ def enter_unit(unit):
 
     unit.Service.AttachProcesses("/", [os.getpid()])
 
-    # attach ourselves to the namespace
-    for ns in Path(f"/proc/{main_pid}/ns").iterdir():
-        pystemd.cutils.setns(os.open(ns, os.O_RDONLY), 0)
+    # enter the unit's namespaces (PrivateNetwork=, PrivateTmp=, ...)
+    join_namespaces(main_pid)
 
     # change the user
     os.setgid(gid)
     os.setuid(uid)
 
 
-class _ProcessWithPreRun(Process):
+class _ProcessWithPreRun(ForkProcess):
     """
-    Parent class that its just a subprocess, but it execute a pre_run hook
+    Parent class that its just a subprocess, but it execute a pre_run hook.
+
+    Always forks (enter_unit relies on it), even on Python 3.14+ where the
+    default start method on Linux is no longer fork.
     """
 
     def __init__(self, *args, **kwargs) -> None:

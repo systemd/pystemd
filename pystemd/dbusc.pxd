@@ -7,6 +7,7 @@
 # the root directory of this source tree.
 #
 
+from posix.types cimport pid_t
 from libc.stdint cimport (
     int16_t,
     int32_t,
@@ -37,6 +38,9 @@ cdef extern from "systemd/sd-daemon.h":
   int SD_LISTEN_FDS_START
   int sd_listen_fds(int unset_environment)
   int sd_notify(int unset_environment, const char *state)
+  int sd_pid_notify_with_fds(pid_t pid, int unset_environment, const char *state,
+                             const int *fds, unsigned n_fds)
+  int sd_listen_fds_with_names(int unset_environment, char ***names)
   int sd_booted()
   int sd_watchdog_enabled(int unset_environment, uint64_t *usec)
 
