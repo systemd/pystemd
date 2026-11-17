@@ -38,6 +38,9 @@ jobs:
     - name: Run ruff
       uses: astral-sh/ruff-action@v3
       with:
+        # Keep in sync with .pre-commit-config.yaml. Unpinned, the action
+        # installs the latest ruff, whose default rule set keeps growing.
+        version: "0.9.6"
         src: >-
           pystemd
           examples
@@ -45,6 +48,9 @@ jobs:
           e2e
     - name: Run isort
       uses: isort/isort-action@v1
+      with:
+        # Keep in sync with .pre-commit-config.yaml.
+        isort-version: "6.0.0"
     - name: Formatting hint
       if: failure()
       run: |
