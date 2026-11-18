@@ -13,6 +13,9 @@ dev
 * Fix `pystemd.futures.TransientUnitPoolExecutor` leaking its unit when the parent process is killed
 * Fix `pystemd.run(wait_for_activation=True)` hanging forever when the unit fails to start
 * Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
+* Add `PrivatePIDs`, `ProtectHostnameEx` and `SystemCallErrorNumber` to systemd1 KNOWN_UNIT_SIGNATURES
+* Add `FileDescriptorStoreMax` and `FileDescriptorStorePreserve` to systemd1 KNOWN_UNIT_SIGNATURES
+* Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
 
 0.15.3
 =====
