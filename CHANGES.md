@@ -7,6 +7,9 @@ the one you find pypi, but its the one in development.
 dev
 =====
 * Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
+* Add `PrivatePIDs`, `ProtectHostnameEx` and `SystemCallErrorNumber` to systemd1 KNOWN_UNIT_SIGNATURES
+* Add `FileDescriptorStoreMax` and `FileDescriptorStorePreserve` to systemd1 KNOWN_UNIT_SIGNATURES
+* Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
 
 0.15.3
 =====
