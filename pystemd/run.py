@@ -306,6 +306,12 @@ def run(
             monitor_fd = monbus.get_fd()
             sel.register(monitor_fd, EVENT_READ)
 
+            # systemd only emits unit PropertiesChanged signals while at least
+            # one client is subscribed. On a desktop someone usually is; on a
+            # minimal host nobody is, and we would wait forever.
+            # pyrefly: ignore [missing-argument]
+            manager.Manager.Subscribe()
+
         # start the process
         # pyrefly: ignore [missing-argument]
         unit_start_job = manager.Manager.StartTransientUnit(
@@ -335,29 +341,41 @@ def run(
 
             # pyrefly: ignore [unbound-name]
             if monitor_fd in _in:
-                # pyrefly: ignore [unbound-name]
-                m = monbus.process()
-                if m.is_empty():
-                    continue
+                # Drain every message sd-bus has buffered: one read from the
+                # socket can bring several signals, and select() will not
+                # wake up again for the ones already read.
+                done = False
+                while not done:
+                    # pyrefly: ignore [unbound-name]
+                    m = monbus.process()
+                    if m.is_empty():
+                        break
 
-                m.process_reply(False)
-                if (
-                    # pyrefly: ignore [missing-attribute]
-                    m.get_path() == unit.path
-                    and m.body[0] == b"org.freedesktop.systemd1.Unit"
-                ):
-                    _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
-                    if wait:
-                        if (
-                            message_job_path != unit_start_job
-                            and m.body[1].get(b"SubState") in EXIT_SUBSTATES
-                        ):
-                            break
-                    elif wait_for_activation:
-                        if message_job_path == unit_start_job and m.body[1].get(
-                            b"SubState"
-                        ) in (b"running",):
-                            break
+                    m.process_reply(False)
+                    if (
+                        # pyrefly: ignore [missing-attribute]
+                        m.get_path() == unit.path
+                        and m.body[0] == b"org.freedesktop.systemd1.Unit"
+                    ):
+                        _, message_job_path = m.body[1].get(b"Job", (0, b"/"))
+                        sub_state = m.body[1].get(b"SubState")
+                        if wait:
+                            done = (
+                                message_job_path != unit_start_job
+                                and sub_state in EXIT_SUBSTATES
+                            )
+                        elif wait_for_activation:
+                            # active, or the start job is over and the unit
+                            # already exited (e.g. it failed to start)
+                            done = (
+                                message_job_path == unit_start_job
+                                and sub_state == b"running"
+                            ) or (
+                                message_job_path != unit_start_job
+                                and sub_state in EXIT_SUBSTATES
+                            )
+                if done:
+                    break
 
             if _wait_polling and not _in and unit.Service.MainPID == 0:
                 # on usermode the subscribe to events does not work that well
