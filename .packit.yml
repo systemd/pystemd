@@ -4,7 +4,7 @@
 specfile_path: python-pystemd.spec
 files_to_sync:
   - python-pystemd.spec
-  - .packit.yaml
+  - .packit.yml
 
 upstream_package_name: pystemd
 downstream_package_name: python-pystemd
@@ -36,14 +36,17 @@ jobs:
     - fedora-eln-ppc64le
     - fedora-eln-s390x
     - fedora-eln-x86_64
-    - epel-8-aarch64
-    - epel-8-ppc64le
-    - epel-8-s390x
-    - epel-8-x86_64
+    # Replace with epel-all after EPEL 8 is EOL
     - epel-9-aarch64
+    - epel-9-i386
     - epel-9-ppc64le
     - epel-9-s390x
     - epel-9-x86_64
+    - epel-10-aarch64
+    - epel-10-i386
+    - epel-10-ppc64le
+    - epel-10-s390x
+    - epel-10-x86_64
 - job: copr_build
   trigger: pull_request
   owner: "@meta"
@@ -59,11 +62,14 @@ jobs:
     - fedora-eln-ppc64le
     - fedora-eln-s390x
     - fedora-eln-x86_64
-    - epel-8-aarch64
-    - epel-8-ppc64le
-    - epel-8-s390x
-    - epel-8-x86_64
+    # Replace with epel-all after EPEL 8 is EOL
     - epel-9-aarch64
+    - epel-9-i386
     - epel-9-ppc64le
     - epel-9-s390x
     - epel-9-x86_64
+    - epel-10-aarch64
+    - epel-10-i386
+    - epel-10-ppc64le
+    - epel-10-s390x
+    - epel-10-x86_64
