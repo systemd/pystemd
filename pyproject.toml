@@ -38,9 +38,8 @@ keywords = ["systemd", "linux", "dbus"]
 t = [
   "pytest", 
   "pytest-cov", 
-  # cstq and toml are used for testing version
-  "cstq", 
-  "toml",
+  # cstq is used for testing version
+  "cstq",
 ]
 lint = [
     "ruff",
