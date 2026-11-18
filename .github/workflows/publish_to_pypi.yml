@@ -17,7 +17,7 @@ jobs:
       - name: Set up latest Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.15'
 
       - name: Install latest pip, build, twine
         run: |
