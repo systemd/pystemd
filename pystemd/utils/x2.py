@@ -9,11 +9,8 @@
 from __future__ import annotations
 
 import shlex
-import uuid
 from pathlib import Path
-from typing import Any, Iterable, TypeVar
-
-T = TypeVar("T")
+from typing import Any, Iterable
 
 
 def x2char_star(what_to_convert: Any, convert_all: bool = False) -> bytes:
@@ -115,13 +112,3 @@ def x2cmdlist(
         return [strlist2cmd(what_to_convert, cont)]
 
     return [strlist2cmd(_, cont) for _ in what_to_convert]
-
-
-def unwrap(obj: T | None, msg="object was None") -> T:
-    if obj is None:
-        raise ValueError(msg)
-    return obj
-
-
-def random_unit_name(*, unit_type="service", prefix="pystemd"):
-    return f"{prefix}{uuid.uuid4().hex}.{unit_type}"
