@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=46.4.0", "wheel", "cython"]
+requires = ["setuptools>=70.1", "cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -22,15 +22,16 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Development Status :: 5 - Production/Stable",
     "Topic :: Utilities",
 ]
 license =  "LGPL-2.1+" 
+license-files = ["LICENSE"]
 keywords = ["systemd", "linux", "dbus"]
 
 [project.optional-dependencies]
@@ -58,4 +59,3 @@ atomic = true
 profile = "black"
 line_length = 88
 skip_gitignore = true
-
