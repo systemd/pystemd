@@ -6,6 +6,7 @@ the one you find pypi, but its the one in development.
 
 dev
 =====
+* Add `delegate=` to `pystemd.run`, a shortcut for `extra={"Delegate": ...}`
 
 0.15.3
 =====
