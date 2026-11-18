@@ -1,6 +1,6 @@
+import tomllib
 from pathlib import Path
 
-import toml
 from cstq import Query
 
 
@@ -22,5 +22,5 @@ def test_version():
     version_version = (
         Query(version).find_assignment("__version__").value.literal_eval_for_node()
     )
-    pyproject_version = toml.loads(pyproject.read_text())["project"]["version"]
+    pyproject_version = tomllib.loads(pyproject.read_text())["project"]["version"]
     assert setup_version == version_version == pyproject_version
