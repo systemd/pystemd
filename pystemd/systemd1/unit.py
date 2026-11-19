@@ -8,8 +8,9 @@
 
 from __future__ import annotations
 
-from pystemd.base import SDObject
-from pystemd.dbuslib import path_encode
+from pystemd.base import SDObject, overwrite_interface_method
+from pystemd.dbuslib import apply_signature, path_encode
+from pystemd.systemd1.unit_signatures import signature_array
 from pystemd.utils import x2char_star
 
 
@@ -31,3 +32,20 @@ class Unit(SDObject):
             "bus": self._bus,
             "_autoload": self._loaded,
         }
+
+    @overwrite_interface_method("org.freedesktop.systemd1.Unit")
+    def SetProperties(self, interface_name, runtime, properties):
+        """
+        Change unit properties at runtime, like `systemctl set-property`.
+        `properties` is a dict (or a list of (name, value) pairs), e.g.
+        `unit.Unit.SetProperties(True, {"CPUWeight": 200})`; each value is
+        sent with the type systemd expects for it (see KNOWN_UNIT_SIGNATURES).
+        """
+        assert interface_name == b"org.freedesktop.systemd1.Unit"
+        args = apply_signature(b"b", [runtime])
+        args += signature_array(properties)
+
+        with self.bus_context() as bus:
+            return bus.call_method(
+                self.destination, self.path, interface_name, b"SetProperties", args
+            ).body

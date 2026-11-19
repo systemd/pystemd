@@ -58,3 +58,21 @@ def test_unit_restart():
 
     # Cleanup
     unit.Unit.Stop(b"replace")
+
+
+def test_unit_set_properties():
+    """Test changing a running unit's properties (systemctl set-property)"""
+    if os.geteuid() != 0:
+        pytest.skip("Requires root privileges")
+
+    unit = pystemd.run([b"/bin/sleep", b"60"], wait_for_activation=True)
+    try:
+        # a dict, or a list of (name, value) pairs like the D-Bus a(sv)
+        unit.Unit.SetProperties(True, {"CPUWeight": 200, "TasksMax": 42})
+        assert unit.Service.CPUWeight == 200
+        assert unit.Service.TasksMax == 42
+
+        unit.Unit.SetProperties(True, [(b"CPUWeight", 300)])
+        assert unit.Service.CPUWeight == 300
+    finally:
+        unit.Unit.Stop(b"replace")

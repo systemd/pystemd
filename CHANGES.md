@@ -18,6 +18,8 @@ dev
 * Add `fds=` to `pystemd.daemon.notify` (sd_pid_notify_with_fds) and add `pystemd.daemon.listen_fds_with_names` (file descriptor store / named socket activation)
 * Add `pystemd.daemon.store_fd` and `pystemd.daemon.store_fds` helpers for the file descriptor store
 * Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
+* Fix `Unit.SetProperties` raising `NotImplementedError`: it now encodes properties like `Manager.SetUnitProperties` does, and takes a dict or a list of (name, value) pairs (#122)
+* Add `CPUWeight`, `IOWeight`, `AllowedCPUs`, `MemoryMin`, the `IO*Max` limits and other cgroup properties to systemd1 KNOWN_UNIT_SIGNATURES
 * Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
 * Add `pystemd.utils.ns.join_namespaces` (atomic pidfd `setns`, with a per-namespace fallback)
 

@@ -27,3 +27,14 @@ class TestArraySignature(TestCase):
                 (-1, None),
             ],
         )
+
+    def test_list_of_pairs(self):
+        # a(sv) as D-Bus sees it: the same result as the dict form
+        self.assertEqual(
+            pystemd.systemd1.unit_signatures.signature_array(
+                [(b"CPUWeight", 200), ("PrivateTmp", True)]
+            ),
+            pystemd.systemd1.unit_signatures.signature_array(
+                {"CPUWeight": 200, b"PrivateTmp": True}
+            ),
+        )
