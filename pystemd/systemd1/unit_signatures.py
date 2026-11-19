@@ -254,6 +254,26 @@ KNOWN_UNIT_SIGNATURES = {
     b"TasksMaxScale": b"u",
     b"CPUQuota": lambda _, value: (b"CPUQuotaPerSecUSec", b"t", int(value * 10**6)),
     b"CPUQuotaPerSecUSec": b"t",
+    b"CPUQuotaPeriodUSec": b"t",
+    b"CPUWeight": b"t",
+    b"StartupCPUWeight": b"t",
+    b"AllowedCPUs": b"ay",
+    b"StartupAllowedCPUs": b"ay",
+    b"AllowedMemoryNodes": b"ay",
+    b"StartupAllowedMemoryNodes": b"ay",
+    b"IOWeight": b"t",
+    b"StartupIOWeight": b"t",
+    b"IODeviceWeight": b"a(st)",
+    b"IOReadBandwidthMax": b"a(st)",
+    b"IOWriteBandwidthMax": b"a(st)",
+    b"IOReadIOPSMax": b"a(st)",
+    b"IOWriteIOPSMax": b"a(st)",
+    b"IODeviceLatencyTargetUSec": b"a(st)",
+    b"MemoryMin": b"t",
+    b"MemoryZSwapMax": b"t",
+    b"MemoryZSwapWriteback": b"b",
+    b"MemoryPressureWatch": b"s",
+    b"MemoryPressureThresholdUSec": b"t",
     b"IPAccounting": b"b",
     b"IPAddressAllow": b"a(iayu)",
     b"IPAddressDeny": b"a(iayu)",
@@ -389,9 +409,13 @@ KNOWN_UNIT_SIGNATURES = {
 
 
 def signature_array(properties):
+    """
+    Encode `properties`, a dict or an iterable of (name, value) pairs, as a
+    D-Bus a(sv), using each property's type from KNOWN_UNIT_SIGNATURES.
+    """
     args = [(ord(b"a"), b"(sv)")]
-    # pyrefly: ignore [bad-assignment]
-    for prop_name, prop_value in properties.items():
+    items = properties.items() if hasattr(properties, "items") else properties
+    for prop_name, prop_value in items:
         prop_name = x2char_star(prop_name)
         signature = KNOWN_UNIT_SIGNATURES[prop_name]
 

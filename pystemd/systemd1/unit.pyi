@@ -6,7 +6,7 @@
 # the root directory of this source tree.
 #
 
-from typing import Any, AnyStr, List, Optional, Tuple
+from typing import Any, AnyStr, Iterable, List, Mapping, Optional, Tuple
 
 from pystemd.base import SDInterface, SDObject
 from pystemd.dbuslib import DBus
@@ -114,8 +114,8 @@ class Unit_Unit(SDInterface):
     def Kill(self, arg0: bytes, arg1: int) -> None: ...  # s  # i
     def SetProperties(
         self,
-        arg0: bool,
-        arg1: List[Tuple[bytes, Any]],  # b  # a(sv)
+        runtime: bool,
+        properties: Mapping[str | bytes, Any] | Iterable[Tuple[str | bytes, Any]],
     ) -> None: ...
     def Ref(self) -> None: ...
     def Unref(self) -> None: ...
