@@ -19,6 +19,7 @@ dev
 * Add `pystemd.daemon.store_fd` and `pystemd.daemon.store_fds` helpers for the file descriptor store
 * Add `OOMPolicy`, `OOMScoreAdjust` and the `ManagedOOM*` properties to systemd1 KNOWN_UNIT_SIGNATURES
 * Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
+* Add `pystemd.utils.ns.join_namespaces` (atomic pidfd `setns`, with a per-namespace fallback)
 
 0.15.3
 =====

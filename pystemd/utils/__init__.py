@@ -12,12 +12,14 @@ pystemd/utils.py module is re-exported here, so `from pystemd.utils import
 x2char_star` (and friends) keeps working.
 """
 
+from pystemd.utils.ns import join_namespaces
 from pystemd.utils.typing import T, unwrap
 from pystemd.utils.unit import random_unit_name
 from pystemd.utils.x2 import str2cmd, strlist2cmd, x2char_star, x2cmdlist
 
 __all__ = [
     "T",
+    "join_namespaces",
     "random_unit_name",
     "str2cmd",
     "strlist2cmd",
