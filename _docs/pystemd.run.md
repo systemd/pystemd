@@ -72,6 +72,9 @@ but we will assume that this just another building block for your program.
 * stderr: Specify a file descriptor for stderr. By default this is `None`
     and your unit will not have a stderr.
 * slice_: the slice under you want to run the unit.
+* delegate: Set `Delegate=` on the unit. True hands the unit's cgroup subtree
+    to the service (needed for `AttachProcesses`), False turns it off. None,
+    the default, leaves systemd's default. Same as `extra={b"Delegate": ...}`.
 
 
 ## Examples

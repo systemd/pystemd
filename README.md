@@ -83,6 +83,14 @@ Each interface has methods and properties that you can access directly as
 `unit.Service.MainPID`. The list of properties and methods is in `.properties`
 and `.methods` of each interface.
 
+Some properties can also be changed on a running unit, like `systemctl set-property`
+(`True` makes the change runtime-only, like `--runtime`):
+
+```python
+# run this as root
+>>> unit.Unit.SetProperties(True, {"CPUWeight": 200, "MemoryMax": 512 * 1024**2})
+```
+
 The above code operates on system (a.k.a root) units by default. To operate on user units, explicitly pass in a user mode D-Bus instance:
 ```
 from pystemd.dbuslib import DBus
@@ -159,6 +167,18 @@ And access to listen file descriptors for socket-activated scripts.
 1 # you normally only open 1 socket
 ```
 
+And the file descriptor store, to keep fds (a memfd with state, a listening
+socket...) across restarts of your service, with `FileDescriptorStoreMax=` in
+its unit ([docs](_docs/daemon.md#file-descriptor-store), [example](examples/fdstore_counter.py)):
+
+```python
+>>> import os, pystemd.daemon
+>>> pystemd.daemon.store_fd("state", os.memfd_create("state"))
+# ...and after a restart
+>>> pystemd.daemon.listen_fds_with_names()
+{'state': [3]}
+```
+
 And access to check if watchdog is enabled and ping it.
 
 ```python
@@ -179,6 +199,16 @@ print('sleeping for 30 seconds')
 time.sleep(watchdog_sec*2)
 print('you will never reach me in a watchdog env')
 
+```
+
+To enter the namespaces of a unit, like `nsenter` (e.g. a unit with
+`PrivateNetwork=`), there's `pystemd.utils.ns.join_namespaces`:
+
+```python
+# run this as root
+>>> from pystemd.utils.ns import join_namespaces
+>>> join_namespaces(unit.Service.MainPID)  # moves the calling process
+['net', 'mnt']
 ```
 
 We also provide basic journal interaction with `pystemd.journal` [docs](_docs/journal.md)
