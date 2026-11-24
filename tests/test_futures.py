@@ -38,17 +38,13 @@ class TestFuturesPool(unittest.TestCase):
 
 @patch("os.setuid", autospec=True)
 @patch("os.setgid", autospec=True)
-@patch("os.open", autospec=True)
-@patch("pystemd.cutils.setns", autospec=True)
+@patch.object(pystemd.futures, "join_namespaces", autospec=True)
 @patch.object(pystemd.futures.psutil, "Process", autospec=True)
-@patch.object(pystemd.futures, "Path", autospec=True)
 class TestEnterUnit(unittest.TestCase):
     def test_enter(
         self,
-        Path: MagicMock,
         Process: MagicMock,
-        setns: MagicMock,
-        os_open: MagicMock,
+        join_namespaces: MagicMock,
         os_setgid: MagicMock,
         os_setuid: MagicMock,
     ) -> None:
@@ -62,7 +58,7 @@ class TestEnterUnit(unittest.TestCase):
 
         Process.assert_called_once_with(main_pid)
         unit.Service.AttachProcesses.assert_called_once_with("/", [os.getpid()])
-        Path.assert_called_once_with(f"/proc/{main_pid}/ns")
+        join_namespaces.assert_called_once_with(main_pid)
         os_setgid.assert_called_once_with(gid)
         os_setuid.assert_called_once_with(uid)
 

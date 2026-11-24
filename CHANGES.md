@@ -22,6 +22,7 @@ dev
 * Add `CPUWeight`, `IOWeight`, `AllowedCPUs`, `MemoryMin`, the `IO*Max` limits and other cgroup properties to systemd1 KNOWN_UNIT_SIGNATURES
 * Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
 * Add `pystemd.utils.ns.join_namespaces` (atomic pidfd `setns`, with a per-namespace fallback)
+* Fix `pystemd.futures` workers leaking one fd per namespace, and silently running outside the unit's namespaces when one can't be joined: they now use `pystemd.utils.ns.join_namespaces`
 
 0.15.3
 =====

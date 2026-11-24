@@ -4,15 +4,14 @@ import os
 from concurrent.futures import ProcessPoolExecutor
 from functools import cached_property
 from multiprocessing.context import BaseContext, ForkProcess
-from pathlib import Path
 from typing import Any, Sequence, cast
 
 import psutil
 
-import pystemd.cutils
 import pystemd.run
 import pystemd.utils
 from pystemd.dbuslib import DBus
+from pystemd.utils.ns import join_namespaces
 
 
 class TransientUnitContext(BaseContext):
@@ -78,7 +77,7 @@ def enter_unit(unit):
     after fork, but before code to run. It basically do:
 
         1) Attach itself to the main transient unit (making it part of the cgroup)
-        2) Change its namespace too all the namespaces of the main transient unit, this is best effort
+        2) Join all the namespaces of the main transient unit (see pystemd.utils.ns.join_namespaces)
         3) Change group and user to the group and user of the main transient unit
     """
     # get the unit information
@@ -90,9 +89,8 @@ def enter_unit(unit):
 
     unit.Service.AttachProcesses("/", [os.getpid()])
 
-    # attach ourselves to the namespace
-    for ns in Path(f"/proc/{main_pid}/ns").iterdir():
-        pystemd.cutils.setns(os.open(ns, os.O_RDONLY), 0)
+    # enter the unit's namespaces (PrivateNetwork=, PrivateTmp=, ...)
+    join_namespaces(main_pid)
 
     # change the user
     os.setgid(gid)
