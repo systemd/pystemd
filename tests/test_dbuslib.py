@@ -13,8 +13,20 @@ import socket
 import tempfile
 from unittest import TestCase
 
-from pystemd.dbusexc import DBusConnectionRefusedError, DBusFileNotFoundError
-from pystemd.dbuslib import DBusAddress, path_decode, path_encode
+from pystemd.dbusexc import (
+    DBusBaseError,
+    DBusConnectionRefusedError,
+    DBusFileNotFoundError,
+)
+from pystemd.dbuslib import (
+    DBus,
+    DBusAddress,
+    DBusMachine,
+    DbusMessage,
+    DBusRemote,
+    path_decode,
+    path_encode,
+)
 
 
 class TestEncode(TestCase):
@@ -33,6 +45,47 @@ class TestEncode(TestCase):
 
     def test_weird_decode(self):
         self.assertEqual(path_decode(b"/o/s1_2eservice", b"/o"), self.EXTERNAL_ID)
+
+    def test_decode_other_prefix(self):
+        self.assertEqual(
+            path_decode(self.ENCODED_PATH, b"/org/freedesktop/login1"), b""
+        )
+
+    def test_encode_invalid_prefix(self):
+        self.assertEqual(path_encode(b"not a path", self.EXTERNAL_ID), b"")
+
+
+class TestDbusMessage(TestCase):
+    def test_empty_message_headers_are_none(self):
+        msg = DbusMessage()
+        self.assertIsNone(msg.get_path())
+        self.assertIsNone(msg.get_interface())
+        self.assertIsNone(msg.get_member())
+        self.assertIsNone(msg.get_destination())
+        self.assertIsNone(msg.get_sender())
+
+    def test_empty_message_process_reply_raises(self):
+        with self.assertRaises(DBusBaseError):
+            DbusMessage().process_reply(False)
+
+
+class TestDBusLifecycle(TestCase):
+    def test_close_unopened_bus(self):
+        bus = DBus()
+        bus.close()
+        bus.close()
+
+    def test_failed_open_then_close(self):
+        # pyrefly: ignore [missing-argument]
+        bus = DBusAddress(b"unix:path=/nonexistent/pystemd-test")
+        with self.assertRaises(DBusFileNotFoundError):
+            bus.open()
+        bus.close()
+
+    def test_machine_and_remote_take_str_and_bytes(self):
+        for cls in (DBusMachine, DBusRemote):
+            for name in ("host", b"host"):
+                cls(name).close()
 
 
 class TestDBusError(TestCase):

@@ -353,7 +353,6 @@ def run(
 
                     m.process_reply(False)
                     if (
-                        # pyrefly: ignore [missing-attribute]
                         m.get_path() == unit.path
                         and m.body[0] == b"org.freedesktop.systemd1.Unit"
                     ):

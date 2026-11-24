@@ -149,3 +149,15 @@ class TestFindClosure(TestCase):
 
     def test_multi_closure(self):
         self.assertEqual(find_closure(b"(s(s)aa(((s)))u)sss", ord("("), ord(")")), 15)
+
+    def test_unbalanced_closure(self):
+        with self.assertRaises(ValueError):
+            find_closure(b"(s(s)", ord("("), ord(")"))
+
+    def test_empty_closure(self):
+        with self.assertRaises(ValueError):
+            find_closure(b"", ord("("), ord(")"))
+
+    def test_unbalanced_struct(self):
+        with self.assertRaises(ValueError):
+            compile_args(b"(ss")

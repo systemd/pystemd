@@ -112,6 +112,10 @@ cdef class DbusMessage:
         while True:
             r = dbusc.sd_bus_message_peek_type(self._msg, &peek_type, &peek_contents)
 
+            if r < 0:
+              # e.g. an empty DbusMessage: peek_type was not set
+              raise DBusError(r, None, "Failed to read message type")
+
             if r == 0:
               if return_e.parent is None:
                 break
@@ -237,51 +241,72 @@ cdef class DbusMessage:
 
 
     cpdef uint8_t get_type(self):
-        cdef uint8_t ret
+        cdef uint8_t ret = 0
         dbusc.sd_bus_message_get_type(self._msg, &ret)
         return ret
 
 
     cpdef uint64_t get_cookie(self):
-        cdef uint64_t ret
+        cdef uint64_t ret = 0
         dbusc.sd_bus_message_get_cookie(self._msg, &ret)
         return ret
 
 
     cpdef uint64_t get_reply_cookie(self):
-        cdef uint64_t ret
+        cdef uint64_t ret = 0
         dbusc.sd_bus_message_get_reply_cookie(self._msg, &ret)
         return ret
 
     cpdef int64_t get_priority(self):
-        cdef int64_t ret
+        cdef int64_t ret = 0
         dbusc.sd_bus_message_get_priority(self._msg, &ret)
         return ret
 
-    cpdef const char *get_path(self):
-        return dbusc.sd_bus_message_get_path(self._msg)
+    # These header fields are optional (a method reply has no path, interface
+    # or member), and sd-bus returns NULL for a missing one: return None.
 
-    cpdef const char *get_interface(self):
-        return dbusc.sd_bus_message_get_path(self._msg)
+    cpdef object get_path(self):
+        return _c2b(dbusc.sd_bus_message_get_path(self._msg))
 
-    cpdef const char *get_member(self):
-        return dbusc.sd_bus_message_get_member(self._msg)
+    cpdef object get_interface(self):
+        return _c2b(dbusc.sd_bus_message_get_interface(self._msg))
 
-    cpdef const char *get_destination(self):
-        return dbusc.sd_bus_message_get_destination(self._msg)
+    cpdef object get_member(self):
+        return _c2b(dbusc.sd_bus_message_get_member(self._msg))
 
-    cpdef const char *get_sender(self):
-        return dbusc.sd_bus_message_get_sender(self._msg)
+    cpdef object get_destination(self):
+        return _c2b(dbusc.sd_bus_message_get_destination(self._msg))
+
+    cpdef object get_sender(self):
+        return _c2b(dbusc.sd_bus_message_get_sender(self._msg))
 
 
 cdef class DBus:
     cdef dbusc.sd_bus *bus
     cdef bool user_mode
     cdef int interactive
+    # (callback, userdata) for every match_signal: sd-bus only holds a
+    # borrowed pointer to them, so they must live as long as the bus does
+    cdef list _signal_callbacks
+
+    def __cinit__(self, *args, **kwargs):
+      # set here, not in __init__, so subclasses that don't call
+      # super().__init__ still get them
+      self.interactive = -1
+      self._signal_callbacks = []
 
     def __init__(self, user_mode=False, interactive=None):
       self.user_mode = user_mode
       self.interactive = -1 if interactive is None else int(interactive)
+
+    def __dealloc__(self):
+      self._free_bus()
+
+    cdef _free_bus(self):
+      if self.bus != NULL:
+        dbusc.sd_bus_close(self.bus)
+        dbusc.sd_bus_unref(self.bus)
+        self.bus = NULL
 
     def __enter__(self):
         self.open()
@@ -300,15 +325,24 @@ cdef class DBus:
 
     def open(self):
         cdef int rets
+        cdef bint was_closed = self.bus == NULL
         rets = self.open_dbus_bus()
         if (rets < 0):
+            if was_closed:
+                # DBusAddress may have created the bus before failing
+                self._free_bus()
             raise DBusError(rets, None, "Could not open a bus to DBus")
         if self.interactive >= 0:
             self.set_allow_interactive_authorization(self.interactive)
 
     def close(self):
-        dbusc.sd_bus_close(self.bus)
-        dbusc.sd_bus_unref(self.bus)
+        """
+        Close the connection. Closing twice is a no-op; using the bus after
+        closing it raises DBusError (sd-bus answers ENOTCONN) until it is
+        opened again.
+        """
+        self._free_bus()
+        self._signal_callbacks = []
 
     def process(self):
         cdef:
@@ -324,12 +358,16 @@ cdef class DBus:
     cdef _msg_append(
         self, dbusc.sd_bus_message *msg_call, int arg_type_i, arg_value):
 
-      cdef char * arg_type_c
+      cdef int r
+      cdef char * arg_type_c = NULL
       cdef char arg_type = <char>arg_type_i
 
-      if arg_type_i > 0:
+      if 0 < arg_type_i < 128:
           inter = chr(arg_type_i).encode()
           arg_type_c = inter
+      elif arg_type_i != -1:
+          raise DBusError(
+            -42, None, "Unknown arg type %s for %s" % (arg_type_i, arg_value))
 
       if arg_type == dbusc.SD_BUS_TYPE_BYTE:
         r = dbusc.sd_bus_message_append(
@@ -399,6 +437,11 @@ cdef class DBus:
       else:
         raise DBusError(
           -42, None, "Unknown arg type %s for %s" % (arg_type, arg_value))
+
+      if r < 0:
+        raise DBusError(
+          r, None, "Failed to append %r (type %r) to the message" % (
+            arg_value, chr(arg_type_i) if arg_type_i > 0 else "end of container"))
 
     def call_method(
             self,
@@ -501,13 +544,12 @@ cdef class DBus:
       """
 
       IF LIBSYSTEMD_VERSION < 237:
-          raise DBusError(-1, "sd_bus_match_signal not available in libsystemd v%d" % LIBSYSTEMD_VERSION)
+          raise DBusError(-1, None, "sd_bus_match_signal not available in libsystemd v%d" % LIBSYSTEMD_VERSION)
       ELSE:
           cdef int r
 
-          callback.metadata = {
-            'userdata': userdata,
-          }
+          # sd-bus gets a borrowed pointer: keep the tuple alive with the bus
+          handler_data = (callback, userdata)
 
           r = dbusc.sd_bus_match_signal(
             self.bus,
@@ -517,18 +559,20 @@ cdef class DBus:
             _b2c(x2char_star(interface)),
             _b2c(x2char_star(member)),
             match_signal_callback_handler,
-            <void*> callback
+            <void*> handler_data
           )
 
           if r < 0:
-              raise DBusError(r, "Failed to add signal match")
+              raise DBusError(r, None, "Failed to add signal match")
+
+          self._signal_callbacks.append(handler_data)
 
     # Direct interface to sd_bus_<methods>
 
     cpdef wait(self, uint64_t timeout):
         cdef int r = dbusc.sd_bus_wait(self.bus, timeout)
         if r < 0:
-            raise DBusError(r, "Failed to wait for bus")
+            raise DBusError(r, None, "Failed to wait for bus")
 
     cpdef const char* get_unique_name(self):
         cdef:
@@ -556,10 +600,13 @@ cdef class DBus:
 
 cdef class DBusMachine(DBus):
   "DBus class that connects to machine"
-  cdef char* machine
+  # bytes, not char*: a char* would point into whatever (possibly temporary)
+  # bytes object was passed to __init__
+  cdef bytes machine
 
-  def __init__(self, char* machine):
-    self.machine = machine
+  def __init__(self, machine):
+    super().__init__()
+    self.machine = x2char_star(machine)
 
   cdef int open_dbus_bus(self):
     return dbusc.sd_bus_open_system_machine(&(self.bus), self.machine)
@@ -577,10 +624,11 @@ cdef class DBusRemote(DBus):
     the system bus on the specified host is created.
   """
 
-  cdef char* host
+  cdef bytes host
 
-  def __init__(self, char* host):
-    self.host = host
+  def __init__(self, host):
+    super().__init__()
+    self.host = x2char_star(host)
 
   cdef int open_dbus_bus(self):
     return dbusc.sd_bus_open_system_remote(&(self.bus), self.host)
@@ -651,7 +699,7 @@ cdef cast_data_to(dbusc.basic_data basic, cast_type):
 
 # Parsing argument library
 
-cpdef int find_closure(char* args, char open, char close):
+cpdef int find_closure(char* args, char open, char close) except -1:
   cdef int counter = 0
   cdef int n
   cdef char arg
@@ -663,8 +711,10 @@ cpdef int find_closure(char* args, char open, char close):
       counter -= 1
 
     if counter == 0:
-      break
-  return n
+      return n
+
+  raise ValueError(
+    "unbalanced %r in signature %r" % (chr(open) + chr(close), args))
 
 
 cdef dict COMPILE_METHODS
@@ -761,7 +811,7 @@ cpdef bytes path_encode(char* prefix,  char* external_id):
   """
 
   cdef:
-    char* ret_path
+    char* ret_path = NULL
     int r
 
   try:
@@ -790,7 +840,7 @@ cpdef bytes path_decode(char* path,  char* prefix):
   """
 
   cdef:
-    char* answer
+    char* answer = NULL
     int r
 
   try:
@@ -811,17 +861,26 @@ cdef int match_signal_callback_handler(
 ) except -1:
   cdef:
     DbusMessage msg = DbusMessage()
-    object mycallback = <object> userdata
+    object mycallback
+    object mydata
 
+  mycallback, mydata = <object> userdata
   msg.set_bus_message(m)
 
   # We can't surface any Exception mycallback may throw, because this is
   # happening as a CALLBACK and we have no access to the caller of this method.
   # This will eventually be resolve into whatever exception the caller decide
   # to raise, usually SystemError
-  mycallback(msg, error=None, userdata=mycallback.metadata['userdata'])
+  mycallback(msg, error=None, userdata=mydata)
 
   return 0
+
+
+cdef object _c2b(const char *value):
+  "char* to bytes, None for NULL (converting NULL to bytes would crash)"
+  if value == NULL:
+    return None
+  return <bytes>value
 
 
 cdef char* _b2c(bytes py_value):
