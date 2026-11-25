@@ -74,6 +74,7 @@ setup(
         "pystemd.utils",
     ],
     ext_modules=external_modules,
+    include_package_data=False,
     package_data={
         "pystemd": [
             str(p.relative_to("pystemd")) for p in Path("pystemd").glob("**/*.pyi")
