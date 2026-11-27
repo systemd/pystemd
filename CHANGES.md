@@ -23,6 +23,9 @@ dev
 * Split `pystemd.utils` into a package (`pystemd.utils.{x2,unit,typing}`); existing imports keep working
 * Add `pystemd.utils.ns.join_namespaces` (atomic pidfd `setns`, with a per-namespace fallback)
 * Fix `pystemd.futures` workers leaking one fd per namespace, and silently running outside the unit's namespaces when one can't be joined: they now use `pystemd.utils.ns.join_namespaces`
+* Fix crashes in `pystemd.dbuslib`: `DbusMessage.get_path()` / `get_member()` / ... segfaulting on a header field the message lacks (they now return `None`), `get_interface()` returning the path, `DBus.close()` twice aborting and using a closed bus corrupting memory (it now raises), and `DBusMachine` / `DBusRemote` keeping a dangling pointer to their name (they now also take `str`)
+* Fix `DBus.match_signal` not keeping its callback alive and failing for bound methods; the callback no longer gets a `metadata` attribute
+* `DBus` buses are now freed when garbage collected; sd-bus errors while building a message, and unbalanced `(` in signatures, now raise instead of being ignored
 
 0.15.3
 =====
