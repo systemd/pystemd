@@ -75,9 +75,9 @@ setup(
     ],
     ext_modules=external_modules,
     package_data={
-        "pystemd": [
-            str(p.relative_to("pystemd")) for p in Path("pystemd").glob("**/*.pyi")
-        ]
+        # py.typed: tell type checkers to use the .pyi stubs (PEP 561)
+        "pystemd": ["py.typed"]
+        + [str(p.relative_to("pystemd")) for p in Path("pystemd").glob("**/*.pyi")]
     },
     install_requires=[
         "lxml",

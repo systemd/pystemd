@@ -26,6 +26,7 @@ dev
 * Fix crashes in `pystemd.dbuslib`: `DbusMessage.get_path()` / `get_member()` / ... segfaulting on a header field the message lacks (they now return `None`), `get_interface()` returning the path, `DBus.close()` twice aborting and using a closed bus corrupting memory (it now raises), and `DBusMachine` / `DBusRemote` keeping a dangling pointer to their name (they now also take `str`)
 * Fix `DBus.match_signal` not keeping its callback alive and failing for bound methods; the callback no longer gets a `metadata` attribute
 * `DBus` buses are now freed when garbage collected; sd-bus errors while building a message, and unbalanced `(` in signatures, now raise instead of being ignored
+* Update the `Unit` type stubs to systemd 259's `Unit` and `Service` interfaces, and ship `py.typed` so type checkers use them (#71)
 * Document the file descriptor store, `delegate=`, `Unit.SetProperties` and `join_namespaces`, and add `examples/fdstore_counter.py`
 
 0.15.3
