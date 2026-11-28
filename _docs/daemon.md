@@ -74,3 +74,50 @@ get the number of usec between pooling, that is `X*10^6` where `X` is
 defined in `WatchdogSec=X`. you can get it with
 `pystemd.daemon.watchdog_enabled`, and if you want to ping systemd, you do
 `pystemd.daemon.notify(False, watchdog=1)`.
+
+
+File descriptor store
+---------------------
+
+systemd can keep file descriptors for your service while it restarts: a memfd
+holding state, a listening socket, even open client connections. The service
+hands them over with `sd_notify` (`FDSTORE=1`, the fds attached to the message),
+and gets them back on its next start, the same way as socket activation
+(`$LISTEN_FDS`, from fd 3, named by `$LISTEN_FDNAMES`). The unit needs
+`FileDescriptorStoreMax=` (the number of fds systemd may keep), above 0.
+
+Store fds under a name with `pystemd.daemon.store_fd`, and get them back with
+`pystemd.daemon.listen_fds_with_names`, which returns them by name:
+
+```python
+import os
+import pystemd.daemon
+
+fds = pystemd.daemon.listen_fds_with_names()   # {name: [fd, ...]}
+if "state" in fds:
+    fd = fds["state"][0]                       # a restart: our memfd is back
+else:
+    fd = os.memfd_create("state")              # the first run: create it, and store it
+    pystemd.daemon.store_fd("state", fd)
+
+pystemd.daemon.notify(False, ready=1)
+```
+
+- `store_fd(name, fds, unset_environment=False, **states)` stores one fd or a
+  list of them (ints, or objects with `fileno()`); extra states go in the same
+  message, e.g. `store_fd("state", fd, ready=1)`.
+- `store_fds({name: fds, ...}, unset_environment=False, **states)` stores
+  several names, one message per name.
+- Both check the names first and raise `ValueError` for an invalid one (1-255
+  printable ASCII characters, no `:`): systemd silently ignores a message with
+  an invalid `FDNAME=`.
+- Underneath, `notify` takes the fds itself: `notify(False, fds=[fd],
+  fdstore=1, fdname="state")` is `sd_pid_notify_with_fds()`.
+- `listen_fds_with_names` also finds the fds of socket activation by name
+  (`FileDescriptorName=` in the socket unit). Names aren't unique, hence the
+  lists: a socket unit with several `ListenStream=` passes all its fds under
+  one name.
+
+[examples/fdstore_counter.py](../examples/fdstore_counter.py) runs itself as a
+service and restarts it a few times: a counter kept in a stored memfd goes up
+across the restarts.
